@@ -1,0 +1,31 @@
+HUMANS.md plugins
+Copyright 2026 cmdAI
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The command-line program (plugins/humans-md/scripts/humans.mjs, published as
+packages/humans-md/bin/humans-md.mjs) includes:
+
+- The HUMANS.md portable reader core, from https://github.com/cmdai-hq/HUMANS.md
+  (tools/, Apache-2.0).
+- The HUMANS.md 0.3 draft schemas, vocabulary and instruction sentences
+  (schema/humans.schema.json, schema/terms.json, schema/instructions.json),
+  from https://github.com/cmdai-hq/HUMANS.md, (c) cmdAI, licensed under
+  CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Embedded unchanged
+  in compiled form. The compile skill's references/ are derived from
+  the same specification and vocabulary (modified: summarized and reformatted).
+- yaml, https://github.com/eemeli/yaml, under the ISC License:
+
+  Copyright Eemeli Aro <eemeli@gmail.com>
+
+  Permission to use, copy, modify, and/or distribute this software for any purpose
+  with or without fee is hereby granted, provided that the above copyright notice
+  and this permission notice appear in all copies.
+
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+  REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+  FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+  INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+  OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+  TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
+  THIS SOFTWARE.

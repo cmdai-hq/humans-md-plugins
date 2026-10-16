@@ -1,0 +1,16 @@
+{
+  "name": "humans-md",
+  "owner": {
+    "name": "cmdAI"
+  },
+  "metadata": {
+    "description": "HUMANS.md for GitHub Copilot: tell your agents how to work with you."
+  },
+  "plugins": [
+    {
+      "name": "humans-md",
+      "source": "./plugins/copilot",
+      "description": "Loads your own ~/.humans/HUMANS.md at the start of each session."
+    }
+  ]
+}

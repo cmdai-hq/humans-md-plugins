@@ -1,0 +1,16 @@
+{
+  "name": "humans-md",
+  "owner": {
+    "name": "cmdAI"
+  },
+  "metadata": {
+    "description": "HUMANS.md plugins: tell your agents how to work with you."
+  },
+  "plugins": [
+    {
+      "name": "humans-md",
+      "source": "plugins/cursor",
+      "description": "Loads your own HUMANS.md at the start of each agent chat."
+    }
+  ]
+}

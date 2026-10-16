@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "case \"${CURSOR_PLUGIN_ROOT}\" in /*) exec node \"${CURSOR_PLUGIN_ROOT}/hooks/session-start.mjs\";; esac",
+        "timeout": 10
+      }
+    ]
+  }
+}

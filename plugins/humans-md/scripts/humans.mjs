@@ -7368,6 +7368,7 @@ var require_dist = __commonJS({
 });
 
 // core/src/cli-solo.ts
+import { realpathSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename as basename2, isAbsolute, join } from "node:path";
 
@@ -15988,7 +15989,7 @@ if (args.length === 0 && (cmd === "--help" || cmd === "-h" || cmd === "help")) {
   process.exit(0);
 }
 if (args.length === 0 && cmd === "--version") {
-  process.stdout.write("0.1.0\n");
+  process.stdout.write("0.2.0\n");
   process.exit(0);
 }
 var fail = () => {
@@ -16033,7 +16034,14 @@ if (cmd === "check") {
   process.stdout.write(JSON.stringify({ ok, issues: issues2 }) + "\n");
   process.exit(ok ? 0 : 1);
 }
-if (!isAbsolute(file) || basename2(file) !== "HUMANS.md") fail();
+var real = (f) => {
+  try {
+    return realpathSync.native(f);
+  } catch {
+    return f;
+  }
+};
+if (!isAbsolute(file) || basename2(file) !== "HUMANS.md" || basename2(real(file)) !== "HUMANS.md") fail();
 var { profile, withheld, issues } = loadProfile(file, "read");
 var codes = issues.map((i) => i.message);
 var projection = profile ? serveTo(profile, { today, withheld, audience: "owner" }) : { status: "none" };

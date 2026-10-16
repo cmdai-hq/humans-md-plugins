@@ -18,7 +18,7 @@ interrupting:
   interrupt_for: blocking_only
 ```
 
-At the start of each session, your agent receives these fields, labelled as data rather than commands, then one plain sentence per preference:
+At the start of each session, your agent receives these fields as information, not as orders, then one plain sentence per preference:
 
 ```
 Open with a brief summary.
@@ -29,38 +29,71 @@ Interrupt only when you are blocked.
 
 A complete file: [example](https://github.com/cmdai-hq/HUMANS.md/blob/main/examples/HUMANS.md).
 
-## Claude Code
+## Before you start
 
-You need Node 22.18 or later (`node --version`).
+- **Node 22.18 or later.** Check with `node --version`. Desktop apps (Claude Desktop, Cursor, VS Code) opened from the Dock may not see a `node` installed with nvm or Homebrew. If nothing loads there, start the app from a terminal once, or install Node from [nodejs.org](https://nodejs.org).
+- **macOS is the only system tested.** Windows and Linux have not been tried.
+- **On a work machine,** your administrator may block plugins or hooks.
 
-1. In a Claude Code session, install the plugin:
-   ```
-   /plugin marketplace add cmdai-hq/humans-md-plugins
-   /plugin install humans-md@humans-md
-   ```
-   From a shell: `claude plugin marketplace add cmdai-hq/humans-md-plugins`, then `claude plugin install humans-md@humans-md`.
-2. No profile yet? Run `/humans-md:compile` and describe how you like to work, in the chat or first in `~/.humans/source.md` under `## What I read`, `## What I decide` and `## When to interrupt me`. Claude says which AI provider reads your text, shows a preview, and saves `~/.humans/HUMANS.md` only after you approve.
-3. Start a new session and ask: *"What does my HUMANS.md say about interruptions?"* Claude should quote your value.
+## Install
 
-The plugin reads `~/.humans/HUMANS.md` and nothing else.
+One client is enough. Install for the ones you use.
 
-### Use another file
+| Client | Install |
+|---|---|
+| Claude Code (CLI, Desktop, VS Code) | `claude plugin install humans-md --marketplace cmdai-hq/humans-md-plugins` |
+| Codex | `codex plugin marketplace add cmdai-hq/humans-md-plugins`, then `codex plugin add humans-md@humans-md`, then trust the hook in `/hooks` |
+| GitHub Copilot CLI | `copilot plugin marketplace add cmdai-hq/humans-md-plugins`, then `copilot plugin install humans-md@humans-md` |
+| Cursor | in an agent chat: `/add-plugin https://github.com/cmdai-hq/humans-md-plugins`, then install **humans-md** for your user |
+| Any other client | `npm install -g @humans-md/cli`, then add [one hook](packages/humans-md#hook-configuration) |
 
-- Set **Your HUMANS.md** in `/config`, or install with `claude plugin install humans-md@humans-md --config profile=/absolute/path/HUMANS.md`. The file must be named `HUMANS.md`.
-- To keep it in a dotfiles repository, make `~/.humans/HUMANS.md` a symbolic link to it.
-- On a managed machine, an administrator can set this value. Check `/config`.
+Notes per client:
 
-## Codex, Cursor, Copilot CLI
+- **Claude Code.** In a session, the same install is `/plugin install humans-md --marketplace cmdai-hq/humans-md-plugins`; choose to install it for you. To use a file other than `~/.humans/HUMANS.md`, set **Your HUMANS.md** in `/config`. The file must be named `HUMANS.md`.
+- **Codex.** Codex runs a plugin's hook only after you trust it. Open `/hooks` in Codex, review the HUMANS.md hook and trust it. Codex asks again after each update. The Codex IDE extension does not load plugins: use the [hand-written hook](packages/humans-md#hook-configuration) there.
+- **GitHub Copilot.** If you turn on Copilot CLI's sandbox (`/sandbox`, off by default), hooks run inside it and may not be able to read `~/.humans`; your agent then gets no profile. VS Code lists plugins installed with Copilot CLI in its Agent Plugins view (setting `chat.plugins.enabled`). This has not been tried in VS Code yet. If you also use the Claude Code extension with this plugin, VS Code may load both.
+- **Cursor.** Cursor also imports Claude Code plugins (Settings → Agents → Third-Party Imports, on by default). If you use both, keep one of the two, or your profile may load twice. Two Cursor bugs were open on 2026-10-16: in the Agents Window, the first message of a new chat can miss the profile ([forum](https://forum.cursor.com/t/agents-window-ignores-sessionstart-additional-context-claude-code-project-hooks-no-longer-load-3-24-9/174143)); and a plugin added with `/add-plugin <url>` can stay on its first version ([forum](https://forum.cursor.com/t/add-plugin-github-imports-can-get-stuck-on-stale-plugin-versions/163895)).
 
-1. Install the command line: `npm install -g @humans-md/cli`.
-2. No profile yet? Copy the [example](https://github.com/cmdai-hq/HUMANS.md/blob/main/examples/HUMANS.md) into `~/.humans/HUMANS.md`, edit it, then run `humans-md check`. Success prints `{"ok":true,"issues":[]}`.
-3. Add one hook to your client's configuration: [snippets](packages/humans-md#hook-configuration).
+Every plugin reads `~/.humans/HUMANS.md` and nothing else; in Claude Code you can choose another file named `HUMANS.md` in `/config`. To keep the file elsewhere, for example in a dotfiles repository, make `~/.humans/HUMANS.md` a symbolic link to a file that is also named `HUMANS.md`.
+
+Install one plugin per client. Some clients also load another client's plugins (Cursor imports Claude Code plugins, VS Code lists Copilot CLI plugins); if your profile shows up twice, remove one.
+
+## Write your profile
+
+- **In Claude Code:** run `/humans-md:compile`. Describe how you like to work, or answer about nine short questions, one at a time. Claude tells you which AI provider reads your words, shows you the file, and saves it only after you say yes.
+- **Anywhere else:** start from the example, then change `id`, `name` and the values:
+  ```sh
+  mkdir -p ~/.humans && curl -o ~/.humans/HUMANS.md https://raw.githubusercontent.com/cmdai-hq/HUMANS.md/main/examples/HUMANS.md
+  ```
+
+Check the file with `npx -y @humans-md/cli check`. Success prints `{"ok":true,"issues":[]}`.
+
+## Check it works
+
+Start a new session and ask: *"What does my HUMANS.md say about interruptions?"* Your agent should quote your value.
+
+If it does not:
+
+1. Run `npx -y @humans-md/cli check` and fix what it reports.
+2. Check that `node --version` prints 22.18 or later in the place your client starts from.
+3. Codex: check that the hook is trusted in `/hooks`. Cursor: open the Output panel, choose **Hooks** and look for `sessionStart`.
+
+## Update
+
+Claude Code does not update plugins from this marketplace by itself. To get a new version:
+
+- Claude Code: `claude plugin update humans-md@humans-md`, or **Update now** in `/plugin`. To update automatically, turn on auto-update for humans-md in the Marketplaces tab of `/plugin`.
+- Codex: `codex plugin marketplace upgrade humans-md`, then trust the hook again in `/hooks`.
+- Copilot CLI: `copilot plugin update humans-md`.
+- Command line: `npm install -g @humans-md/cli@latest`.
+
+Restart your client after an update.
 
 ## What your agent receives
 
 The fields it recognizes, labelled as data, then the plain sentences shown above. Comments, unknown fields and the Markdown body are left out. If the file is missing, invalid or too large, the agent receives `{"status":"none"}`: nothing is loaded, and nothing is cut short.
 
-You can turn the plain sentences off: `--no-guidance` for the command line, `HUMANS_GUIDANCE=off` in the environment Claude Code starts in.
+To leave the plain sentences out, start Claude Code, Codex or Copilot with `HUMANS_GUIDANCE=off` set, or pass `--no-guidance` to the command line.
 
 ## Privacy and limits
 
@@ -70,20 +103,25 @@ You can turn the plain sentences off: `--no-guidance` for the command line, `HUM
 
 ## Status
 
-Format version: 0.3 draft (`0.3-draft.2026-10-15.1`). Tested on macOS only. "Tested" means a real session on the version named loaded the profile from this repository's plugin, and the model quoted a value from it; it says nothing about how well a model follows the preferences. All three Claude surfaces loaded the plugin installed from this GitHub repository.
+Format version: 0.3 draft (`0.3-draft.2026-10-15.1`). Tested on macOS only. "Tested" means a real session on the version named loaded the profile from this repository's plugin, and the model quoted a value from it; it says nothing about how well a model follows the preferences. The Claude rows were tested with plugin 0.1.0 installed from this GitHub repository. Installing Codex from GitHub and trusting the hook in `/hooks` are not tested yet.
 
 | Surface | Version | Status (2026-10-16) |
 |---|---|---|
 | Claude Code CLI | 2.1.301, 2.1.302 | Tested |
 | Claude Desktop, Code tab | 2.42304 | Tested |
 | Claude Code for VS Code | 2.1.300 | Tested (2.1.89 did not load it) |
-| Codex CLI | | Not tested |
-| Cursor | | Not tested |
-| GitHub Copilot CLI | | Not tested |
+| Codex CLI | 0.163.0 | Partly tested: `codex exec` loaded the plugin from a local copy, with the trust step skipped |
+| Cursor CLI (`agent`) | 2026.10.16 | Partly tested: a real session loaded the plugin with `--plugin-dir` and quoted the profile; installing from GitHub is not tested yet |
+| Cursor editor | 3.25.6 | Not tested |
+| GitHub Copilot CLI | 1.0.98 | Not tested: the plugin installs from a local copy of this repository; no session has run |
+| VS Code, GitHub Copilot | | Not tested |
 
 ## Uninstall
 
-- Claude Code: `/plugin uninstall humans-md@humans-md`.
+- Claude Code: `claude plugin uninstall humans-md@humans-md`, then `claude plugin marketplace remove humans-md`.
+- Codex: `codex plugin remove humans-md@humans-md`, then `codex plugin marketplace remove humans-md`.
+- Copilot CLI: `copilot plugin uninstall humans-md`, then `copilot plugin marketplace remove humans-md`.
+- Cursor: uninstall humans-md in **Customize**.
 - Command line: `npm uninstall -g @humans-md/cli`, then remove the hook from your client's configuration.
 
 Your files in `~/.humans/` stay where they are.
