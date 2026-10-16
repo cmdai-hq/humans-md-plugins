@@ -70,7 +70,7 @@ You can turn the plain sentences off: `--no-guidance` for the command line, `HUM
 
 ## Status
 
-Format version: 0.3 draft (`0.3-draft.2026-10-15.1`). Tested on macOS only. "Tested" means a real session on the version named loaded the profile from this repository's plugin, and the model quoted a value from it; it says nothing about how well a model follows the preferences. Installing from this GitHub repository has not been tested yet: the trials below used a local copy of it.
+Format version: 0.3 draft (`0.3-draft.2026-10-15.1`). Tested on macOS only. "Tested" means a real session on the version named loaded the profile from this repository's plugin, and the model quoted a value from it; it says nothing about how well a model follows the preferences. The Claude Code CLI trial installed the plugin from this GitHub repository; the other trials used a local copy of it.
 
 | Surface | Version | Status (2026-10-16) |
 |---|---|---|

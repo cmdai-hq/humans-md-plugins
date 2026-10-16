@@ -39,7 +39,7 @@ jobs:
       - run: node --test
       - name: Pack, install and run the npm package
         working-directory: packages/humans-md
-        run: |
+        run: | # zizmor: ignore[adhoc-packages] installs the tarball this job just packed
           npm pack --pack-destination "$RUNNER_TEMP"
           npm install -g "$RUNNER_TEMP"/humans-md-cli-*.tgz
           test "$(humans-md --version)" = "$(node -p 'require("./package.json").version')"
@@ -64,7 +64,7 @@ jobs:
           node-version: 24
           package-manager-cache: false
       - name: Install Claude Code (pinned)
-        run: |
+        run: | # zizmor: ignore[adhoc-packages] pinned by CLAUDE_CODE_VERSION; bumped deliberately
           npm install -g --include=optional "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
           claude --version
       - run: claude plugin validate --strict .
