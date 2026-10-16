@@ -51,10 +51,10 @@ Notes per client:
 
 - **Claude Code.** In a session, the same install is `/plugin install humans-md --marketplace cmdai-hq/humans-md-plugins`; choose to install it for you. To use a file other than `~/.humans/HUMANS.md`, set **Your HUMANS.md** in `/config`. The file must be named `HUMANS.md`.
 - **Codex.** Codex runs a plugin's hook only after you trust it. Open `/hooks` in Codex, review the HUMANS.md hook and trust it. Codex asks again after each update. The Codex IDE extension does not load plugins: use the [hand-written hook](packages/humans-md#hook-configuration) there.
-- **GitHub Copilot.** VS Code lists plugins installed with Copilot CLI in its Agent Plugins view (setting `chat.plugins.enabled`). This has not been tried in VS Code yet. If you also use the Claude Code extension with this plugin, VS Code may load both.
+- **GitHub Copilot.** If you turn on Copilot CLI's sandbox (`/sandbox`, off by default), hooks run inside it and may not be able to read `~/.humans`; your agent then gets no profile. VS Code lists plugins installed with Copilot CLI in its Agent Plugins view (setting `chat.plugins.enabled`). This has not been tried in VS Code yet. If you also use the Claude Code extension with this plugin, VS Code may load both.
 - **Cursor.** Cursor also imports Claude Code plugins (Settings → Agents → Third-Party Imports, on by default). If you use both, keep one of the two, or your profile may load twice. Two Cursor bugs were open on 2026-10-16: in the Agents Window, the first message of a new chat can miss the profile ([forum](https://forum.cursor.com/t/agents-window-ignores-sessionstart-additional-context-claude-code-project-hooks-no-longer-load-3-24-9/174143)); and a plugin added with `/add-plugin <url>` can stay on its first version ([forum](https://forum.cursor.com/t/add-plugin-github-imports-can-get-stuck-on-stale-plugin-versions/163895)).
 
-Every plugin reads `~/.humans/HUMANS.md` and nothing else. To keep the file elsewhere, for example in a dotfiles repository, make `~/.humans/HUMANS.md` a symbolic link to a file that is also named `HUMANS.md`.
+Every plugin reads `~/.humans/HUMANS.md` and nothing else; in Claude Code you can choose another file named `HUMANS.md` in `/config`. To keep the file elsewhere, for example in a dotfiles repository, make `~/.humans/HUMANS.md` a symbolic link to a file that is also named `HUMANS.md`.
 
 Install one plugin per client. Some clients also load another client's plugins (Cursor imports Claude Code plugins, VS Code lists Copilot CLI plugins); if your profile shows up twice, remove one.
 
@@ -111,7 +111,8 @@ Format version: 0.3 draft (`0.3-draft.2026-10-15.1`). Tested on macOS only. "Tes
 | Claude Desktop, Code tab | 2.42304 | Tested |
 | Claude Code for VS Code | 2.1.300 | Tested (2.1.89 did not load it) |
 | Codex CLI | 0.163.0 | Partly tested: `codex exec` loaded the plugin from a local copy, with the trust step skipped |
-| Cursor | | Not tested |
+| Cursor CLI (`agent`) | 2026.10.16 | Partly tested: a real session loaded the plugin with `--plugin-dir` and quoted the profile; installing from GitHub is not tested yet |
+| Cursor editor | 3.25.6 | Not tested |
 | GitHub Copilot CLI | 1.0.98 | Not tested: the plugin installs from a local copy of this repository; no session has run |
 | VS Code, GitHub Copilot | | Not tested |
 

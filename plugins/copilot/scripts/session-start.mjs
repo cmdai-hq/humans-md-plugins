@@ -7,7 +7,7 @@ const file = selectedFile(process.argv.slice(2), '~/.humans/HUMANS.md');
 // Copilot CLI sends its camelCase payload (sessionId, source) and reads a top-level
 // `additionalContext`. VS Code's Local harness maps the same hook to `SessionStart`, sends
 // `hook_event_name` and reads `hookSpecificOutput`, which is the Claude envelope.
-const copilot = e => e.hook_event_name === undefined && (typeof e.sessionId === 'string' || ['startup', 'resume', 'new'].includes(e.source));
+const copilot = e => e.hook_event_name === undefined && typeof e.sessionId === 'string' && ['startup', 'resume', 'new'].includes(e.source);
 const input = await readEvent(e => e.hook_event_name === 'SessionStart' || copilot(e));
 if (input) {
   const client = copilot(input) ? 'copilot' : 'claude';

@@ -82,7 +82,7 @@ test('Copilot CLI gets its documented top-level envelope; VS Code gets hookSpeci
 test('no profile: the model gets the absence; other events and bad input get nothing', () => inTemp(empty => {
   assert.equal(runHook({ HOME: empty }).stdout, ABSENT);
   assert.equal(runHook({ HOME: empty }, vscodeEvent).stdout, ABSENT_VSCODE);
-  for (const input of ['not json', '[]', 'null', '{"hook_event_name":"UserPromptSubmit"}', '{"toolName":"bash"}']) {
+  for (const input of ['not json', '[]', 'null', '{"hook_event_name":"UserPromptSubmit"}', '{"toolName":"bash"}', '{"source":"startup"}', '{"sessionId":"s","source":"other"}']) {
     assert.equal(runHook({ HOME: home }, input).stdout, '', input);
   }
   // A path in the hook input selects nothing.
