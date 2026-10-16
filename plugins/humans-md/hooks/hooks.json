@@ -1,0 +1,11 @@
+{
+  "description": "Load the owner's HUMANS.md, chosen in the plugin settings, as presentation data at session start.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact|fork",
+        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.mjs\"", "timeout": 10 }]
+      }
+    ]
+  }
+}

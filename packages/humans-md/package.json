@@ -1,0 +1,40 @@
+{
+  "name": "@humans-md/cli",
+  "version": "0.1.0",
+  "description": "Validate your own HUMANS.md and render it for agent hooks (Claude Code, Codex, Cursor, Copilot CLI). Draft format.",
+  "keywords": [
+    "humans-md",
+    "agents",
+    "claude-code",
+    "codex",
+    "cursor",
+    "copilot",
+    "hooks",
+    "profile"
+  ],
+  "homepage": "https://humansmd.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cmdai-hq/humans-md-plugins.git",
+    "directory": "packages/humans-md"
+  },
+  "bugs": "https://github.com/cmdai-hq/humans-md-plugins/issues",
+  "license": "Apache-2.0",
+  "author": "Tristan Bessoussa (https://github.com/tristanbes)",
+  "type": "module",
+  "bin": {
+    "humans-md": "bin/humans-md.mjs"
+  },
+  "files": [
+    "bin/humans-md.mjs",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

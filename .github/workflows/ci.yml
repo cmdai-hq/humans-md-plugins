@@ -1,0 +1,98 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  smoke:
+    name: smoke (${{ matrix.os }}, node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        node: [22, 24, 26]
+        include:
+          # engines.node floor (">=22.18")
+          - os: ubuntu-latest
+            node: 22.18.0
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ matrix.node }}
+          package-manager-cache: false
+      - run: node --test
+      - name: Pack, install and run the npm package
+        working-directory: packages/humans-md
+        run: |
+          npm pack --pack-destination "$RUNNER_TEMP"
+          npm install -g "$RUNNER_TEMP"/humans-md-cli-*.tgz
+          test "$(humans-md --version)" = "$(node -p 'require("./package.json").version')"
+          humans-md check "$GITHUB_WORKSPACE/test/fixtures/home/.humans/HUMANS.md"
+
+  plugin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      # Pinned; bump deliberately (check `npm view @anthropic-ai/claude-code dist-tags`).
+      CLAUDE_CODE_VERSION: 2.1.292
+      DISABLE_AUTOUPDATER: 1
+      CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: 1
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install Claude Code (pinned)
+        run: |
+          npm install -g --include=optional "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+          claude --version
+      - run: claude plugin validate --strict .
+      - run: claude plugin validate --strict plugins/humans-md
+
+  zizmor:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: zizmorcore/zizmor-action@85b2b9fb8e3325e7a23d7d0a9d7ba5ae0f999e3e # v0.7.1
+        with:
+          advanced-security: false
+
+  # Single stable check name for branch rulesets.
+  ci-ok:
+    if: always()
+    needs: [smoke, plugin, zizmor]
+    runs-on: ubuntu-slim
+    timeout-minutes: 2
+    permissions: {}
+    steps:
+      - env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "$RESULTS"
+          for r in $RESULTS; do [ "$r" = success ] || exit 1; done

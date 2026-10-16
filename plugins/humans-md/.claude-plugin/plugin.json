@@ -1,0 +1,29 @@
+{
+  "name": "humans-md",
+  "displayName": "HUMANS.md",
+  "version": "0.1.0",
+  "description": "Loads your own HUMANS.md at the start of each session, so Claude knows how long its replies should be, what it can decide without asking, and when to interrupt you. Includes /humans-md:compile to write the file.",
+  "author": {
+    "name": "Tristan Bessoussa",
+    "url": "https://github.com/tristanbes"
+  },
+  "homepage": "https://humansmd.dev",
+  "repository": "https://github.com/cmdai-hq/humans-md-plugins",
+  "license": "Apache-2.0",
+  "keywords": [
+    "humans-md",
+    "profile",
+    "preferences",
+    "attention",
+    "interruptions"
+  ],
+  "userConfig": {
+    "profile": {
+      "type": "file",
+      "title": "Your HUMANS.md",
+      "description": "Path to your profile. The file must be named HUMANS.md. Leave empty to use ~/.humans/HUMANS.md.",
+      "required": false,
+      "default": "~/.humans/HUMANS.md"
+    }
+  }
+}
