@@ -44,7 +44,7 @@ One client is enough. Install for the ones you use.
 | Claude Code (CLI, Desktop, VS Code) | `claude plugin install humans-md --marketplace cmdai-hq/humans-md-plugins` |
 | Codex | `codex plugin marketplace add cmdai-hq/humans-md-plugins`, then `codex plugin add humans-md@humans-md`, then trust the hook in `/hooks` |
 | GitHub Copilot CLI | `copilot plugin marketplace add cmdai-hq/humans-md-plugins`, then `copilot plugin install humans-md@humans-md` |
-| Cursor | in an agent chat: `/add-plugin https://github.com/cmdai-hq/humans-md-plugins`, then install **humans-md** for your user |
+| Cursor | `agent plugin marketplace add https://github.com/cmdai-hq/humans-md-plugins` (Cursor CLI), then `/add-plugin humans-md` in a Cursor chat and install it for you |
 | Any other client | `npm install -g @humans-md/cli`, then add [one hook](packages/humans-md#hook-configuration) |
 
 Notes per client:
@@ -52,7 +52,7 @@ Notes per client:
 - **Claude Code.** In a session, the same install is `/plugin install humans-md --marketplace cmdai-hq/humans-md-plugins`; choose to install it for you. To use a file other than `~/.humans/HUMANS.md`, set **Your HUMANS.md** in `/config`. The file must be named `HUMANS.md`.
 - **Codex.** Codex runs a plugin's hook only after you trust it. Open `/hooks` in Codex, review the HUMANS.md hook and trust it. Codex asks again after each update. The Codex IDE extension does not load plugins: use the [hand-written hook](packages/humans-md#hook-configuration) there.
 - **GitHub Copilot.** If you turn on Copilot CLI's sandbox (`/sandbox`, off by default), hooks run inside it and may not be able to read `~/.humans`; your agent then gets no profile. VS Code lists plugins installed with Copilot CLI in its Agent Plugins view (setting `chat.plugins.enabled`). This has not been tried in VS Code yet. If you also use the Claude Code extension with this plugin, VS Code may load both.
-- **Cursor.** Cursor also imports Claude Code plugins (Settings → Agents → Third-Party Imports, on by default). If you use both, keep one of the two, or your profile may load twice. Two Cursor bugs were open on 2026-10-16: in the Agents Window, the first message of a new chat can miss the profile ([forum](https://forum.cursor.com/t/agents-window-ignores-sessionstart-additional-context-claude-code-project-hooks-no-longer-load-3-24-9/174143)); and a plugin added with `/add-plugin <url>` can stay on its first version ([forum](https://forum.cursor.com/t/add-plugin-github-imports-can-get-stuck-on-stale-plugin-versions/163895)).
+- **Cursor.** `/add-plugin` takes a plugin name, not a URL. Without the Cursor CLI, install it with `curl https://cursor.com/install -fsS | bash`, then `agent login`. Check that the plugin's description says "each agent chat": if it says "Claude", Cursor picked the Claude Code plugin; remove the marketplace, add it again and reinstall. Cursor also imports Claude Code plugins (Settings → Agents → Third-Party Imports, on by default); if you use both, keep one of the two, or your profile may load twice. The Agents Window does not load the profile: on 3.25.6 it was missing from the first and the second message, a Cursor bug open on 2026-10-17 ([forum](https://forum.cursor.com/t/agents-window-ignores-sessionstart-additional-context-claude-code-project-hooks-no-longer-load-3-24-9/174143)). Use the editor's agent panel, which loads it.
 
 Every plugin reads `~/.humans/HUMANS.md` and nothing else; in Claude Code you can choose another file named `HUMANS.md` in `/config`. To keep the file elsewhere, for example in a dotfiles repository, make `~/.humans/HUMANS.md` a symbolic link to a file that is also named `HUMANS.md`.
 
@@ -85,6 +85,7 @@ Claude Code does not update plugins from this marketplace by itself. To get a ne
 - Claude Code: `claude plugin update humans-md@humans-md`, or **Update now** in `/plugin`. To update automatically, turn on auto-update for humans-md in the Marketplaces tab of `/plugin`.
 - Codex: `codex plugin marketplace upgrade humans-md`, then trust the hook again in `/hooks`.
 - Copilot CLI: `copilot plugin update humans-md`.
+- Cursor: a marketplace stays on the commit it was added at, and updating it re-reads that commit. Run `agent plugin marketplace remove humans-md`, then `agent plugin marketplace add https://github.com/cmdai-hq/humans-md-plugins`.
 - Command line: `npm install -g @humans-md/cli@latest`.
 
 Restart your client after an update.
@@ -103,16 +104,17 @@ To leave the plain sentences out, start Claude Code, Codex or Copilot with `HUMA
 
 ## Status
 
-Format version: 0.3 draft (`0.3-draft.2026-10-15.1`). Tested on macOS only. "Tested" means a real session on the version named loaded the profile from this repository's plugin, and the model quoted a value from it; it says nothing about how well a model follows the preferences. The Claude rows were tested with plugin 0.1.0 installed from this GitHub repository. Installing Codex from GitHub and trusting the hook in `/hooks` are not tested yet.
+Format version: 0.3 draft (`0.3-draft.2026-10-15.1`). Tested on macOS only. "Tested" means a real session on the version named loaded the profile from this repository's plugin, and the model quoted a value from it; it says nothing about how well a model follows the preferences. The Claude rows were tested with plugin 0.1.0, the Codex and Cursor rows with 0.2.0, each installed from this GitHub repository.
 
 | Surface | Version | Status (2026-10-16) |
 |---|---|---|
 | Claude Code CLI | 2.1.301, 2.1.302 | Tested |
 | Claude Desktop, Code tab | 2.42304 | Tested |
 | Claude Code for VS Code | 2.1.300 | Tested (2.1.89 did not load it) |
-| Codex CLI | 0.163.0 | Partly tested: `codex exec` loaded the plugin from a local copy, with the trust step skipped |
-| Cursor CLI (`agent`) | 2026.10.16 | Partly tested: a real session loaded the plugin with `--plugin-dir` and quoted the profile; installing from GitHub is not tested yet |
-| Cursor editor | 3.25.6 | Not tested |
+| Codex CLI | 0.163.0 | Tested, after trusting the hook in `/hooks` |
+| Cursor CLI (`agent`) | 2026.10.16 | Tested |
+| Cursor editor, agent panel | 3.25.6 | Tested |
+| Cursor Agents Window | 3.25.6 | Does not load it: missing from the first and second message (Cursor bug) |
 | GitHub Copilot CLI | 1.0.98 | Not tested: the plugin installs from a local copy of this repository; no session has run |
 | VS Code, GitHub Copilot | | Not tested |
 

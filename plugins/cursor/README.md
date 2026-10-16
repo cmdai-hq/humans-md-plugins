@@ -1,6 +1,6 @@
 # HUMANS.md for Cursor
 
-Loads your own `~/.humans/HUMANS.md` at the start of each Cursor agent chat. The agent receives your fields, labelled as data rather than commands, then one plain sentence per preference. See the [main README](https://github.com/cmdai-hq/humans-md-plugins#cursor) for installation.
+Loads your own `~/.humans/HUMANS.md` at the start of each Cursor agent chat. The agent receives your fields, labelled as data rather than commands, then one plain sentence per preference. See the [main README](https://github.com/cmdai-hq/humans-md-plugins#install) for installation.
 
 - Needs Node 22.18 or later on the `PATH` Cursor starts with.
 - Reads `~/.humans/HUMANS.md` and nothing else. To keep the file elsewhere, make `~/.humans/HUMANS.md` a symbolic link to a file also named `HUMANS.md`.
