@@ -17,7 +17,7 @@ Write a short opening in the language of the request, then ask the first questio
 - With a multiple-choice tool (in Claude Code, `AskUserQuestion`), ask each question through it: one question per call, at most four choices, its free-text field for the person's own words. Without one, write the choices as a numbered list and accept a number, their own words or "skip".
 - Use plain words and short sentences in the person's language. Translate the choice labels below.
 - Ask only about working preferences: how replies look, how choices and interruptions are handled, who may read the file. Never ask about health, diagnosis, personality, feelings, stress or triggers. A statement the person volunteers is kept exactly as written (step 2).
-- A skipped question leaves its fields absent. An unpicked choice leaves its field absent; it never sets the opposite value.
+- A skipped question leaves its fields absent, except question 8: skipping it proposes `visibility: private`, because an absent visibility is read as `org`. An unpicked choice leaves its field absent; it never sets the opposite value.
 - A free answer goes through the step 2 mapping: a closed value when one fits, otherwise a proposed note or a listed loss.
 - In the preview, picked choices are explicit. Show as interpretations: the order of `reading.visual`, the proposed `id`, and every mapped free answer.
 

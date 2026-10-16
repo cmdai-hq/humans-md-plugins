@@ -1,6 +1,6 @@
 {
   "name": "@humans-md/cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Check your own HUMANS.md and print it for an agent's session-start hook. Claude Code, Codex, Cursor and Copilot CLI also have plugins that need no hook setup. Draft format.",
   "keywords": [
     "humans-md",

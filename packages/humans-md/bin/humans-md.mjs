@@ -15990,7 +15990,7 @@ if (args.length === 0 && (cmd === "--help" || cmd === "-h" || cmd === "help")) {
   process.exit(0);
 }
 if (args.length === 0 && cmd === "--version") {
-  process.stdout.write("0.2.0\n");
+  process.stdout.write("0.2.1\n");
   process.exit(0);
 }
 var fail = () => {
