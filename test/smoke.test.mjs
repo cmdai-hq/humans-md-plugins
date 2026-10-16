@@ -28,6 +28,10 @@ test('one program, one version, licenses in every package', () => {
   assert.match(skill, /^---\nname: compile\n/);
   assert.match(skill, /\$\{CLAUDE_PLUGIN_ROOT\}\/scripts\/humans\.mjs" check /);
   assert.doesNotMatch(skill, /`node scripts\/|render-agent|humans\.mjs" validate/);
+  // No text yet: the skill offers a guided interview, shipped beside it.
+  assert.match(skill, /by answering a few\n  short questions/);
+  assert.match(skill, /\[interview\]\(references\/interview\.md\)/);
+  assert.match(readFileSync(join(root, 'plugins/humans-md/skills/compile/references/interview.md'), 'utf8'), /One question per message\./);
   const pkg = JSON.parse(readFileSync(join(root, 'packages/humans-md/package.json'), 'utf8'));
   const manifest = JSON.parse(readFileSync(join(root, 'plugins/humans-md/.claude-plugin/plugin.json'), 'utf8'));
   assert.equal(manifest.version, pkg.version);

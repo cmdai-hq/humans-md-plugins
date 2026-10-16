@@ -1,0 +1,28 @@
+{
+  "name": "humans-md",
+  "version": "0.2.0",
+  "description": "Loads your own HUMANS.md at the start of each Codex session, so Codex knows how long its replies should be, what it can decide without asking, and when to interrupt you.",
+  "author": {
+    "name": "Tristan Bessoussa",
+    "url": "https://github.com/tristanbes"
+  },
+  "homepage": "https://humansmd.dev",
+  "repository": "https://github.com/cmdai-hq/humans-md-plugins",
+  "license": "Apache-2.0",
+  "keywords": [
+    "humans-md",
+    "profile",
+    "preferences",
+    "attention",
+    "interruptions"
+  ],
+  "interface": {
+    "displayName": "HUMANS.md",
+    "shortDescription": "Your working preferences",
+    "longDescription": "Loads ~/.humans/HUMANS.md at session start: how long and how structured replies should be, which choices Codex can make without asking, and when to interrupt you. Your own file only. Preferences change presentation; they never grant a permission.",
+    "developerName": "cmdAI",
+    "category": "Productivity",
+    "capabilities": [],
+    "websiteURL": "https://humansmd.dev"
+  }
+}

@@ -2,6 +2,8 @@
 
 Check your [HUMANS.md](https://humansmd.dev), and print it in the format Codex, Cursor or Copilot CLI expect from a session-start hook. Reads your own profile only.
 
+On Claude Code, Codex, Cursor or GitHub Copilot CLI, the [plugins](https://github.com/cmdai-hq/humans-md-plugins) set up the hook for you. Use this command line to check your file, or to add the hook by hand elsewhere.
+
 ```sh
 npm install -g @humans-md/cli   # Node 22.18 or later
 humans-md check                 # validate ~/.humans/HUMANS.md
@@ -35,7 +37,7 @@ Add one hook to your existing configuration. These snippets follow each client's
 
 Test by hand first: `humans-md hook cursor` should print `"status":"found"`. `{"status":"none"}` means the file is missing, invalid or too large: run `humans-md check` to see why. If your client starts from a desktop app, its `PATH` may not include npm's global `bin`: use the absolute path that `which humans-md` prints.
 
-**Codex**: `~/.codex/hooks.json`, then review and trust the hook in `/hooks`.
+**Codex**: install the [plugin](https://github.com/cmdai-hq/humans-md-plugins#codex) instead; it needs no global install and loads the plain sentences too. Use this hook where plugins do not load, such as the Codex IDE extension: `~/.codex/hooks.json`, then review and trust the hook in `/hooks`.
 
 ```json
 {
@@ -51,9 +53,9 @@ Test by hand first: `humans-md hook cursor` should print `"status":"found"`. `{"
 }
 ```
 
-Codex limits hook output to about 2,500 tokens. A full profile plus the plain sentences can exceed that and would load as nothing, so this snippet uses `--no-guidance`: Codex gets your fields without the sentences.
+Without an `additionalContextLimit`, Codex limits hook output to about 2,500 tokens, so `hook codex` caps its context at 2,500 bytes. A full profile plus the plain sentences can exceed that and would load as nothing, so this snippet uses `--no-guidance`: Codex gets your fields without the sentences.
 
-**Cursor**: `~/.cursor/hooks.json`.
+**Cursor**: the plugin needs no global install. See [Cursor](https://github.com/cmdai-hq/humans-md-plugins#cursor). Without it, add this to `~/.cursor/hooks.json`.
 
 ```json
 {
@@ -66,7 +68,7 @@ Codex limits hook output to about 2,500 tokens. A full profile plus the plain se
 }
 ```
 
-**GitHub Copilot CLI**: a file in `~/.copilot/hooks/`, for example `humans-md.json`.
+**GitHub Copilot CLI**: the plugin needs no global install and no hook file. See [cmdai-hq/humans-md-plugins](https://github.com/cmdai-hq/humans-md-plugins#github-copilot-cli). To add the hook by hand instead, put a file in `~/.copilot/hooks/`, for example `humans-md.json`.
 
 ```json
 {
@@ -80,7 +82,7 @@ Codex limits hook output to about 2,500 tokens. A full profile plus the plain se
 }
 ```
 
-Known bug: a `sessionStart` hook placed in a repository's `.github/hooks/` may not run ([github/copilot-cli#1730](https://github.com/github/copilot-cli/issues/1730), open on 2026-10-16).
+Keep it in `~/.copilot/hooks/`. A `sessionStart` hook placed in a repository's `.github/hooks/` may not run ([github/copilot-cli#1730](https://github.com/github/copilot-cli/issues/1730), open on 2026-10-16). In that issue, the same hook ran from the user directory on Copilot CLI 1.0.78 for macOS.
 
 **Claude Code**: install the plugin instead; it needs no global install. See [cmdai-hq/humans-md-plugins](https://github.com/cmdai-hq/humans-md-plugins).
 

@@ -1,7 +1,7 @@
 {
   "name": "@humans-md/cli",
-  "version": "0.1.0",
-  "description": "Validate your own HUMANS.md and render it for agent hooks (Claude Code, Codex, Cursor, Copilot CLI). Draft format.",
+  "version": "0.2.0",
+  "description": "Check your own HUMANS.md and print it for an agent's session-start hook. Claude Code, Codex, Cursor and Copilot CLI also have plugins that need no hook setup. Draft format.",
   "keywords": [
     "humans-md",
     "agents",
