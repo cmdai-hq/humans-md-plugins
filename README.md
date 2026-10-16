@@ -70,11 +70,11 @@ You can turn the plain sentences off: `--no-guidance` for the command line, `HUM
 
 ## Status
 
-Format version: 0.3 draft (`0.3-draft.2026-10-15.1`). Tested on macOS only. "Tested" means a real session on the version named loaded the profile from this repository's plugin, and the model quoted a value from it; it says nothing about how well a model follows the preferences. Installing from this GitHub repository has not been tested yet: the trials below used a local copy of it.
+Format version: 0.3 draft (`0.3-draft.2026-10-15.1`). Tested on macOS only. "Tested" means a real session on the version named loaded the profile from this repository's plugin, and the model quoted a value from it; it says nothing about how well a model follows the preferences. All three Claude surfaces loaded the plugin installed from this GitHub repository.
 
 | Surface | Version | Status (2026-10-16) |
 |---|---|---|
-| Claude Code CLI | 2.1.301 | Tested |
+| Claude Code CLI | 2.1.301, 2.1.302 | Tested |
 | Claude Desktop, Code tab | 2.42304 | Tested |
 | Claude Code for VS Code | 2.1.300 | Tested (2.1.89 did not load it) |
 | Codex CLI | | Not tested |
