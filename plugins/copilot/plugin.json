@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "humans-md",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Loads your own ~/.humans/HUMANS.md at the start of each session, so Copilot knows how long its replies should be, what it can decide without asking, and when to interrupt you.",
   "author": {
     "name": "Tristan Bessoussa",
