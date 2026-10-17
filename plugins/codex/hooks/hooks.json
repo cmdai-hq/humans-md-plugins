@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${PLUGIN_ROOT}/hooks/session-start.mjs\"",
+            "command": "r=\"${PLUGIN_ROOT}\"; case \"$r\" in /*) cd \"$r\" && exec node hooks/session-start.mjs;; esac",
             "timeout": 10,
             "statusMessage": "Loading your HUMANS.md",
             "additionalContextLimit": 16384

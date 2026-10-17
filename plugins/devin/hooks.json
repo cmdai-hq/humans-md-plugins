@@ -1,0 +1,13 @@
+{
+  "SessionStart": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "r=\"${DEVIN_PLUGIN_ROOT:-$CLAUDE_PLUGIN_ROOT}\"; case \"$r\" in /*) cd \"$r\" && exec node scripts/session-start.mjs;; esac",
+          "timeout": 10
+        }
+      ]
+    }
+  ]
+}

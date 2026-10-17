@@ -1,0 +1,4 @@
+{
+  "name": "humans-md",
+  "description": "Loads your own ~/.humans/HUMANS.md with the first prompt of each Junie session, so Junie knows how long its replies should be, what it can decide without asking, and when to interrupt you. Needs the Junie CLI Early Access version (hooks)."
+}

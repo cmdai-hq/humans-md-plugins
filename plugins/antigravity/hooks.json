@@ -1,0 +1,11 @@
+{
+  "humans-md": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "case \"$(pwd)\" in \"$HOME\"/.gemini/config/plugins/*|\"$HOME\"/.gemini/antigravity-cli/plugins/*) exec node ./hooks/session-start.mjs session-start;; esac",
+        "timeout": 10
+      }
+    ]
+  }
+}

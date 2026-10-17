@@ -70,6 +70,35 @@ jobs:
       - run: claude plugin validate --strict .
       - run: claude plugin validate --strict plugins/humans-md
 
+  skills:
+    name: agent skills spec
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      # Reference validator of agentskills.io, pinned to a commit of agentskills/agentskills
+      # (skills-ref 0.1.0) with its locked dependencies; bump deliberately. The PyPI "skills-ref"
+      # is uploaded by someone else and installs another command, so it is not used.
+      SKILLS_REF_COMMIT: f130f348f502d9804278a617f86929846896d2e9
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+      - name: Install skills-ref (pinned)
+        run: | # zizmor: ignore[adhoc-packages] pinned to a commit, dependencies pinned to its uv.lock
+          python -m venv "$RUNNER_TEMP/skills-ref"
+          "$RUNNER_TEMP/skills-ref/bin/pip" install --no-cache-dir click==8.3.1 strictyaml==1.7.3 python-dateutil==2.9.0.post0 six==1.17.0 \
+            "skills-ref @ git+https://github.com/agentskills/agentskills@${SKILLS_REF_COMMIT}#subdirectory=skills-ref"
+      - name: Validate every SKILL.md
+        run: |
+          for skill in skills/humans-md-compile plugins/humans-md/skills/compile; do
+            "$RUNNER_TEMP/skills-ref/bin/skills-ref" validate "$skill"
+          done
+
   zizmor:
     runs-on: ubuntu-slim
     timeout-minutes: 10
@@ -86,7 +115,7 @@ jobs:
   # Single stable check name for branch rulesets.
   ci-ok:
     if: always()
-    needs: [smoke, plugin, zizmor]
+    needs: [smoke, plugin, skills, zizmor]
     runs-on: ubuntu-slim
     timeout-minutes: 2
     permissions: {}

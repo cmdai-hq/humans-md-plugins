@@ -4,7 +4,7 @@
     "sessionStart": [
       {
         "type": "command",
-        "bash": "case \"$HUMANS_MD_PLUGIN_ROOT\" in /*) exec node \"$HUMANS_MD_PLUGIN_ROOT/scripts/session-start.mjs\";; esac",
+        "bash": "case \"$HUMANS_MD_PLUGIN_ROOT\" in /*) cd \"$HUMANS_MD_PLUGIN_ROOT\" && exec node scripts/session-start.mjs;; esac",
         "powershell": "if ($env:HUMANS_MD_PLUGIN_ROOT -and [IO.Path]::IsPathRooted($env:HUMANS_MD_PLUGIN_ROOT)) { node (Join-Path $env:HUMANS_MD_PLUGIN_ROOT 'scripts/session-start.mjs') }",
         "env": { "HUMANS_MD_PLUGIN_ROOT": "${PLUGIN_ROOT}" },
         "timeoutSec": 10
