@@ -185,18 +185,18 @@ The fields it recognizes, labelled as data, then one plain sentence per preferen
 
 ## Compatibility
 
-Format version: 0.3 draft (`0.3-draft.2026-10-15.1`). macOS only. "Tested" means a real session on the version named loaded the profile and the model quoted a value from it; it says nothing about how well a model follows the preferences. Rows marked "local copy" were tested with the 0.3.0 build before it was published here.
+Format version: 0.3 draft (`0.3-draft.2026-10-15.1`). macOS only. "Tested" means a real session on the version named loaded the profile and the model quoted a value from it; it says nothing about how well a model follows the preferences. "From GitHub" means plugin 0.3.0 installed with the command in this README; "local copy" means the 0.3.0 build tested before it was published.
 
 | Client | Version | Status (2026-10-17) |
 |---|---|---|
 | Claude Code CLI, Desktop, VS Code | 2.1.301, 2.42304, 2.1.300 | Tested (VS Code 2.1.89 did not load it) |
-| Codex CLI | 0.163.0 | Tested, also local copy |
+| Codex CLI | 0.163.0 | Tested from GitHub, after trusting the hook again in `/hooks` |
 | Cursor CLI, editor agent panel | 2026.10.16, 3.25.6 | Tested, CLI also local copy |
 | Cursor Agents Window | 3.25.6 | Does not load it (Cursor bug) |
-| Google Antigravity CLI | 1.4.0 | Tested, local copy |
-| OpenCode 2 | 2.0.32 | Tested, local copy, also through the background service |
-| Devin CLI | 3000.11.92 | Tested, local copy |
-| Junie CLI, copy with `sync --to junie` | 26.10.12 | Tested |
+| Google Antigravity CLI | 1.4.0 | Tested from GitHub |
+| OpenCode 2 | 2.0.32 | Tested from GitHub, also through the background service |
+| Devin CLI | 3000.11.92 | Tested from GitHub |
+| Junie CLI, copy with `npx -y @humans-md/cli sync --to junie` | 26.10.12 | Tested with `@humans-md/cli` 0.3.0 from npm |
 | Junie CLI EAP, extension | 26.10.20 | Tested, local copy: first prompt of each session |
 | GitHub Copilot CLI, VS Code Copilot, OpenCode 1, Devin Desktop window, Cline, Warp | | Not tested |
 
