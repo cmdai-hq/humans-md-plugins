@@ -215,6 +215,18 @@ test('with HOME empty or relative, the hook writes nothing in the session direct
   assert.deepEqual(readdirSync(cwd), ['.humans']);
 }));
 
+test('a file where a marker folder should be gives the absence, not silence', () => inHome(home => {
+  // mkdir -p fails with EEXIST here: that is not an already-marked session.
+  for (const file of ['.cache', '.cache/humans-md']) {
+    rmSync(join(home, '.cache'), { recursive: true, force: true });
+    if (file !== '.cache') mkdirSync(join(home, '.cache'));
+    writeFileSync(join(home, file), 'not a folder');
+    const out = runHook(home, event(`f-${file.length}`));
+    assert.equal(out.stdout, ABSENT, file);
+    assert.match(out.stderr, /^SESSION_MARKER_UNAVAILABLE$/m, file);
+  }
+}));
+
 test('a marker folder that cannot be written gives the absence', { skip: process.getuid?.() === 0 }, () => inHome(home => {
   mkdirSync(markers(home), { recursive: true });
   chmodSync(markers(home), 0o500);

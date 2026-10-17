@@ -108,7 +108,7 @@ These locations follow each client's documentation as read on 2026-10-17; none h
 
 **This is a copy, not a live load.** A hook or plugin reads your HUMANS.md at each session start, as the format asks. A copy does not: run `humans-md sync` again after each change to your profile, or your agents keep the old one.
 
-- The rest of the file is kept byte for byte. A new block goes at the end, after a blank line. A new file is readable by you only (mode 600).
+- The rest of the file is kept byte for byte. One exception: after `--remove`, a file that had no final newline keeps the one sync added before its block. A new block goes at the end, after a blank line. A new file is readable by you only (mode 600).
 - Running it again without a change rewrites nothing.
 - `--remove` takes the block out, without reading your profile. `--dry-run` shows what would change and prints the block, without writing.
 - `--no-guidance` leaves out the plain sentences, as with `show`.

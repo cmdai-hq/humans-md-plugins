@@ -48,9 +48,11 @@ function markSession(id) {
       if (!lstatSync(dir).isDirectory()) throw new Error('not a folder');
     }
     const name = createHash('sha256').update(id).digest('hex');
-    closeSync(openSync(join(MARKERS, name), constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL, 0o600));
-  } catch (error) {
-    if (error?.code === 'EEXIST') return false;
+    // Only the marker itself already existing means "already marked"; an EEXIST from the folders
+    // above (a file where ~/.cache should be) means no marker can be written.
+    try { closeSync(openSync(join(MARKERS, name), constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL, 0o600)); }
+    catch (error) { if (error?.code === 'EEXIST') return false; throw error; }
+  } catch {
     report('SESSION_MARKER_UNAVAILABLE');
     return undefined;
   }
