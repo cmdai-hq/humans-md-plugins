@@ -34,7 +34,7 @@ test('one program, one version, licenses in every package', () => {
   const interview = readFileSync(join(root, 'plugins/humans-md/skills/compile/references/interview.md'), 'utf8');
   assert.match(interview, /One question per message\./);
   // This plugin's own setting, named only in the public copy.
-  assert.match(interview, /\*\*Your HUMANS\.md\*\* row in `\/config`, or with `claude plugin configure humans-md@humans-md --values-stdin`/);
+  assert.match(interview, /In Claude Code, with the humans-md plugin, that is the \*\*Your HUMANS\.md\*\* row in `\/config`, or `claude plugin configure humans-md@humans-md --values-stdin`/);
   const pkg = JSON.parse(readFileSync(join(root, 'packages/humans-md/package.json'), 'utf8'));
   const manifest = JSON.parse(readFileSync(join(root, 'plugins/humans-md/.claude-plugin/plugin.json'), 'utf8'));
   assert.equal(manifest.version, pkg.version);
