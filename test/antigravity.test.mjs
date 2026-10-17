@@ -59,7 +59,7 @@ test('one named hook on SessionStart, a flat handler from the plugin folder', ()
   // Only Antigravity's plugin folders: `agy plugin install` writes ~/.gemini/config/plugins/<folder>/
   // (seen on agy 1.4.0), and https://antigravity.google/docs/plugins names ~/.gemini/antigravity-cli/plugins/<name>/.
   // Physical paths on both sides: a HOME reached through a link, or ending with /, still matches.
-  const guard = event => `h=$(cd "$HOME" 2>/dev/null && pwd -P) || exit 0; case "$(pwd -P)" in "$h"/.gemini/config/plugins/*|"$h"/.gemini/antigravity-cli/plugins/*) exec node ./hooks/session-start.mjs ${event};; esac`;
+  const guard = event => `h=$(cd "$HOME" 2>/dev/null && pwd -P) || exit 0; h=\${h%/}; case "$(pwd -P)" in "$h"/.gemini/config/plugins/*|"$h"/.gemini/antigravity-cli/plugins/*) exec node ./hooks/session-start.mjs ${event};; esac`;
   // Flat lists of handlers (a matcher group here makes agy discard the whole file).
   assert.deepEqual(hooks['humans-md'].SessionStart, [{ type: 'command', command: guard('session-start'), timeout: 10 }]);
 });

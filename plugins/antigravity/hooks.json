@@ -3,7 +3,7 @@
     "SessionStart": [
       {
         "type": "command",
-        "command": "h=$(cd \"$HOME\" 2>/dev/null && pwd -P) || exit 0; case \"$(pwd -P)\" in \"$h\"/.gemini/config/plugins/*|\"$h\"/.gemini/antigravity-cli/plugins/*) exec node ./hooks/session-start.mjs session-start;; esac",
+        "command": "h=$(cd \"$HOME\" 2>/dev/null && pwd -P) || exit 0; h=${h%/}; case \"$(pwd -P)\" in \"$h\"/.gemini/config/plugins/*|\"$h\"/.gemini/antigravity-cli/plugins/*) exec node ./hooks/session-start.mjs session-start;; esac",
         "timeout": 10
       }
     ]
