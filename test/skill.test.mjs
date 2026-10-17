@@ -93,7 +93,7 @@ test('the portable skill never runs the CLI by a path relative to the working di
   for (const span of spans.filter(s => /scripts\/humans\.mjs/.test(s) && !commands.includes(s))) assert.equal(span, 'scripts/humans.mjs');
   assert.ok(commands.length >= 5, commands.join(' | '));
   for (const span of commands) {
-    assert.match(span, /^(node "<that (path|folder)>\/scripts\/humans\.mjs"|<humans-md> (check|show|--version)\b|npx --prefix "<temp-dir>" -y @humans-md\/cli@[^ ]+$|mktemp -d$)/, span);
+    assert.match(span, /^(node "<that (path|folder)>\/scripts\/humans\.mjs"|<humans-md> (check|show|sync|--version)\b|npx --prefix "<temp-dir>" -y @humans-md\/cli@[^ ]+$|mktemp -d$)/, span);
   }
   assert.doesNotMatch(docs, /node (\.\/)?scripts\/|node "(\.\/)?scripts\/|CLAUDE_PLUGIN_ROOT|this plugin/);
   // The npm fallback is pinned to this release, with npm's project set to a new folder from mktemp.

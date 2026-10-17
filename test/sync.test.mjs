@@ -262,6 +262,7 @@ fs.fsyncSync = fd => {
   fsyncSync(fd);
   if (race === 'edit') fs.appendFileSync(target, 'Edited meanwhile.\\n');
   if (race === 'create') fs.writeFileSync(target, 'Created meanwhile.\\n');
+  if (race === 'chmod') fs.chmodSync(target, 0o400);
 };
 fs.renameSync = (from, to) => { if (race === 'rename') throw Object.assign(new Error('EIO'), { code: 'EIO' }); renameSync(from, to); };
 syncBuiltinESMExports();
@@ -278,6 +279,12 @@ test('a target changed or created while sync runs is not replaced, and no tempor
   assert.deepEqual(readdirSync(join(home, '.agents')), ['AGENTS.md']);
   rmSync(agents(home));
   refused(syncRacing(home, 'create'), 'TARGET_UNAVAILABLE');
+  assert.equal(readFileSync(agents(home), 'utf8'), 'Created meanwhile.\n');
+  assert.deepEqual(readdirSync(join(home, '.agents')), ['AGENTS.md']);
+  // Only the mode changed: same inode, size and mtime, but not the same file to replace.
+  chmodSync(agents(home), 0o600);
+  refused(syncRacing(home, 'chmod'), 'TARGET_UNAVAILABLE');
+  assert.equal(statSync(agents(home)).mode & 0o777, 0o400);
   assert.equal(readFileSync(agents(home), 'utf8'), 'Created meanwhile.\n');
   assert.deepEqual(readdirSync(join(home, '.agents')), ['AGENTS.md']);
 }));

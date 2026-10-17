@@ -16158,7 +16158,7 @@ function syncFile(target2, block, dryRun2 = false) {
       closeSync2(fd);
     }
     const now = lstatOrNull(target2);
-    if (current === null ? now !== null : now === null || now.ino !== current.st.ino || now.size !== current.st.size || now.mtimeMs !== current.st.mtimeMs) {
+    if (current === null ? now !== null : now === null || now.ino !== current.st.ino || now.size !== current.st.size || now.mtimeMs !== current.st.mtimeMs || now.ctimeMs !== current.st.ctimeMs) {
       throw new SyncError("TARGET_UNAVAILABLE");
     }
     renameSync(tmp, target2);
