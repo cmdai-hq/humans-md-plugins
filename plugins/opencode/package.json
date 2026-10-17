@@ -1,0 +1,25 @@
+{
+  "name": "opencode-humans-md",
+  "version": "0.3.0",
+  "description": "Adds your own ~/.humans/HUMANS.md to each OpenCode session, so the agent knows how long its replies should be, what it can decide without asking, and when to interrupt you.",
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "humans-md",
+    "profile",
+    "preferences"
+  ],
+  "homepage": "https://humansmd.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cmdai-hq/humans-md-plugins.git",
+    "directory": "plugins/opencode"
+  },
+  "license": "Apache-2.0",
+  "author": "Tristan Bessoussa (https://github.com/tristanbes)",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js"
+  }
+}

@@ -55,7 +55,7 @@ test('one sessionStart hook, started from the plugin root', () => {
   const config = json(join(plugin, 'hooks/hooks.json'));
   assert.equal(config.version, 1);
   assert.deepEqual(Object.keys(config.hooks), ['sessionStart']);
-  assert.deepEqual(config.hooks.sessionStart, [{ command: 'case "${CURSOR_PLUGIN_ROOT}" in /*) exec node "${CURSOR_PLUGIN_ROOT}/hooks/session-start.mjs";; esac', timeout: 10 }]);
+  assert.deepEqual(config.hooks.sessionStart, [{ command: 'case "${CURSOR_PLUGIN_ROOT}" in /*) cd "${CURSOR_PLUGIN_ROOT}" && exec node hooks/session-start.mjs;; esac', timeout: 10 }]);
   // The command resolves inside the installed plugin, from any working directory.
   const command = config.hooks.sessionStart[0].command.replaceAll('${CURSOR_PLUGIN_ROOT}', plugin);
   const out = spawnSync('/bin/sh', ['-c', command], { input: session, cwd: tmpdir(), encoding: 'utf8', env: { PATH: process.env.PATH, HOME: home } });

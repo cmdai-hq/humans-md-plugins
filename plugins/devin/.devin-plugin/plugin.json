@@ -1,0 +1,19 @@
+{
+  "name": "humans-md",
+  "version": "0.3.0",
+  "description": "Loads your own ~/.humans/HUMANS.md at the start of each Devin session, so Devin knows how long its replies should be, what it can decide without asking, and when to interrupt you.",
+  "author": {
+    "name": "Tristan Bessoussa"
+  },
+  "homepage": "https://humansmd.dev",
+  "repository": "https://github.com/cmdai-hq/humans-md-plugins",
+  "license": "Apache-2.0",
+  "keywords": [
+    "humans-md",
+    "profile",
+    "preferences",
+    "attention",
+    "interruptions"
+  ],
+  "skills": []
+}

@@ -1,7 +1,7 @@
 {
   "name": "@humans-md/cli",
-  "version": "0.2.2",
-  "description": "Check your own HUMANS.md and print it for an agent's session-start hook. Claude Code, Codex, Cursor and Copilot CLI also have plugins that need no hook setup. Draft format.",
+  "version": "0.3.0",
+  "description": "Check your own HUMANS.md, print it for an agent's session-start hook, or copy it for clients without hooks. Plugins for Claude Code, Codex, Cursor, Copilot CLI, Antigravity, OpenCode, Devin and Junie need no hook setup. Draft format.",
   "keywords": [
     "humans-md",
     "agents",
@@ -9,6 +9,11 @@
     "codex",
     "cursor",
     "copilot",
+    "antigravity",
+    "opencode",
+    "devin",
+    "junie",
+    "cline",
     "hooks",
     "profile"
   ],

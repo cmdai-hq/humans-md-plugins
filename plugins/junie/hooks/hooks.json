@@ -1,0 +1,9 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [{ "type": "command", "command": "r=\"${JUNIE_EXTENSION_ROOT}\"; case \"$r\" in /*) cd \"$r\" && exec node hooks/user-prompt-submit.mjs;; esac", "timeout": 10 }]
+      }
+    ]
+  }
+}

@@ -75,7 +75,7 @@ test('single person only: no recipient, group or diagnostic paths', () => {
     assert.match(result.stderr, /^UNSUPPORTED_ARGUMENT\nhumans-md: /);
     assert.ok(Buffer.byteLength(result.stderr) < 512, 'SPEC § 8: diagnostics under 512 bytes');
   }
-  assert.doesNotMatch(readFileSync(pluginCli, 'utf8'), /mergeAudience|coverage|conflicts/);
+  assert.doesNotMatch(readFileSync(pluginCli, 'utf8'), /mergeAudience|coverage|conflicts|humans_group|claude-recipient|UserPromptSubmit|visibleTo|MULTI_PERSON/);
 });
 
 test('each client gets its documented envelope; show prints what agents receive', () => {

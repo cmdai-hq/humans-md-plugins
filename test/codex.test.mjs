@@ -60,7 +60,9 @@ test('one SessionStart hook, its program and runtime identical to the other pack
   assert.equal(hooks.hooks.SessionStart.length, 1);
   assert.equal(hooks.hooks.SessionStart[0].matcher, 'startup|resume|clear|compact|fork');
   assert.equal(handler.type, 'command');
-  assert.equal(handler.command, 'node "${PLUGIN_ROOT}/hooks/session-start.mjs"');
+  // Codex runs commands from the session's folder: start from the plugin root, so `node` is never
+  // looked up there (an empty PATH entry is the current folder), and only for an absolute root.
+  assert.equal(handler.command, 'r="${PLUGIN_ROOT}"; case "$r" in /*) cd "$r" && exec node hooks/session-start.mjs;; esac');
   // The runtime forwards at most 16 KiB; a limit of as many tokens means Codex never spills it.
   assert.ok(handler.additionalContextLimit >= 16_384);
   assert.ok(handler.timeout <= 10);

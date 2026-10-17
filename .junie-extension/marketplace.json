@@ -1,0 +1,20 @@
+{
+  "name": "humans-md",
+  "owner": {
+    "name": "cmdAI",
+    "url": "https://cmdai.fr"
+  },
+  "metadata": {
+    "description": "HUMANS.md for JetBrains Junie: tell your agents how to work with you.",
+    "homepage": "https://humansmd.dev"
+  },
+  "extensions": [
+    {
+      "name": "humans-md",
+      "source": { "source": "github", "repo": "cmdai-hq/humans-md-plugins", "path": "plugins/junie" },
+      "description": "Loads your own ~/.humans/HUMANS.md with the first prompt of each session. Needs the Junie CLI Early Access version.",
+      "author": { "name": "Tristan Bessoussa" },
+      "homepage": "https://humansmd.dev"
+    }
+  ]
+}

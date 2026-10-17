@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -105,4 +105,32 @@ test('the hook commands never run a file from the session directory', () => inTe
   assert.match(sh(copilot.bash, { HUMANS_MD_PLUGIN_ROOT: join(root, 'plugins/copilot') }, JSON.stringify(PLUGINS[2].event)).stdout, loaded);
   assert.match(sh(cursor.command, { CURSOR_PLUGIN_ROOT: join(root, 'plugins/cursor') }, JSON.stringify(PLUGINS[3].event)).stdout, loaded);
   assert.match(sh(cursor.command.replaceAll('${CURSOR_PLUGIN_ROOT}', join(root, 'plugins/cursor')), {}, JSON.stringify(PLUGINS[3].event)).stdout, loaded);
+}));
+
+test('no hook command runs a `node` from the session directory, even with an empty PATH entry', () => inTemp(repo => {
+  // An empty PATH entry is the current folder (POSIX): a repository could ship its own `node`.
+  writeFileSync(join(repo, 'node'), '#!/bin/sh\necho PLANTED\n');
+  chmodSync(join(repo, 'node'), 0o755);
+  const hooks = path => JSON.parse(readFileSync(join(root, 'plugins', path), 'utf8'));
+  const cases = [
+    // [client, command, environment the client sets, event]
+    ['cursor', hooks('cursor/hooks/hooks.json').hooks.sessionStart[0].command, { CURSOR_PLUGIN_ROOT: join(root, 'plugins/cursor') }, PLUGINS[3].event],
+    ['copilot', hooks('copilot/com.github.copilot/hooks/hooks.json').hooks.sessionStart[0].bash, { HUMANS_MD_PLUGIN_ROOT: join(root, 'plugins/copilot') }, PLUGINS[2].event],
+    ['codex', hooks('codex/hooks/hooks.json').hooks.SessionStart[0].hooks[0].command, { PLUGIN_ROOT: join(root, 'plugins/codex') }, PLUGINS[1].event],
+    ['devin', hooks('devin/hooks.json').SessionStart[0].hooks[0].command, { DEVIN_PLUGIN_ROOT: join(root, 'plugins/devin') }, { hook_event_name: 'SessionStart', source: 'startup' }],
+    ['junie', hooks('junie/hooks/hooks.json').hooks.UserPromptSubmit[0].hooks[0].command.replaceAll('${JUNIE_EXTENSION_ROOT}', join(root, 'plugins/junie')), {}, { hook_event_name: 'UserPromptSubmit', session_id: `path-${process.pid}` }],
+  ];
+  for (const [client, command, env, event] of cases) {
+    const h = mkdtempSync(join(tmpdir(), 'humans-md-path-'));
+    try {
+      mkdirSync(join(h, '.humans'));
+      cpSync(join(home, '.humans/HUMANS.md'), join(h, '.humans/HUMANS.md'));
+      for (const path of [`:${process.env.PATH}`, `${process.env.PATH}:`, `${process.env.PATH.split(':')[0]}::${process.env.PATH}`]) {
+        const out = spawnSync('/bin/sh', ['-c', command], { cwd: repo, input: JSON.stringify(event), encoding: 'utf8', timeout: 15_000, env: { ...env, PATH: path, HOME: h } });
+        assert.doesNotMatch(out.stdout, /PLANTED/, `${client} with PATH=${path.slice(0, 20)}`);
+        assert.match(out.stdout, /Invented profile for tests\./, `${client}: ${out.stderr}`);
+        rmSync(join(h, '.cache'), { recursive: true, force: true });
+      }
+    } finally { rmSync(h, { recursive: true, force: true }); }
+  }
 }));

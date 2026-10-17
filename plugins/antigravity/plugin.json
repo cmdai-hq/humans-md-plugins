@@ -1,0 +1,7 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "humans-md",
+  "displayName": "HUMANS.md",
+  "description": "Loads your own ~/.humans/HUMANS.md when a conversation starts, so the agent knows how long to reply, what it may decide alone, and when to interrupt you.",
+  "version": "0.3.0"
+}

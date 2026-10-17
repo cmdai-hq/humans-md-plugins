@@ -3,7 +3,7 @@
   "hooks": {
     "sessionStart": [
       {
-        "command": "case \"${CURSOR_PLUGIN_ROOT}\" in /*) exec node \"${CURSOR_PLUGIN_ROOT}/hooks/session-start.mjs\";; esac",
+        "command": "case \"${CURSOR_PLUGIN_ROOT}\" in /*) cd \"${CURSOR_PLUGIN_ROOT}\" && exec node hooks/session-start.mjs;; esac",
         "timeout": 10
       }
     ]
