@@ -60,7 +60,7 @@ Install one plugin per client. Some clients also load another client's plugins (
 
 ## Write your profile
 
-- **In Claude Code:** run `/humans-md:compile`. Describe how you like to work, or answer about nine short questions, one at a time. Claude tells you which AI provider reads your words, shows you the file, and saves it only after you say yes.
+- **In Claude Code:** run `/humans-md:compile`. Describe how you like to work, or answer about ten short questions, one at a time. Claude tells you which AI provider reads your words, shows you the file, and saves it only after you say yes.
 - **Anywhere else:** start from the example, then change `id`, `name` and the values:
   ```sh
   mkdir -p ~/.humans && curl -o ~/.humans/HUMANS.md https://raw.githubusercontent.com/cmdai-hq/HUMANS.md/main/examples/HUMANS.md

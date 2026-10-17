@@ -31,7 +31,10 @@ test('one program, one version, licenses in every package', () => {
   // No text yet: the skill offers a guided interview, shipped beside it.
   assert.match(skill, /by answering a few\n  short questions/);
   assert.match(skill, /\[interview\]\(references\/interview\.md\)/);
-  assert.match(readFileSync(join(root, 'plugins/humans-md/skills/compile/references/interview.md'), 'utf8'), /One question per message\./);
+  const interview = readFileSync(join(root, 'plugins/humans-md/skills/compile/references/interview.md'), 'utf8');
+  assert.match(interview, /One question per message\./);
+  // This plugin's own setting, named only in the public copy.
+  assert.match(interview, /In Claude Code, with the humans-md plugin, that is the \*\*Your HUMANS\.md\*\* row in `\/config`, or `claude plugin configure humans-md@humans-md --values-stdin`/);
   const pkg = JSON.parse(readFileSync(join(root, 'packages/humans-md/package.json'), 'utf8'));
   const manifest = JSON.parse(readFileSync(join(root, 'plugins/humans-md/.claude-plugin/plugin.json'), 'utf8'));
   assert.equal(manifest.version, pkg.version);
