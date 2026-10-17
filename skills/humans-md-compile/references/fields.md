@@ -12,7 +12,7 @@ Every field is optional unless marked required. Values are closed: use exactly o
 | `id` | required, lowercase slug `[a-z0-9-]{2,64}`; equals the file name, except for a file named exactly `HUMANS.md` |
 | `name` | required, plain text 1–80 Unicode scalar values |
 | `aliases` | ≤ 5 names or nicknames, 1–40 Unicode scalar values each |
-| `identities` | `email`, `slack` (`T…/U…`), `github`, `gitlab`, `entra`, `google` |
+| `identities` | `email`, `slack` (`[TE]…/[UW]…`), `github`, `gitlab`, `entra`, `google` |
 | `languages` | ≤ 10 ISO 639-1 codes in reading/output preference order, e.g. `[fr, en]`; levels and quotation/identifier exceptions belong in notes, not extra language codes |
 | `updated` | required, `"YYYY-MM-DD"` (quoted) |
 | `visibility` | `org` (omission means org), `anyone_with_file`, `private`; propose explicit private only for new profiles; preserve existing omission or explicit value on updates unless a scope change is approved |

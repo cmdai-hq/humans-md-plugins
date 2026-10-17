@@ -104,7 +104,7 @@ Some clients run no hook and load no plugin, but read a user-level instruction f
 | Junie CLI | `humans-md sync --to junie` | `~/.junie/AGENTS.md` |
 | Any other file | `humans-md sync --target PATH` | `PATH`, absolute or starting with `~/` |
 
-These locations follow each client's documentation as read on 2026-10-17; none has been tested in a real session yet. Junie inside a JetBrains IDE's AI Chat runs the Junie CLI, but its documentation does not say whether it reads `~/.junie/AGENTS.md`. Warp keeps its Global Rules inside the app, not in a file: paste the output of `humans-md show` into a Global Rule instead (Warp Drive, Personal, Rules).
+These locations follow each client's documentation as read on 2026-10-17. The Junie CLI copy was tested in a real session (Junie 26.10.12); the Cline and Warp locations have not been tested yet. Junie inside a JetBrains IDE's AI Chat runs the Junie CLI, but its documentation does not say whether it reads `~/.junie/AGENTS.md`. Warp keeps its Global Rules inside the app, not in a file: paste the output of `humans-md show` into a Global Rule instead (Warp Drive, Personal, Rules).
 
 **This is a copy, not a live load.** A hook or plugin reads your HUMANS.md at each session start, as the format asks. A copy does not: run `humans-md sync` again after each change to your profile, or your agents keep the old one.
 

@@ -58,7 +58,8 @@ test('one named hook on SessionStart, a flat handler from the plugin folder', ()
   assert.deepEqual(Object.keys(hooks['humans-md']), ['SessionStart']);
   // Only Antigravity's plugin folders: `agy plugin install` writes ~/.gemini/config/plugins/<folder>/
   // (seen on agy 1.4.0), and https://antigravity.google/docs/plugins names ~/.gemini/antigravity-cli/plugins/<name>/.
-  const guard = event => `case "$(pwd)" in "$HOME"/.gemini/config/plugins/*|"$HOME"/.gemini/antigravity-cli/plugins/*) exec node ./hooks/session-start.mjs ${event};; esac`;
+  // Physical paths on both sides: a HOME reached through a link, or ending with /, still matches.
+  const guard = event => `h=$(cd "$HOME" 2>/dev/null && pwd -P) || exit 0; case "$(pwd -P)" in "$h"/.gemini/config/plugins/*|"$h"/.gemini/antigravity-cli/plugins/*) exec node ./hooks/session-start.mjs ${event};; esac`;
   // Flat lists of handlers (a matcher group here makes agy discard the whole file).
   assert.deepEqual(hooks['humans-md'].SessionStart, [{ type: 'command', command: guard('session-start'), timeout: 10 }]);
 });
@@ -85,6 +86,15 @@ test('installed under ~/.gemini, the command loads your profile', () => inTemp(d
     const other = installed(dir, folder);
     assert.equal(projected(shell(command, other, { HOME: dir }).stdout).status, 'found', folder);
   }
+  // HOME given through a link, or with a trailing slash: the physical paths still match.
+  symlinkSync(dir, join(dir, '..', `${dir.split('/').at(-1)}-link`));
+  const linked = join(dir, '..', `${dir.split('/').at(-1)}-link`);
+  try {
+    for (const home of [linked, dir + '/', linked + '/']) {
+      assert.equal(projected(shell(command, join(linked, '.gemini/config/plugins/humans-md'), { HOME: home }).stdout).status, 'found', home);
+      assert.equal(projected(shell(command, target, { HOME: home }).stdout).status, 'found', home);
+    }
+  } finally { rmSync(linked); }
 }));
 
 test('the commands never run a file from a project folder', () => inTemp(dir => {
