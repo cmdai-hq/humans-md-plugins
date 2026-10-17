@@ -1,7 +1,7 @@
 {
   "name": "humans-md",
   "displayName": "HUMANS.md",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Loads your own ~/.humans/HUMANS.md at the start of each agent chat, so the agent knows how long its replies should be, what it can decide without asking, and when to interrupt you.",
   "author": {
     "name": "Tristan Bessoussa"
