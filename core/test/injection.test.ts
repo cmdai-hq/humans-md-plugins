@@ -24,14 +24,16 @@ describe("20 trapped profiles", () => {
     const id = `t${String(t.n).padStart(2, "0")}`;
     it(`#${t.n} local-file path (CLI, no directory) serves no payload either`, () => {
       const dir = mkdtempSync(join(tmpdir(), "humans-cli-"));
-      let served: string;
+      let served: string, rendered: string;
       try {
         const file = join(dir, `${id}.md`);
         writeFileSync(file, t.source);
         served = execFileSync(process.execPath, [inject("referenceCli"), "serve", file, "--owner"], { encoding: "utf8" });
+        rendered = execFileSync(process.execPath, [inject("referenceCli"), "render-agent", file, "--owner"], { encoding: "utf8" });
       } finally { rmSync(dir, { recursive: true, force: true }); }
       assertClosed(served);
-      expect(JSON.stringify(JSON.parse(served).profile?.as_instructions ?? [])).not.toMatch(/ZEBRA|Bluebird|deadline moved/i);
+      // The payload must never reach the SPEC § 6.4 sentences, which follow the frame and JSON lines.
+      expect(rendered.split("\n").slice(2).join("\n")).not.toMatch(/ZEBRA|Bluebird|deadline moved/i);
       if (t.expect === "stripped") expect(served).not.toContain(`ZEBRA${String(t.n).padStart(2, "0")}`);
     });
 

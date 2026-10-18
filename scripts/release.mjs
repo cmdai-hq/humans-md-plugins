@@ -22,7 +22,7 @@ if (verify) {
   const problems = [];
   if (pkg.version !== version) problems.push(`packages/humans-md/package.json is ${pkg.version}`);
   // The derived fields (plugin manifests, bundle, skill pin) must match the package: build --check.
-  const build = spawnSync(process.execPath, [join(root, 'scripts/build.ts'), '--check'], { cwd: root, encoding: 'utf8' });
+  const build = spawnSync('npm', ['run', 'build', '--', '--check'], { cwd: root, encoding: 'utf8' });
   if (build.status !== 0) problems.push(`npm run build -- --check failed:\n${build.stderr.trim()}`);
   const cli = spawnSync(process.execPath, [join(root, 'packages/humans-md/bin/humans-md.mjs'), '--version'], { encoding: 'utf8' });
   if (cli.stdout.trim() !== version) problems.push(`humans-md --version prints ${cli.stdout.trim() || cli.stderr.trim()}`);

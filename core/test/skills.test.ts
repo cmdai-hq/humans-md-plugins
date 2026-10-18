@@ -134,7 +134,7 @@ describe("reference CLI", () => {
    * Execute the bundled diagnostic CLI and parse its stdout JSON; unexpected nonzero exits or malformed
    * output fail the test.
    */
-  const run = (...args: string[]) => JSON.parse(execFileSync("node", [cli, ...args], { encoding: "utf8" }));
+  const run = (...args: string[]) => JSON.parse(execFileSync(process.execPath, [cli, ...args], { encoding: "utf8" }));
   const profiles = join(import.meta.dirname, "./fixtures");
   it("refuses a private profile unless --owner", () => {
     expect(run("serve", join(profiles, "alex-r.md")).status).toBe("none");
