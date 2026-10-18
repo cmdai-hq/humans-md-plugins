@@ -14,7 +14,7 @@
 // --check writes nothing and exits 1 when a committed file differs from what the build would write.
 import { build } from "esbuild";
 import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join, relative } from "node:path";
+import { dirname, join } from "node:path";
 
 const root = join(import.meta.dirname, "..");
 const args = process.argv.slice(2);
@@ -198,5 +198,5 @@ if (check) {
     mkdirSync(dirname(abs), { recursive: true });
     writeFileSync(abs, outputs.get(path)!);
   }
-  console.log(`build: ${drift.length ? `wrote ${drift.map(p => relative(root, join(root, p))).join(", ")}` : "nothing to write"} (${outputs.size} derived files, humans-md ${version})`);
+  console.log(`build: ${drift.length ? `wrote ${drift.join(", ")}` : "nothing to write"} (${outputs.size} derived files, humans-md ${version})`);
 }
