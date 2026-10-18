@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Codex SessionStart hook: the owner's own profile only. runtime.mjs is the Claude Code plugin's
-// copy (the generator writes it here), so both plugins validate and fail the same way.
+// copy (`npm run build` writes it here), so both plugins validate and fail the same way.
 import { selectedFile, readEvent, renderOwner, absent } from './runtime.mjs';
 // Codex plugins have no user settings: the file is the location SPEC § 5 fixes. To keep it
 // elsewhere, make ~/.humans/HUMANS.md a symbolic link. Hook input never selects a file.

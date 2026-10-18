@@ -204,7 +204,17 @@ Format version: 0.3 draft (`0.3-draft.2026-10-18.1`). macOS only. "Tested" means
 
 Reading a colleague's profile, merging a group's profiles and organization directories.
 
-The command line is built from a repository that is not public yet. The published file is the complete, unminified program, so you can read all of it. Report problems in [issues](https://github.com/cmdai-hq/humans-md-plugins/issues).
+The command line is built from [`core/`](core) in this repository. The published file is the complete, unminified program, so you can read all of it. Report problems in [issues](https://github.com/cmdai-hq/humans-md-plugins/issues).
+
+## Development
+
+Node 22.18 or later. `npm ci` once.
+
+- **Layout:** [`core/`](core) is the TypeScript source of the command line, with its tests. [`spec/`](spec) is a pinned copy of [cmdai-hq/HUMANS.md](https://github.com/cmdai-hq/HUMANS.md), recorded in `spec/MIRROR.json`. `plugins/`, `skills/` and `packages/` are what users install, so the built files stay committed.
+- **Build:** `npm run build` writes the built files in place: the command line in every plugin, the portable skill and the npm package, the hook runtime copied from `plugins/humans-md/hooks/runtime.mjs`, `skills/humans-md-compile` (made from `plugins/humans-md/skills/compile`), the vocabulary reference, the LICENSE and NOTICE copies and the plugin versions. Edit every other file directly, then build. `npm run build -- --check` fails when a committed built file is out of date; CI runs it.
+- **Test:** `npm test` runs the core tests (vitest) and the tests of the shipped files (`node --test 'test/*.test.mjs'`). `npm run typecheck` checks the TypeScript.
+- **Update the spec:** a daily workflow opens a pull request when HUMANS.md changes. By hand: `npm run sync:spec -- --source <HUMANS.md checkout> --revision <full commit>`, then `npm run build`.
+- **Release:** `npm run release 0.3.2`, then a pull request; after the merge, tag `v0.3.2`. Details in [docs/RELEASING.md](docs/RELEASING.md).
 
 ## License
 
