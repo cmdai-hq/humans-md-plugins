@@ -1,0 +1,1240 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://humansmd.dev/schema/0.3/humans-projection.schema.json",
+  "title": "Individual HUMANS.md projection, version 0.3 (draft)",
+  "description": "Reconstructed model-facing data; no names, aliases, identity claims, body, comments, state or directory prose. Text encoding and budgets are in SPEC § 6.3.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "const": "none"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "profile"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "found",
+            "stale"
+          ]
+        },
+        "profile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "updated",
+            "stale",
+            "withheld"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]{2,64}$",
+              "description": "Unique within its directory. Equals the basename without .md in every directory, except a file named exactly HUMANS.md or an explicitly reported draft validation mode."
+            },
+            "updated": {
+              "type": "string",
+              "format": "date",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+              "description": "Gregorian calendar date string, years 0000–9999; quoting recommended. No year-0–99 remapping."
+            },
+            "stale": {
+              "type": "boolean"
+            },
+            "withheld": {
+              "type": "array",
+              "maxItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "const": "notes"
+              }
+            },
+            "languages": {
+              "type": "array",
+              "maxItems": 10,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/language"
+              },
+              "minItems": 1
+            },
+            "reading": {
+              "type": "object",
+              "description": "What I read.",
+              "additionalProperties": false,
+              "properties": {
+                "lead_with": {
+                  "enum": [
+                    "tldr",
+                    "decision_needed",
+                    "context",
+                    "question",
+                    "next_action"
+                  ],
+                  "description": "What the first line holds."
+                },
+                "length": {
+                  "enum": [
+                    "minimal",
+                    "short",
+                    "standard",
+                    "thorough"
+                  ]
+                },
+                "max_words": {
+                  "type": "integer",
+                  "minimum": 20,
+                  "maximum": 2000,
+                  "description": "Cap on the entire message, including an appendix, tables and code; never bypass via an unsolicited thread or extra message."
+                },
+                "structure": {
+                  "enum": [
+                    "bullets",
+                    "prose",
+                    "mixed",
+                    "numbered"
+                  ]
+                },
+                "visual": {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "table",
+                      "diagram",
+                      "chart",
+                      "example",
+                      "text"
+                    ]
+                  },
+                  "uniqueItems": true,
+                  "maxItems": 5,
+                  "description": "Preferred forms, most wanted first.",
+                  "minItems": 1
+                },
+                "technical_depth": {
+                  "enum": [
+                    "non_technical",
+                    "balanced",
+                    "expert"
+                  ]
+                },
+                "jargon": {
+                  "enum": [
+                    "avoid",
+                    "define",
+                    "ok"
+                  ]
+                },
+                "tone": {
+                  "enum": [
+                    "direct",
+                    "neutral",
+                    "warm"
+                  ]
+                },
+                "evidence": {
+                  "enum": [
+                    "numbers_and_sources",
+                    "key_numbers",
+                    "light"
+                  ]
+                },
+                "uncertainty": {
+                  "enum": [
+                    "flag_explicitly",
+                    "inline"
+                  ],
+                  "description": "flag_explicitly: say what was checked and what was assumed."
+                },
+                "close_with": {
+                  "enum": [
+                    "next_action",
+                    "one_question",
+                    "nothing"
+                  ],
+                  "description": "What the last line holds; never invent an action or a question to fill it."
+                }
+              },
+              "minProperties": 1
+            },
+            "deciding": {
+              "type": "object",
+              "description": "What I decide.",
+              "additionalProperties": false,
+              "properties": {
+                "reversible": {
+                  "enum": [
+                    "decide_and_report",
+                    "ask"
+                  ],
+                  "description": "Only for actions the agent is already allowed to take. Never grants a permission."
+                },
+                "batch_questions": {
+                  "enum": [
+                    "end_of_task",
+                    "as_they_come"
+                  ]
+                },
+                "default_answer": {
+                  "enum": [
+                    "always",
+                    "when_obvious"
+                  ]
+                },
+                "asks_per_message": {
+                  "enum": [
+                    "one",
+                    "few",
+                    "any"
+                  ]
+                },
+                "format": {
+                  "enum": [
+                    "recommendation_first",
+                    "options_then_recommendation",
+                    "options_only"
+                  ]
+                },
+                "question_style": {
+                  "enum": [
+                    "open",
+                    "multiple_choice",
+                    "yes_confirms_recommendation"
+                  ],
+                  "description": "How each question is phrased; yes_confirms_recommendation falls back to multiple_choice without a recommendation."
+                },
+                "challenge": {
+                  "enum": [
+                    "welcome_early",
+                    "after_draft",
+                    "on_request"
+                  ]
+                },
+                "out_of_scope_steps": {
+                  "enum": [
+                    "omit_unless_blocking",
+                    "list"
+                  ]
+                }
+              },
+              "minProperties": 1
+            },
+            "interrupting": {
+              "type": "object",
+              "description": "When to interrupt me.",
+              "additionalProperties": false,
+              "properties": {
+                "interrupt_for": {
+                  "enum": [
+                    "blocking_only",
+                    "blocking_or_risky",
+                    "anything"
+                  ]
+                },
+                "group_by": {
+                  "enum": [
+                    "project",
+                    "none"
+                  ]
+                },
+                "channel_hint": {
+                  "enum": [
+                    "async_written",
+                    "sync_call",
+                    "either"
+                  ]
+                },
+                "progress_updates": {
+                  "enum": [
+                    "every_message",
+                    "phase_changes",
+                    "end_only"
+                  ],
+                  "description": "How a long task reports where it stands in its own conversation; never a reason to message elsewhere."
+                },
+                "quiet_hours": {
+                  "type": "object",
+                  "description": "When agents do not interrupt the owner, in the owner's time zone. Times only, never a reason. from and to must differ (SPEC § 3.5). Omitted from groups and stored variants.",
+                  "additionalProperties": false,
+                  "required": [
+                    "time_zone",
+                    "from",
+                    "to"
+                  ],
+                  "properties": {
+                    "time_zone": {
+                      "$ref": "#/$defs/timeZone"
+                    },
+                    "from": {
+                      "type": "string",
+                      "pattern": "^(?:[01][0-9]|2[0-3]):(?:00|30)$",
+                      "description": "Start of the daily quiet range, HH:MM on the hour or half hour, inclusive."
+                    },
+                    "to": {
+                      "type": "string",
+                      "pattern": "^(?:[01][0-9]|2[0-3]):(?:00|30)$",
+                      "description": "End of the daily quiet range, exclusive; earlier than from means the range crosses midnight."
+                    },
+                    "all_day": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 7,
+                      "items": {
+                        "enum": [
+                          "monday",
+                          "tuesday",
+                          "wednesday",
+                          "thursday",
+                          "friday",
+                          "saturday",
+                          "sunday"
+                        ]
+                      },
+                      "description": "Weekdays that are quiet all day. An empty list means none, like every optional list (SPEC § 3.2); projections omit it.",
+                      "minItems": 1
+                    }
+                  }
+                }
+              },
+              "minProperties": 1
+            },
+            "context": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "role": {
+                  "$ref": "#/$defs/role"
+                },
+                "knows_well": {
+                  "type": "array",
+                  "maxItems": 15,
+                  "uniqueItems": true,
+                  "items": {
+                    "$ref": "#/$defs/topic"
+                  },
+                  "minItems": 1
+                },
+                "knows_little": {
+                  "type": "array",
+                  "maxItems": 15,
+                  "uniqueItems": true,
+                  "items": {
+                    "$ref": "#/$defs/topic"
+                  },
+                  "minItems": 1
+                },
+                "decides": {
+                  "type": "array",
+                  "maxItems": 10,
+                  "uniqueItems": true,
+                  "items": {
+                    "$ref": "#/$defs/decision"
+                  },
+                  "minItems": 1
+                },
+                "stale": {
+                  "type": "boolean"
+                }
+              },
+              "minProperties": 2,
+              "required": [
+                "stale"
+              ]
+            },
+            "avoid": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "walls_of_text",
+                  "filler_intro",
+                  "filler_outro",
+                  "hedging",
+                  "emoji",
+                  "rhetorical_questions",
+                  "multiple_asks",
+                  "unexplained_acronyms",
+                  "passive_voice",
+                  "exclamation",
+                  "long_preamble",
+                  "nested_bullets",
+                  "sarcasm",
+                  "recap",
+                  "idioms"
+                ]
+              },
+              "minItems": 1
+            },
+            "notes": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 280,
+              "not": {
+                "$ref": "#/$defs/unsafeText"
+              },
+              "description": "Owner-approved preferences or personal information, including voluntary medical statements. Kept as scoped data under SPEC § 6; never an action or task instruction. A sharing warning is not invalidity."
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "withheld": {
+                    "contains": {
+                      "const": "notes"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "withheld"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "notes": false
+                }
+              }
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "stale"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "profile": {
+                "type": "object",
+                "properties": {
+                  "stale": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "profile": {
+                "type": "object",
+                "properties": {
+                  "stale": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "$defs": {
+    "unsafeText": {
+      "description": "Technical plain-text restrictions, Unicode 17.0. No medical word blacklist. Limits count Unicode scalar values.",
+      "type": "string",
+      "anyOf": [
+        {
+          "pattern": "[\\p{Cc}\\p{Cf}\\p{Cs}\\p{Co}\\p{Cn}\\p{Zl}\\p{Zp}\\u00A0\\u1680\\u2000-\\u200A\\u202F\\u205F\\u3000]"
+        },
+        {
+          "pattern": "[`*_#<>\\[\\]{}|~\\\\]"
+        },
+        {
+          "pattern": "[A-Za-z][A-Za-z0-9+.\\-]*://"
+        },
+        {
+          "pattern": "(^|[^A-Za-z0-9])([Hh][Tt][Tt][Pp][Ss]?|[Mm][Aa][Ii][Ll][Tt][Oo]|[Jj][Aa][Vv][Aa][Ss][Cc][Rr][Ii][Pp][Tt]|[Vv][Bb][Ss][Cc][Rr][Ii][Pp][Tt]|[Dd][Aa][Tt][Aa]|[Ff][Ii][Ll][Ee]|[Ff][Tt][Pp]|[Tt][Ee][Ll]|[Ss][Mm][Ss]|[Ss][Ss][Hh]|[Bb][Ll][Oo][Bb]|[Ww][Ss][Ss]?):"
+        },
+        {
+          "pattern": "(^|[^A-Za-z0-9])[Ww][Ww][Ww]\\."
+        },
+        {
+          "pattern": "[^\\s@]+@[^\\s@]+\\.[^\\s@]+"
+        }
+      ]
+    },
+    "role": {
+      "enum": [
+        "software-engineer",
+        "senior-engineer",
+        "staff-engineer",
+        "principal-engineer",
+        "tech-lead",
+        "architect",
+        "engineering-manager",
+        "director-of-engineering",
+        "vp-engineering",
+        "cto",
+        "sre",
+        "devops-engineer",
+        "security-engineer",
+        "qa-engineer",
+        "data-engineer",
+        "data-scientist",
+        "ml-engineer",
+        "product-manager",
+        "product-owner",
+        "designer",
+        "ux-researcher",
+        "technical-writer",
+        "founder",
+        "ceo",
+        "coo",
+        "cfo",
+        "operations",
+        "marketing",
+        "sales",
+        "customer-support",
+        "legal",
+        "finance",
+        "people-ops",
+        "researcher",
+        "student"
+      ]
+    },
+    "topic": {
+      "enum": [
+        "javascript",
+        "typescript",
+        "python",
+        "php",
+        "ruby",
+        "go",
+        "rust",
+        "java",
+        "kotlin",
+        "swift",
+        "c-cpp",
+        "csharp-dotnet",
+        "elixir",
+        "scala",
+        "sql",
+        "shell",
+        "react",
+        "vue",
+        "svelte",
+        "angular",
+        "node",
+        "symfony",
+        "laravel",
+        "rails",
+        "django",
+        "spring",
+        "frontend",
+        "backend",
+        "mobile",
+        "apis",
+        "distributed-systems",
+        "databases",
+        "postgres",
+        "mysql",
+        "mongodb",
+        "redis",
+        "search",
+        "caching",
+        "messaging",
+        "data-pipelines",
+        "analytics",
+        "machine-learning",
+        "llm-agents",
+        "infrastructure",
+        "kubernetes",
+        "docker",
+        "terraform",
+        "ci-cd",
+        "observability",
+        "incident-response",
+        "performance",
+        "security",
+        "identity-auth",
+        "networking",
+        "cloud-aws",
+        "cloud-gcp",
+        "cloud-azure",
+        "cloudflare",
+        "cloud-costs",
+        "testing",
+        "accessibility",
+        "design-systems",
+        "ux-research",
+        "product-strategy",
+        "roadmap",
+        "pricing",
+        "billing-payments",
+        "growth",
+        "seo",
+        "marketing",
+        "sales",
+        "customer-support",
+        "compliance",
+        "privacy-gdpr",
+        "legal",
+        "finance",
+        "hiring",
+        "people-management",
+        "project-management",
+        "documentation",
+        "open-source"
+      ]
+    },
+    "decision": {
+      "enum": [
+        "architecture",
+        "schema-changes",
+        "api-contracts",
+        "dependencies",
+        "infra-budget",
+        "vendor-choice",
+        "security-exceptions",
+        "data-access",
+        "release-scope",
+        "release-timing",
+        "roadmap-priority",
+        "pricing",
+        "design",
+        "copy-and-content",
+        "hiring",
+        "team-organization",
+        "incident-escalation",
+        "legal-review",
+        "spending"
+      ]
+    },
+    "language": {
+      "enum": [
+        "aa",
+        "ab",
+        "ae",
+        "af",
+        "ak",
+        "am",
+        "an",
+        "ar",
+        "as",
+        "av",
+        "ay",
+        "az",
+        "ba",
+        "be",
+        "bg",
+        "bi",
+        "bm",
+        "bn",
+        "bo",
+        "br",
+        "bs",
+        "ca",
+        "ce",
+        "ch",
+        "co",
+        "cr",
+        "cs",
+        "cu",
+        "cv",
+        "cy",
+        "da",
+        "de",
+        "dv",
+        "dz",
+        "ee",
+        "el",
+        "en",
+        "eo",
+        "es",
+        "et",
+        "eu",
+        "fa",
+        "ff",
+        "fi",
+        "fj",
+        "fo",
+        "fr",
+        "fy",
+        "ga",
+        "gd",
+        "gl",
+        "gn",
+        "gu",
+        "gv",
+        "ha",
+        "he",
+        "hi",
+        "ho",
+        "hr",
+        "ht",
+        "hu",
+        "hy",
+        "hz",
+        "ia",
+        "id",
+        "ie",
+        "ig",
+        "ii",
+        "ik",
+        "io",
+        "is",
+        "it",
+        "iu",
+        "ja",
+        "jv",
+        "ka",
+        "kg",
+        "ki",
+        "kj",
+        "kk",
+        "kl",
+        "km",
+        "kn",
+        "ko",
+        "kr",
+        "ks",
+        "ku",
+        "kv",
+        "kw",
+        "ky",
+        "la",
+        "lb",
+        "lg",
+        "li",
+        "ln",
+        "lo",
+        "lt",
+        "lu",
+        "lv",
+        "mg",
+        "mh",
+        "mi",
+        "mk",
+        "ml",
+        "mn",
+        "mr",
+        "ms",
+        "mt",
+        "my",
+        "na",
+        "nb",
+        "nd",
+        "ne",
+        "ng",
+        "nl",
+        "nn",
+        "no",
+        "nr",
+        "nv",
+        "ny",
+        "oc",
+        "oj",
+        "om",
+        "or",
+        "os",
+        "pa",
+        "pi",
+        "pl",
+        "ps",
+        "pt",
+        "qu",
+        "rm",
+        "rn",
+        "ro",
+        "ru",
+        "rw",
+        "sa",
+        "sc",
+        "sd",
+        "se",
+        "sg",
+        "si",
+        "sk",
+        "sl",
+        "sm",
+        "sn",
+        "so",
+        "sq",
+        "sr",
+        "ss",
+        "st",
+        "su",
+        "sv",
+        "sw",
+        "ta",
+        "te",
+        "tg",
+        "th",
+        "ti",
+        "tk",
+        "tl",
+        "tn",
+        "to",
+        "tr",
+        "ts",
+        "tt",
+        "tw",
+        "ty",
+        "ug",
+        "uk",
+        "ur",
+        "uz",
+        "ve",
+        "vi",
+        "vo",
+        "wa",
+        "wo",
+        "xh",
+        "yi",
+        "yo",
+        "za",
+        "zh",
+        "zu"
+      ],
+      "description": "ISO 639-1 code."
+    },
+    "timeZone": {
+      "enum": [
+        "Africa/Abidjan",
+        "Africa/Accra",
+        "Africa/Addis_Ababa",
+        "Africa/Algiers",
+        "Africa/Asmara",
+        "Africa/Bamako",
+        "Africa/Bangui",
+        "Africa/Banjul",
+        "Africa/Bissau",
+        "Africa/Blantyre",
+        "Africa/Brazzaville",
+        "Africa/Bujumbura",
+        "Africa/Cairo",
+        "Africa/Casablanca",
+        "Africa/Ceuta",
+        "Africa/Conakry",
+        "Africa/Dakar",
+        "Africa/Dar_es_Salaam",
+        "Africa/Djibouti",
+        "Africa/Douala",
+        "Africa/El_Aaiun",
+        "Africa/Freetown",
+        "Africa/Gaborone",
+        "Africa/Harare",
+        "Africa/Johannesburg",
+        "Africa/Juba",
+        "Africa/Kampala",
+        "Africa/Khartoum",
+        "Africa/Kigali",
+        "Africa/Kinshasa",
+        "Africa/Lagos",
+        "Africa/Libreville",
+        "Africa/Lome",
+        "Africa/Luanda",
+        "Africa/Lubumbashi",
+        "Africa/Lusaka",
+        "Africa/Malabo",
+        "Africa/Maputo",
+        "Africa/Maseru",
+        "Africa/Mbabane",
+        "Africa/Mogadishu",
+        "Africa/Monrovia",
+        "Africa/Nairobi",
+        "Africa/Ndjamena",
+        "Africa/Niamey",
+        "Africa/Nouakchott",
+        "Africa/Ouagadougou",
+        "Africa/Porto-Novo",
+        "Africa/Sao_Tome",
+        "Africa/Tripoli",
+        "Africa/Tunis",
+        "Africa/Windhoek",
+        "America/Adak",
+        "America/Anchorage",
+        "America/Anguilla",
+        "America/Antigua",
+        "America/Araguaina",
+        "America/Argentina/Buenos_Aires",
+        "America/Argentina/Catamarca",
+        "America/Argentina/Cordoba",
+        "America/Argentina/Jujuy",
+        "America/Argentina/La_Rioja",
+        "America/Argentina/Mendoza",
+        "America/Argentina/Rio_Gallegos",
+        "America/Argentina/Salta",
+        "America/Argentina/San_Juan",
+        "America/Argentina/San_Luis",
+        "America/Argentina/Tucuman",
+        "America/Argentina/Ushuaia",
+        "America/Aruba",
+        "America/Asuncion",
+        "America/Atikokan",
+        "America/Bahia",
+        "America/Bahia_Banderas",
+        "America/Barbados",
+        "America/Belem",
+        "America/Belize",
+        "America/Blanc-Sablon",
+        "America/Boa_Vista",
+        "America/Bogota",
+        "America/Boise",
+        "America/Cambridge_Bay",
+        "America/Campo_Grande",
+        "America/Cancun",
+        "America/Caracas",
+        "America/Cayenne",
+        "America/Cayman",
+        "America/Chicago",
+        "America/Chihuahua",
+        "America/Ciudad_Juarez",
+        "America/Costa_Rica",
+        "America/Coyhaique",
+        "America/Creston",
+        "America/Cuiaba",
+        "America/Curacao",
+        "America/Danmarkshavn",
+        "America/Dawson",
+        "America/Dawson_Creek",
+        "America/Denver",
+        "America/Detroit",
+        "America/Dominica",
+        "America/Edmonton",
+        "America/Eirunepe",
+        "America/El_Salvador",
+        "America/Fort_Nelson",
+        "America/Fortaleza",
+        "America/Glace_Bay",
+        "America/Goose_Bay",
+        "America/Grand_Turk",
+        "America/Grenada",
+        "America/Guadeloupe",
+        "America/Guatemala",
+        "America/Guayaquil",
+        "America/Guyana",
+        "America/Halifax",
+        "America/Havana",
+        "America/Hermosillo",
+        "America/Indiana/Indianapolis",
+        "America/Indiana/Knox",
+        "America/Indiana/Marengo",
+        "America/Indiana/Petersburg",
+        "America/Indiana/Tell_City",
+        "America/Indiana/Vevay",
+        "America/Indiana/Vincennes",
+        "America/Indiana/Winamac",
+        "America/Inuvik",
+        "America/Iqaluit",
+        "America/Jamaica",
+        "America/Juneau",
+        "America/Kentucky/Louisville",
+        "America/Kentucky/Monticello",
+        "America/Kralendijk",
+        "America/La_Paz",
+        "America/Lima",
+        "America/Los_Angeles",
+        "America/Lower_Princes",
+        "America/Maceio",
+        "America/Managua",
+        "America/Manaus",
+        "America/Marigot",
+        "America/Martinique",
+        "America/Matamoros",
+        "America/Mazatlan",
+        "America/Menominee",
+        "America/Merida",
+        "America/Metlakatla",
+        "America/Mexico_City",
+        "America/Miquelon",
+        "America/Moncton",
+        "America/Monterrey",
+        "America/Montevideo",
+        "America/Montserrat",
+        "America/Nassau",
+        "America/New_York",
+        "America/Nome",
+        "America/Noronha",
+        "America/North_Dakota/Beulah",
+        "America/North_Dakota/Center",
+        "America/North_Dakota/New_Salem",
+        "America/Nuuk",
+        "America/Ojinaga",
+        "America/Panama",
+        "America/Paramaribo",
+        "America/Phoenix",
+        "America/Port-au-Prince",
+        "America/Port_of_Spain",
+        "America/Porto_Velho",
+        "America/Puerto_Rico",
+        "America/Punta_Arenas",
+        "America/Rankin_Inlet",
+        "America/Recife",
+        "America/Regina",
+        "America/Resolute",
+        "America/Rio_Branco",
+        "America/Santarem",
+        "America/Santiago",
+        "America/Santo_Domingo",
+        "America/Sao_Paulo",
+        "America/Scoresbysund",
+        "America/Sitka",
+        "America/St_Barthelemy",
+        "America/St_Johns",
+        "America/St_Kitts",
+        "America/St_Lucia",
+        "America/St_Thomas",
+        "America/St_Vincent",
+        "America/Swift_Current",
+        "America/Tegucigalpa",
+        "America/Thule",
+        "America/Tijuana",
+        "America/Toronto",
+        "America/Tortola",
+        "America/Vancouver",
+        "America/Whitehorse",
+        "America/Winnipeg",
+        "America/Yakutat",
+        "Antarctica/Casey",
+        "Antarctica/Davis",
+        "Antarctica/DumontDUrville",
+        "Antarctica/Macquarie",
+        "Antarctica/Mawson",
+        "Antarctica/McMurdo",
+        "Antarctica/Palmer",
+        "Antarctica/Rothera",
+        "Antarctica/Syowa",
+        "Antarctica/Troll",
+        "Antarctica/Vostok",
+        "Arctic/Longyearbyen",
+        "Asia/Aden",
+        "Asia/Almaty",
+        "Asia/Amman",
+        "Asia/Anadyr",
+        "Asia/Aqtau",
+        "Asia/Aqtobe",
+        "Asia/Ashgabat",
+        "Asia/Atyrau",
+        "Asia/Baghdad",
+        "Asia/Bahrain",
+        "Asia/Baku",
+        "Asia/Bangkok",
+        "Asia/Barnaul",
+        "Asia/Beirut",
+        "Asia/Bishkek",
+        "Asia/Brunei",
+        "Asia/Chita",
+        "Asia/Colombo",
+        "Asia/Damascus",
+        "Asia/Dhaka",
+        "Asia/Dili",
+        "Asia/Dubai",
+        "Asia/Dushanbe",
+        "Asia/Famagusta",
+        "Asia/Gaza",
+        "Asia/Hebron",
+        "Asia/Ho_Chi_Minh",
+        "Asia/Hong_Kong",
+        "Asia/Hovd",
+        "Asia/Irkutsk",
+        "Asia/Jakarta",
+        "Asia/Jayapura",
+        "Asia/Jerusalem",
+        "Asia/Kabul",
+        "Asia/Kamchatka",
+        "Asia/Karachi",
+        "Asia/Kathmandu",
+        "Asia/Khandyga",
+        "Asia/Kolkata",
+        "Asia/Krasnoyarsk",
+        "Asia/Kuala_Lumpur",
+        "Asia/Kuching",
+        "Asia/Kuwait",
+        "Asia/Macau",
+        "Asia/Magadan",
+        "Asia/Makassar",
+        "Asia/Manila",
+        "Asia/Muscat",
+        "Asia/Nicosia",
+        "Asia/Novokuznetsk",
+        "Asia/Novosibirsk",
+        "Asia/Omsk",
+        "Asia/Oral",
+        "Asia/Phnom_Penh",
+        "Asia/Pontianak",
+        "Asia/Pyongyang",
+        "Asia/Qatar",
+        "Asia/Qostanay",
+        "Asia/Qyzylorda",
+        "Asia/Riyadh",
+        "Asia/Sakhalin",
+        "Asia/Samarkand",
+        "Asia/Seoul",
+        "Asia/Shanghai",
+        "Asia/Singapore",
+        "Asia/Srednekolymsk",
+        "Asia/Taipei",
+        "Asia/Tashkent",
+        "Asia/Tbilisi",
+        "Asia/Tehran",
+        "Asia/Thimphu",
+        "Asia/Tokyo",
+        "Asia/Tomsk",
+        "Asia/Ulaanbaatar",
+        "Asia/Urumqi",
+        "Asia/Ust-Nera",
+        "Asia/Vientiane",
+        "Asia/Vladivostok",
+        "Asia/Yakutsk",
+        "Asia/Yangon",
+        "Asia/Yekaterinburg",
+        "Asia/Yerevan",
+        "Atlantic/Azores",
+        "Atlantic/Bermuda",
+        "Atlantic/Canary",
+        "Atlantic/Cape_Verde",
+        "Atlantic/Faroe",
+        "Atlantic/Madeira",
+        "Atlantic/Reykjavik",
+        "Atlantic/South_Georgia",
+        "Atlantic/St_Helena",
+        "Atlantic/Stanley",
+        "Australia/Adelaide",
+        "Australia/Brisbane",
+        "Australia/Broken_Hill",
+        "Australia/Darwin",
+        "Australia/Eucla",
+        "Australia/Hobart",
+        "Australia/Lindeman",
+        "Australia/Lord_Howe",
+        "Australia/Melbourne",
+        "Australia/Perth",
+        "Australia/Sydney",
+        "Europe/Amsterdam",
+        "Europe/Andorra",
+        "Europe/Astrakhan",
+        "Europe/Athens",
+        "Europe/Belgrade",
+        "Europe/Berlin",
+        "Europe/Bratislava",
+        "Europe/Brussels",
+        "Europe/Bucharest",
+        "Europe/Budapest",
+        "Europe/Busingen",
+        "Europe/Chisinau",
+        "Europe/Copenhagen",
+        "Europe/Dublin",
+        "Europe/Gibraltar",
+        "Europe/Guernsey",
+        "Europe/Helsinki",
+        "Europe/Isle_of_Man",
+        "Europe/Istanbul",
+        "Europe/Jersey",
+        "Europe/Kaliningrad",
+        "Europe/Kirov",
+        "Europe/Kyiv",
+        "Europe/Lisbon",
+        "Europe/Ljubljana",
+        "Europe/London",
+        "Europe/Luxembourg",
+        "Europe/Madrid",
+        "Europe/Malta",
+        "Europe/Mariehamn",
+        "Europe/Minsk",
+        "Europe/Monaco",
+        "Europe/Moscow",
+        "Europe/Oslo",
+        "Europe/Paris",
+        "Europe/Podgorica",
+        "Europe/Prague",
+        "Europe/Riga",
+        "Europe/Rome",
+        "Europe/Samara",
+        "Europe/San_Marino",
+        "Europe/Sarajevo",
+        "Europe/Saratov",
+        "Europe/Simferopol",
+        "Europe/Skopje",
+        "Europe/Sofia",
+        "Europe/Stockholm",
+        "Europe/Tallinn",
+        "Europe/Tirane",
+        "Europe/Ulyanovsk",
+        "Europe/Vaduz",
+        "Europe/Vatican",
+        "Europe/Vienna",
+        "Europe/Vilnius",
+        "Europe/Volgograd",
+        "Europe/Warsaw",
+        "Europe/Zagreb",
+        "Europe/Zurich",
+        "Indian/Antananarivo",
+        "Indian/Chagos",
+        "Indian/Christmas",
+        "Indian/Cocos",
+        "Indian/Comoro",
+        "Indian/Kerguelen",
+        "Indian/Mahe",
+        "Indian/Maldives",
+        "Indian/Mauritius",
+        "Indian/Mayotte",
+        "Indian/Reunion",
+        "Pacific/Apia",
+        "Pacific/Auckland",
+        "Pacific/Bougainville",
+        "Pacific/Chatham",
+        "Pacific/Chuuk",
+        "Pacific/Easter",
+        "Pacific/Efate",
+        "Pacific/Fakaofo",
+        "Pacific/Fiji",
+        "Pacific/Funafuti",
+        "Pacific/Galapagos",
+        "Pacific/Gambier",
+        "Pacific/Guadalcanal",
+        "Pacific/Guam",
+        "Pacific/Honolulu",
+        "Pacific/Kanton",
+        "Pacific/Kiritimati",
+        "Pacific/Kosrae",
+        "Pacific/Kwajalein",
+        "Pacific/Majuro",
+        "Pacific/Marquesas",
+        "Pacific/Midway",
+        "Pacific/Nauru",
+        "Pacific/Niue",
+        "Pacific/Norfolk",
+        "Pacific/Noumea",
+        "Pacific/Pago_Pago",
+        "Pacific/Palau",
+        "Pacific/Pitcairn",
+        "Pacific/Pohnpei",
+        "Pacific/Port_Moresby",
+        "Pacific/Rarotonga",
+        "Pacific/Saipan",
+        "Pacific/Tahiti",
+        "Pacific/Tarawa",
+        "Pacific/Tongatapu",
+        "Pacific/Wake",
+        "Pacific/Wallis",
+        "UTC"
+      ],
+      "description": "IANA tz database release 2026e: the names in zone.tab, plus UTC."
+    }
+  }
+}

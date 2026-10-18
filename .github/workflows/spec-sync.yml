@@ -1,0 +1,137 @@
+name: spec-sync
+
+# Daily: when cmdai-hq/HUMANS.md main moves past spec/MIRROR.json's source_revision, sync the
+# mirror, rebuild the derived files and open (or update) one pull request.
+#
+# A pull request opened with GITHUB_TOKEN does not trigger other workflows, so ci.yml would not run
+# on it. workflow_dispatch is the documented exception: this workflow dispatches ci.yml on the
+# pull request's branch, and its checks (ci-ok included) report on the pull request's head commit.
+#
+# The sync and the build run upstream files (spec/tools, the validator generator), so they run in a
+# read-only job. Only the derived files cross to the write-capable job, which runs no repository code.
+
+on:
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: spec-sync
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    outputs:
+      changed: ${{ steps.spec.outputs.changed }}
+      head: ${{ steps.spec.outputs.head }}
+      pinned: ${{ steps.spec.outputs.pinned }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Compare HUMANS.md main with the pinned mirror
+        id: spec
+        run: |
+          git clone --quiet --depth 1 --branch main https://github.com/cmdai-hq/HUMANS.md.git "$RUNNER_TEMP/spec-source"
+          head="$(git -C "$RUNNER_TEMP/spec-source" rev-parse HEAD)"
+          pinned="$(node -p 'require("./spec/MIRROR.json").source_revision')"
+          echo "head=$head" >> "$GITHUB_OUTPUT"
+          echo "pinned=$pinned" >> "$GITHUB_OUTPUT"
+          if [ "$head" = "$pinned" ]; then echo "changed=false" >> "$GITHUB_OUTPUT"; else echo "changed=true" >> "$GITHUB_OUTPUT"; fi
+          echo "HUMANS.md main $head, mirror $pinned"
+      - name: Sync the mirror and rebuild
+        if: steps.spec.outputs.changed == 'true'
+        env:
+          HEAD_REVISION: ${{ steps.spec.outputs.head }}
+        run: |
+          node scripts/sync-spec.mjs --source "$RUNNER_TEMP/spec-source" --revision "$HEAD_REVISION"
+          npm ci --ignore-scripts
+          npm run build
+          tar -czf "$RUNNER_TEMP/derived.tgz" spec plugins skills packages
+      - name: Keep the derived files for the pull request job
+        if: steps.spec.outputs.changed == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: derived
+          path: ${{ runner.temp }}/derived.tgz
+          retention-days: 1
+
+  pull-request:
+    needs: build
+    if: needs.build.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # push the automation/spec-sync branch
+      pull-requests: write # open or update its pull request
+      actions: write # dispatch ci.yml on that branch
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: derived
+          path: ${{ runner.temp }}
+      - name: Unpack the derived files (untrusted, the build ran upstream code)
+        run: |
+          archive="$RUNNER_TEMP/derived.tgz"
+          # Listings go to files first: under pipefail, `tar | grep -q` can pass on a SIGPIPE.
+          tar -tzvf "$archive" > "$RUNNER_TEMP/long.txt"
+          tar -tzf "$archive" > "$RUNNER_TEMP/names.txt"
+          # Only regular files and directories: no symlinks, hard links or devices.
+          if grep -qvE '^[-d]' "$RUNNER_TEMP/long.txt"; then echo "refusing: a member is not a regular file or directory"; exit 1; fi
+          # Only paths under the four derived folders, never absolute or with a .. segment.
+          while IFS= read -r member; do
+            case "$member" in
+              /* | ../* | */../* | */.. | ..) echo "refusing: $member"; exit 1 ;;
+              spec | spec/* | plugins | plugins/* | skills | skills/* | packages | packages/*) ;;
+              *) echo "refusing: $member"; exit 1 ;;
+            esac
+          done < "$RUNNER_TEMP/names.txt"
+          out="$RUNNER_TEMP/derived"
+          mkdir "$out"
+          tar -xzf "$archive" -C "$out" --no-same-owner --no-same-permissions
+          if [ -n "$(find "$out" ! -type f ! -type d)" ]; then echo "refusing: unexpected file type"; exit 1; fi
+          for folder in spec plugins skills packages; do
+            rm -rf "$folder"
+            cp -R "$out/$folder" "$folder"
+          done
+      - name: Open or update the pull request
+        id: pr
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          branch: automation/spec-sync
+          delete-branch: true
+          add-paths: |
+            spec
+            plugins
+            skills
+            packages
+          commit-message: |
+            chore(spec): sync the mirror to cmdai-hq/HUMANS.md ${{ needs.build.outputs.head }}
+          title: 'chore(spec): sync the mirror to cmdai-hq/HUMANS.md ${{ needs.build.outputs.head }}'
+          body: |
+            Syncs `spec/` to https://github.com/cmdai-hq/HUMANS.md/commit/${{ needs.build.outputs.head }} (was ${{ needs.build.outputs.pinned }}) with `scripts/sync-spec.mjs`, then runs `npm run build`.
+
+            Changes: https://github.com/cmdai-hq/HUMANS.md/compare/${{ needs.build.outputs.pinned }}...${{ needs.build.outputs.head }}
+
+            CI runs through a `workflow_dispatch` of `ci.yml` on this branch (a pull request opened with `GITHUB_TOKEN` triggers no workflow). If the checks are missing, run **ci** on `automation/spec-sync` from the Actions tab.
+
+            Before merging: read the spec changes, and if the CLI bundle changed, plan a release (`docs/RELEASING.md`).
+      - name: Run CI on the pull request's branch
+        if: steps.pr.outputs.pull-request-operation == 'created' || steps.pr.outputs.pull-request-operation == 'updated'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: gh workflow run ci.yml --repo "$REPOSITORY" --ref automation/spec-sync

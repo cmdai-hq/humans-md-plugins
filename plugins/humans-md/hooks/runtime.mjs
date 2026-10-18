@@ -1,5 +1,5 @@
 // Model-free process boundary of the public SessionStart hook: the owner's own profile only.
-// Shared by the Claude Code plugin and, copied by the generator, the Codex and Copilot plugins.
+// Edited in plugins/humans-md/hooks; `npm run build` copies it unchanged into the plugins that read the same envelope.
 import { spawnSync } from 'node:child_process';
 import { realpathSync } from 'node:fs';
 import { homedir } from 'node:os';

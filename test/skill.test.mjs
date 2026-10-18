@@ -162,7 +162,7 @@ test('the portable skill carries the published CLI, byte for byte', () => {
   assert.equal(out.stdout.trim(), version);
 });
 
-test('the Claude Code plugin skill is still generated as before, and hidden from npx skills', () => {
+test('the Claude Code plugin skill keeps its packaging, and is hidden from npx skills', () => {
   const text = read(join(plugin, 'SKILL.md'));
   const { data } = frontmatter(text);
   assertSpec(plugin);

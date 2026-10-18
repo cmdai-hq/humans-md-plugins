@@ -36,7 +36,8 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           package-manager-cache: false
-      - run: node --test
+      # The shipped files as committed: no install, no build.
+      - run: node --test 'test/*.test.mjs'
       - name: Pack, install and run the npm package
         working-directory: packages/humans-md
         run: | # zizmor: ignore[adhoc-packages] installs the tarball this job just packed
@@ -44,6 +45,28 @@ jobs:
           npm install -g "$RUNNER_TEMP"/humans-md-cli-*.tgz
           test "$(humans-md --version)" = "$(node -p 'require("./package.json").version')"
           humans-md check "$GITHUB_WORKSPACE/test/fixtures/home/.humans/HUMANS.md"
+
+  source:
+    name: source (build check, core tests, typecheck)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+      # esbuild runs from its platform package; no install script is needed.
+      - run: npm ci --ignore-scripts
+      - run: npm run check:spec
+      # Every derived file (bundles, runtime copies, portable skill, licenses, versions) matches core/ and the sources.
+      - run: npm run build -- --check
+      - run: npm run typecheck
+      - run: npm run test:core
 
   plugin:
     runs-on: ubuntu-latest
@@ -115,7 +138,7 @@ jobs:
   # Single stable check name for branch rulesets.
   ci-ok:
     if: always()
-    needs: [smoke, plugin, skills, zizmor]
+    needs: [smoke, source, plugin, skills, zizmor]
     runs-on: ubuntu-slim
     timeout-minutes: 2
     permissions: {}

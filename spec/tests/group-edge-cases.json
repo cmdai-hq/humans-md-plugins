@@ -1,0 +1,930 @@
+{
+  "description": "Pure merge inputs are already validated and audience-authorized; each slot is a distinct member, identity fields do not define membership. Private inputs still count only in total. Integration fixtures must map invalid, future or unauthorized profiles to null.",
+  "cases": [
+    {
+      "id": "zero",
+      "today": "2026-10-13",
+      "members": [],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 0,
+          "total": 0
+        },
+        "conflicts": []
+      }
+    },
+    {
+      "id": "no-profile",
+      "today": "2026-10-13",
+      "members": [
+        null,
+        null
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 0,
+          "total": 2
+        },
+        "conflicts": []
+      }
+    },
+    {
+      "id": "all-empty",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "languages": [],
+          "reading": {
+            "visual": []
+          },
+          "avoid": [],
+          "context": {
+            "knows_well": []
+          }
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 1,
+          "total": 1
+        },
+        "conflicts": []
+      }
+    },
+    {
+      "id": "empty-language-abstains",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "languages": []
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "languages": [
+            "fr",
+            "en"
+          ]
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13"
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 3,
+          "total": 3
+        },
+        "conflicts": [],
+        "languages": [
+          "fr",
+          "en"
+        ]
+      }
+    },
+    {
+      "id": "mixed-languages",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "languages": [
+            "fr",
+            "en"
+          ]
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "languages": []
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 3,
+          "total": 3
+        },
+        "conflicts": [],
+        "languages": [
+          "en"
+        ]
+      }
+    },
+    {
+      "id": "no-common-language",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "languages": [
+            "fr"
+          ]
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "languages": [
+            "en"
+          ]
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 2,
+          "total": 2
+        },
+        "conflicts": [],
+        "languages": [
+          "en"
+        ]
+      }
+    },
+    {
+      "id": "knows-well-absent",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "context": {
+            "knows_well": [
+              "python"
+            ]
+          }
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13"
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 2,
+          "total": 2
+        },
+        "conflicts": []
+      }
+    },
+    {
+      "id": "knows-well-empty",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "context": {
+            "knows_well": [
+              "python"
+            ]
+          }
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "context": {
+            "knows_well": []
+          }
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 2,
+          "total": 2
+        },
+        "conflicts": []
+      }
+    },
+    {
+      "id": "knows-well-every-eligible",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "context": {
+            "knows_well": [
+              "python"
+            ]
+          }
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "context": {
+            "knows_well": [
+              "python",
+              "go"
+            ]
+          }
+        },
+        null,
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "visibility": "private"
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 2,
+          "total": 4
+        },
+        "conflicts": [],
+        "context": {
+          "knows_well": [
+            "python"
+          ]
+        }
+      }
+    },
+    {
+      "id": "private-does-not-vote",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "visibility": "private",
+          "languages": [
+            "fr"
+          ],
+          "reading": {
+            "max_words": 20
+          }
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "languages": [
+            "en"
+          ],
+          "reading": {
+            "max_words": 149
+          }
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 1,
+          "total": 2
+        },
+        "conflicts": [],
+        "languages": [
+          "en"
+        ],
+        "reading": {
+          "max_words": 149
+        }
+      }
+    },
+    {
+      "id": "only-private",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "visibility": "private"
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 0,
+          "total": 1
+        },
+        "conflicts": []
+      }
+    },
+    {
+      "id": "max-words-conflict",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "reading": {
+            "max_words": 20
+          }
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "reading": {
+            "max_words": 2000
+          }
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 2,
+          "total": 2
+        },
+        "conflicts": [
+          {
+            "field": "reading.max_words"
+          }
+        ],
+        "reading": {
+          "max_words": 20
+        }
+      }
+    },
+    {
+      "id": "two-voters-three-profiles",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "reading": {
+            "max_words": 20,
+            "tone": "warm"
+          }
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "reading": {
+            "max_words": 2000,
+            "tone": "direct"
+          }
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13"
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 3,
+          "total": 3
+        },
+        "conflicts": [
+          {
+            "field": "reading.max_words"
+          },
+          {
+            "field": "reading.tone"
+          }
+        ],
+        "reading": {
+          "max_words": 20,
+          "tone": "neutral"
+        }
+      }
+    },
+    {
+      "id": "three-voters-numeric-order",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "reading": {
+            "max_words": 20
+          }
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "reading": {
+            "max_words": 100
+          }
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "reading": {
+            "max_words": 2000
+          }
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 3,
+          "total": 3
+        },
+        "conflicts": [
+          {
+            "field": "reading.max_words",
+            "values": [
+              {
+                "value": 20,
+                "count": 1
+              },
+              {
+                "value": 100,
+                "count": 1
+              },
+              {
+                "value": 2000,
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "reading": {
+          "max_words": 20
+        }
+      }
+    },
+    {
+      "id": "stored-variants-inactive",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "reading": {
+            "length": "short"
+          },
+          "states": {
+            "incident": {
+              "length": "minimal"
+            }
+          },
+          "interrupting": {
+            "when_focused": "urgent_only"
+          }
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 1,
+          "total": 1
+        },
+        "conflicts": [],
+        "reading": {
+          "length": "short"
+        }
+      }
+    },
+    {
+      "id": "appendix-within-cap",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "reading": {
+            "max_words": 20,
+            "technical_depth": "expert"
+          }
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "reading": {
+            "max_words": 100,
+            "technical_depth": "non_technical"
+          }
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 2,
+          "total": 2
+        },
+        "conflicts": [
+          {
+            "field": "reading.max_words"
+          },
+          {
+            "field": "reading.technical_depth"
+          }
+        ],
+        "reading": {
+          "max_words": 20,
+          "technical_depth": "non_technical",
+          "appendix_depth": "expert"
+        }
+      }
+    },
+    {
+      "id": "notes-never-grouped",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "notes": "I have ADHD."
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 1,
+          "total": 1
+        },
+        "conflicts": []
+      }
+    },
+    {
+      "id": "known-little-union",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "context": {
+            "knows_little": [
+              "go"
+            ]
+          }
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "context": {
+            "knows_little": [
+              "python"
+            ]
+          }
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 2,
+          "total": 2
+        },
+        "conflicts": [],
+        "context": {
+          "knows_little": [
+            "python",
+            "go"
+          ]
+        }
+      }
+    },
+    {
+      "id": "working-style-three-voters",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "reading": {
+            "lead_with": "next_action",
+            "structure": "numbered",
+            "close_with": "next_action"
+          },
+          "deciding": {
+            "question_style": "yes_confirms_recommendation"
+          },
+          "interrupting": {
+            "progress_updates": "every_message"
+          },
+          "avoid": [
+            "idioms"
+          ]
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "reading": {
+            "lead_with": "next_action",
+            "structure": "numbered",
+            "close_with": "one_question"
+          },
+          "deciding": {
+            "question_style": "yes_confirms_recommendation"
+          },
+          "interrupting": {
+            "progress_updates": "end_only"
+          },
+          "avoid": [
+            "recap",
+            "sarcasm"
+          ]
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "reading": {
+            "lead_with": "context",
+            "structure": "prose",
+            "close_with": "nothing"
+          },
+          "deciding": {
+            "question_style": "open"
+          },
+          "interrupting": {
+            "progress_updates": "phase_changes"
+          }
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 3,
+          "total": 3
+        },
+        "reading": {
+          "lead_with": "next_action",
+          "structure": "numbered",
+          "close_with": "nothing"
+        },
+        "deciding": {
+          "question_style": "yes_confirms_recommendation"
+        },
+        "interrupting": {
+          "progress_updates": "phase_changes"
+        },
+        "avoid": [
+          "sarcasm",
+          "recap",
+          "idioms"
+        ],
+        "conflicts": [
+          {
+            "field": "reading.lead_with",
+            "values": [
+              {
+                "value": "next_action",
+                "count": 2
+              },
+              {
+                "value": "context",
+                "count": 1
+              }
+            ]
+          },
+          {
+            "field": "reading.structure",
+            "values": [
+              {
+                "value": "numbered",
+                "count": 2
+              },
+              {
+                "value": "prose",
+                "count": 1
+              }
+            ]
+          },
+          {
+            "field": "reading.close_with",
+            "values": [
+              {
+                "value": "next_action",
+                "count": 1
+              },
+              {
+                "value": "nothing",
+                "count": 1
+              },
+              {
+                "value": "one_question",
+                "count": 1
+              }
+            ]
+          },
+          {
+            "field": "deciding.question_style",
+            "values": [
+              {
+                "value": "yes_confirms_recommendation",
+                "count": 2
+              },
+              {
+                "value": "open",
+                "count": 1
+              }
+            ]
+          },
+          {
+            "field": "interrupting.progress_updates",
+            "values": [
+              {
+                "value": "end_only",
+                "count": 1
+              },
+              {
+                "value": "every_message",
+                "count": 1
+              },
+              {
+                "value": "phase_changes",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "working-style-tie-fallbacks",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "reading": {
+            "close_with": "next_action"
+          },
+          "deciding": {
+            "question_style": "open"
+          },
+          "interrupting": {
+            "progress_updates": "every_message"
+          }
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "reading": {
+            "close_with": "one_question"
+          },
+          "deciding": {
+            "question_style": "yes_confirms_recommendation"
+          },
+          "interrupting": {
+            "progress_updates": "end_only"
+          }
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 2,
+          "total": 2
+        },
+        "reading": {
+          "close_with": "nothing"
+        },
+        "deciding": {
+          "question_style": "multiple_choice"
+        },
+        "interrupting": {
+          "progress_updates": "phase_changes"
+        },
+        "conflicts": [
+          {
+            "field": "reading.close_with"
+          },
+          {
+            "field": "deciding.question_style"
+          },
+          {
+            "field": "interrupting.progress_updates"
+          }
+        ]
+      }
+    },
+    {
+      "id": "quiet-hours-never-grouped",
+      "today": "2026-10-13",
+      "members": [
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "interrupting": {
+            "interrupt_for": "anything",
+            "quiet_hours": {
+              "time_zone": "Europe/Paris",
+              "from": "19:00",
+              "to": "08:00",
+              "all_day": [
+                "sunday"
+              ]
+            }
+          }
+        },
+        {
+          "humans": "0.3",
+          "id": "sample",
+          "name": "Example",
+          "updated": "2026-10-13",
+          "interrupting": {
+            "interrupt_for": "anything",
+            "quiet_hours": {
+              "time_zone": "America/New_York",
+              "from": "18:00",
+              "to": "08:30"
+            }
+          }
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 2,
+          "total": 2
+        },
+        "interrupting": {
+          "interrupt_for": "anything"
+        },
+        "conflicts": []
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Antigravity hook: the owner's ~/.humans/HUMANS.md, the location SPEC § 5 fixes, once per
-// conversation. runtime.mjs and ../scripts/humans.mjs are copied here by the generator.
+// conversation. runtime.mjs and ../scripts/humans.mjs are copied here by `npm run build`.
 // hooks.json starts this file from the plugin folder with its event as the first argument: the
 // event payload never selects a file, names the event or asserts ownership.
 import { spawnSync } from 'node:child_process';

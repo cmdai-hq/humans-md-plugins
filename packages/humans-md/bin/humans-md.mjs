@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Generated bundle of the HUMANS.md single-person CLI (source in the HUMANS.md workshop, not public yet). Do not edit. Apache-2.0; notices in NOTICE.
+// Bundle of the HUMANS.md single-person CLI, built from core/src by `npm run build`. Do not edit. Apache-2.0; notices in NOTICE.
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 var __create = Object.create;
@@ -7376,10 +7376,10 @@ import { basename as basename3, isAbsolute as isAbsolute2, join as join2 } from 
 // core/src/cli-files.ts
 import { basename, resolve } from "node:path";
 
-// ../spec/tools/bytes.mjs
+// spec/tools/bytes.mjs
 import { openSync, readSync, closeSync } from "node:fs";
 
-// ../spec/tools/yaml-data.mjs
+// spec/tools/yaml-data.mjs
 function yamlData(source, yaml2) {
   const options = { schema: "core", uniqueKeys: true, strict: true, prettyErrors: false, keepSourceTokens: true };
   const tokens = [...new yaml2.Parser().parse(source)];
@@ -7449,7 +7449,7 @@ function jsonScalar(value) {
   return value === null || typeof value === "boolean";
 }
 
-// ../spec/tools/reader-core.mjs
+// spec/tools/reader-core.mjs
 var MAX_FILE_BYTES = 24589;
 var MAX_FRONTMATTER_BYTES = 20480;
 var MAX_BODY_BYTES = 4096;
@@ -7514,7 +7514,7 @@ function parseCore(input, opts, { yaml: yaml2, schema, validate, validateRead, w
   }
 }
 
-// ../spec/tools/bytes.mjs
+// spec/tools/bytes.mjs
 function readBounded(path, limit = MAX_FILE_BYTES) {
   const fd = openSync(path, "r");
   try {
@@ -14149,7 +14149,7 @@ function validate23(data, { instancePath = "", parentData, parentDataProperty, r
 }
 validate23.evaluated = { "props": true, "dynamicProps": false, "dynamicItems": false };
 
-// ../spec/schema/humans.schema.json
+// spec/schema/humans.schema.json
 var humans_schema_default = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: "https://humansmd.dev/schema/0.3/humans.schema.json",
@@ -15566,7 +15566,7 @@ var humans_schema_default = {
   }
 };
 
-// ../spec/schema/terms.json
+// spec/schema/terms.json
 var terms_default = {
   agent_words: {
     en: [
@@ -15736,7 +15736,7 @@ function daysBetween(from, to2) {
   return Math.floor((Date.parse(`${to2}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 864e5);
 }
 
-// ../spec/schema/instructions.json
+// spec/schema/instructions.json
 var instructions_default = {
   description: "One fixed sentence per projected preference value (SPEC \xA7 6.4). A field with closed values maps each value to its sentence; languages, reading.max_words and interrupting.quiet_hours have one sentence that refers to the projected value. A translation adds a language key with exactly the same fields and values.",
   languages: {
@@ -16203,7 +16203,7 @@ if (args.length === 0 && (cmd === "--help" || cmd === "-h" || cmd === "help")) {
   process.exit(0);
 }
 if (args.length === 0 && cmd === "--version") {
-  process.stdout.write("0.3.1\n");
+  process.stdout.write("0.3.2\n");
   process.exit(0);
 }
 var fail = () => {
@@ -16304,7 +16304,7 @@ if (cmd === "sync") {
   }
   process.stderr.write(diagnostics(codes));
   const rerun = rerunCommand({ to, target: target && destination, profile: positional[0] && file, guidance }, homedir2());
-  sync(makeBlock(rendered.output, today, "0.3.1", rerun));
+  sync(makeBlock(rendered.output, today, "0.3.2", rerun));
 }
 process.stdout.write(rendered.output);
 process.stderr.write(diagnostics(codes));

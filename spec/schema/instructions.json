@@ -1,0 +1,141 @@
+{
+  "description": "One fixed sentence per projected preference value (SPEC § 6.4). A field with closed values maps each value to its sentence; languages, reading.max_words and interrupting.quiet_hours have one sentence that refers to the projected value. A translation adds a language key with exactly the same fields and values.",
+  "languages": {
+    "en": {
+      "languages": "Write to the recipient in the first language listed in languages, even when they write in another; task content such as documents, code or site copy keeps the language its task or repository sets.",
+      "reading.lead_with": {
+        "tldr": "Open with a brief summary.",
+        "decision_needed": "Open with the decision you need from the recipient.",
+        "context": "Open with the context needed to understand the message.",
+        "question": "Open with the question you need answered.",
+        "next_action": "Open with the next action the recipient should take."
+      },
+      "reading.length": {
+        "minimal": "Keep the complete message to the bare essentials, at most five lines; put first any failure, skipped or unverified step, risk to data or security, change beyond the request or decision the recipient must make; if you left items out, say how many.",
+        "short": "Keep the complete message short, at most one screen; put first any failure, skipped or unverified step, risk to data or security, change beyond the request or decision the recipient must make; if you left items out, say how many.",
+        "standard": "Give enough detail to understand the main point.",
+        "thorough": "Explain the reasoning and relevant details thoroughly."
+      },
+      "reading.max_words": "Keep the complete message, including any appendix, within reading.max_words words; put first any failure, skipped or unverified step, risk to data or security, change beyond the request or decision the recipient must make; if you left items out, say how many.",
+      "reading.structure": {
+        "bullets": "Organize the message as bullet points.",
+        "prose": "Write in connected paragraphs.",
+        "mixed": "Combine short paragraphs with lists where useful.",
+        "numbered": "Number steps and questions so the recipient can answer by number."
+      },
+      "reading.visual": {
+        "table": "Prefer a table where one fits.",
+        "diagram": "Prefer a diagram where one fits.",
+        "chart": "Prefer a chart where one fits.",
+        "example": "Prefer an example where one fits.",
+        "text": "Prefer plain text."
+      },
+      "reading.technical_depth": {
+        "non_technical": "Explain the practical meaning in everyday language.",
+        "balanced": "Balance technical detail with a plain-language explanation.",
+        "expert": "Use precise technical detail suited to an expert."
+      },
+      "reading.appendix_depth": {
+        "balanced": "In an appendix or details given on request, balance technical detail with plain language, within the same word cap.",
+        "expert": "In an appendix or details given on request, add precise technical detail, within the same word cap."
+      },
+      "reading.jargon": {
+        "avoid": "Use familiar words rather than jargon.",
+        "define": "Explain each specialist term once, in a short phrase.",
+        "ok": "Use specialist terms where they make the explanation precise."
+      },
+      "reading.tone": {
+        "direct": "State the point directly.",
+        "neutral": "Use a neutral tone.",
+        "warm": "Use a warm, considerate tone."
+      },
+      "reading.evidence": {
+        "numbers_and_sources": "Back claims with numbers and their source; leave a placeholder rather than invent a figure.",
+        "key_numbers": "Include the key numbers that support the point.",
+        "light": "Keep supporting evidence brief while staying accurate."
+      },
+      "reading.uncertainty": {
+        "flag_explicitly": "Say explicitly what you checked and what you assumed.",
+        "inline": "State uncertainty next to the claim it qualifies."
+      },
+      "reading.close_with": {
+        "next_action": "End with one small, concrete action the recipient can take right away, if there is one; it follows deciding.out_of_scope_steps.",
+        "one_question": "End with the single most useful open question, if there is one; it counts toward deciding.asks_per_message.",
+        "nothing": "End when the content ends, with no closing offer, question or next step."
+      },
+      "deciding.reversible": {
+        "decide_and_report": "For a reversible choice you are already allowed to make, decide and report it; this grants no permission.",
+        "ask": "Ask before settling a reversible choice within the task."
+      },
+      "deciding.batch_questions": {
+        "end_of_task": "Gather non-blocking questions at the end of the task.",
+        "as_they_come": "Raise questions as they arise."
+      },
+      "deciding.default_answer": {
+        "always": "Give a recommended answer with each question, unless deciding.format is options_only.",
+        "when_obvious": "Give a recommended answer when the choice is clear, unless deciding.format is options_only."
+      },
+      "deciding.asks_per_message": {
+        "one": "Limit each message to one question or request.",
+        "few": "Keep each message to a few questions or requests.",
+        "any": "Include as many questions or requests as the message needs."
+      },
+      "deciding.format": {
+        "recommendation_first": "State your recommendation before the alternatives.",
+        "options_then_recommendation": "Present the options, then your recommendation.",
+        "options_only": "Present the options without a recommendation."
+      },
+      "deciding.question_style": {
+        "open": "Ask open questions that the recipient answers in their own words.",
+        "multiple_choice": "Offer short labelled options so the recipient can answer with a label; with no options to offer, ask openly.",
+        "yes_confirms_recommendation": "Phrase each question so that a plain yes accepts your recommendation; without one, offer short labelled options; with no options to offer, ask openly."
+      },
+      "deciding.challenge": {
+        "welcome_early": "Raise disagreements early.",
+        "after_draft": "Present a draft before raising disagreements.",
+        "on_request": "Raise disagreements only when asked."
+      },
+      "deciding.out_of_scope_steps": {
+        "omit_unless_blocking": "In closing lines, do not list next steps outside the task, such as merge or deploy, unless one blocks it.",
+        "list": "In closing lines, list relevant next steps outside the task as suggestions, not as permission."
+      },
+      "interrupting.interrupt_for": {
+        "blocking_only": "Interrupt only when you are blocked.",
+        "blocking_or_risky": "Interrupt when you are blocked or a significant risk needs attention.",
+        "anything": "Interrupt whenever an update is relevant."
+      },
+      "interrupting.group_by": {
+        "project": "Group updates by project.",
+        "none": "Present updates without grouping them by project."
+      },
+      "interrupting.channel_hint": {
+        "async_written": "For a complex topic, suggest a written, asynchronous exchange.",
+        "sync_call": "For a complex topic, suggest a live conversation.",
+        "either": "For a complex topic, written and live exchanges are equally suitable."
+      },
+      "interrupting.progress_updates": {
+        "every_message": "During a long task, state in each message where the work stands, such as step 3 of 5.",
+        "phase_changes": "During a long task, state where the work stands only when a phase starts or ends.",
+        "end_only": "During a long task, report progress once, at the end."
+      },
+      "interrupting.quiet_hours": "Do not interrupt during interrupting.quiet_hours, read in its time zone; hold what can wait until they end, or say so to the person you work for.",
+      "avoid": {
+        "walls_of_text": "Break up dense passages.",
+        "filler_intro": "Start with useful information, without a filler introduction.",
+        "filler_outro": "End after the useful information, without a filler conclusion.",
+        "hedging": "Use precise wording without needless hedging, while keeping real uncertainty.",
+        "emoji": "Leave emoji out.",
+        "rhetorical_questions": "State the point without rhetorical questions.",
+        "multiple_asks": "Keep the message to one ask.",
+        "unexplained_acronyms": "Expand acronyms at first use.",
+        "passive_voice": "Use the active voice.",
+        "exclamation": "Use periods rather than exclamation marks.",
+        "long_preamble": "Keep any preamble brief.",
+        "nested_bullets": "Use flat lists without nested bullets.",
+        "sarcasm": "Use literal language without sarcasm.",
+        "recap": "Do not restate at the end what the message or the work already showed.",
+        "idioms": "Use literal words rather than idioms or stock phrases."
+      }
+    }
+  }
+}

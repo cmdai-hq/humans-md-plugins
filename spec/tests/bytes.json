@@ -1,0 +1,643 @@
+{
+  "description": "Materialize each segments array in order as UTF-8 text or hex bytes, multiplied by repeat (default 1), with no extra newline. Hash original bytes before any normalization. Expected writer validity requires the whole file contract, not only JSON Schema.",
+  "cases": [
+    {
+      "id": "front-lf-20479",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n#"
+        },
+        {
+          "text": "x",
+          "repeat": 20416
+        },
+        {
+          "text": "\n---\n"
+        }
+      ],
+      "size": 20487,
+      "sha256": "8ecc7aebf4e7edde8a489f34602fcac4524f36657b83e9bc8657383fd1139220",
+      "writer_valid": true,
+      "frontmatter_bytes": 20479,
+      "body_bytes": 0
+    },
+    {
+      "id": "front-lf-20480",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n#"
+        },
+        {
+          "text": "x",
+          "repeat": 20417
+        },
+        {
+          "text": "\n---\n"
+        }
+      ],
+      "size": 20488,
+      "sha256": "698da4e91fdea5b677ae8e3566c8ccd89b33724634887d09700c52ceaa53e0ba",
+      "writer_valid": true,
+      "frontmatter_bytes": 20480,
+      "body_bytes": 0
+    },
+    {
+      "id": "front-lf-20481",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n#"
+        },
+        {
+          "text": "x",
+          "repeat": 20418
+        },
+        {
+          "text": "\n---\n"
+        }
+      ],
+      "size": 20489,
+      "sha256": "e8728cff236252e219f9b692579bcfff3bcfddf809ebcbd20ef4a0148425d3ee",
+      "writer_valid": false,
+      "frontmatter_bytes": 20481,
+      "body_bytes": 0
+    },
+    {
+      "id": "front-crlf-20479",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\r\nhumans: \"0.3\"\r\nid: sample\r\nname: Example\r\nupdated: \"2026-10-13\"\r\n#"
+        },
+        {
+          "text": "x",
+          "repeat": 20411
+        },
+        {
+          "text": "\r\n---\r\n"
+        }
+      ],
+      "size": 20489,
+      "sha256": "8b53f735aa97addd406cd66f822498de1e3697fc6e25f5a28b19a8a4042da659",
+      "writer_valid": true,
+      "frontmatter_bytes": 20479,
+      "body_bytes": 0
+    },
+    {
+      "id": "front-crlf-20480",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\r\nhumans: \"0.3\"\r\nid: sample\r\nname: Example\r\nupdated: \"2026-10-13\"\r\n#"
+        },
+        {
+          "text": "x",
+          "repeat": 20412
+        },
+        {
+          "text": "\r\n---\r\n"
+        }
+      ],
+      "size": 20490,
+      "sha256": "6aefdec71b9ae693c89cb8ceb39006732ba12b659a050a30e2238484a47489f3",
+      "writer_valid": true,
+      "frontmatter_bytes": 20480,
+      "body_bytes": 0
+    },
+    {
+      "id": "front-crlf-20481",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\r\nhumans: \"0.3\"\r\nid: sample\r\nname: Example\r\nupdated: \"2026-10-13\"\r\n#"
+        },
+        {
+          "text": "x",
+          "repeat": 20413
+        },
+        {
+          "text": "\r\n---\r\n"
+        }
+      ],
+      "size": 20491,
+      "sha256": "f945755102e08a12e63929fd6b7d7b5dbf3d26b611f1beb8fbd052b8d10f1c41",
+      "writer_valid": false,
+      "frontmatter_bytes": 20481,
+      "body_bytes": 0
+    },
+    {
+      "id": "body-4095",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n---\n"
+        },
+        {
+          "text": "x",
+          "repeat": 4095
+        }
+      ],
+      "size": 4164,
+      "sha256": "174ed84cde28bad9d48e20c86f456e7199747d0a35b77abfd51d28a20f11b472",
+      "writer_valid": true,
+      "frontmatter_bytes": 61,
+      "body_bytes": 4095
+    },
+    {
+      "id": "body-4096",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n---\n"
+        },
+        {
+          "text": "x",
+          "repeat": 4096
+        }
+      ],
+      "size": 4165,
+      "sha256": "4e2376f72a8f3cb94196c61e6e5c4bfac3367f31fee931d55a60856d824069c6",
+      "writer_valid": true,
+      "frontmatter_bytes": 61,
+      "body_bytes": 4096
+    },
+    {
+      "id": "body-4097",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n---\n"
+        },
+        {
+          "text": "x",
+          "repeat": 4097
+        }
+      ],
+      "size": 4166,
+      "sha256": "78121f1353300d226c362cf54efee319899f4ce4c607f288709d718f3a522ae4",
+      "writer_valid": false,
+      "frontmatter_bytes": 61,
+      "body_bytes": 4097
+    },
+    {
+      "id": "total-max-with-bom",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "hex": "efbbbf"
+        },
+        {
+          "text": "---\r\nhumans: \"0.3\"\r\nid: sample\r\nname: Example\r\nupdated: \"2026-10-13\"\r\n#"
+        },
+        {
+          "text": "x",
+          "repeat": 20412
+        },
+        {
+          "text": "\r\n---\r\n"
+        },
+        {
+          "text": "x",
+          "repeat": 4096
+        }
+      ],
+      "size": 24589,
+      "sha256": "27c6e5bfb7f33b4f892ab04f6097cdde01b4aba44648fc2f531fa00c5799d89a",
+      "writer_valid": true,
+      "frontmatter_bytes": 20480,
+      "body_bytes": 4096
+    },
+    {
+      "id": "no-final-newline",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n---"
+        }
+      ],
+      "size": 68,
+      "sha256": "2d83b81d2b83d0f73e3b082da8717ac300cce84dcded356c12fb571f733b1030",
+      "writer_valid": true
+    },
+    {
+      "id": "single-bom",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "hex": "efbbbf"
+        },
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n---\n"
+        }
+      ],
+      "size": 72,
+      "sha256": "97906ebc0f3704828469d4363affb85fda0a304b9c6a72aa10bc78401c92ad79",
+      "writer_valid": true
+    },
+    {
+      "id": "double-bom",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "hex": "efbbbfefbbbf"
+        },
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n---\n"
+        }
+      ],
+      "size": 75,
+      "sha256": "3561aa165d613ff92079d8270db5f2b24a751e94e038f26d38046aef468ac437",
+      "writer_valid": false
+    },
+    {
+      "id": "interior-bom",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n---\n﻿"
+        }
+      ],
+      "size": 72,
+      "sha256": "fbabb5784bf722ea7dd641eb8ec6a05f8c9b5a4cedec01c5811c1065af1a2cd6",
+      "writer_valid": false
+    },
+    {
+      "id": "bare-cr",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\rhumans: \"0.3\"\rid: sample\rname: Example\rupdated: \"2026-10-13\"\r---\r"
+        }
+      ],
+      "size": 69,
+      "sha256": "f7a1c1a542a212e5b4e7e2ad133fca2a463dce9f0babea14a26f4b9dc4278042",
+      "writer_valid": false
+    },
+    {
+      "id": "bad-utf8",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n---\n"
+        },
+        {
+          "hex": "ff"
+        }
+      ],
+      "size": 70,
+      "sha256": "420e1c398a9e4723efe86be211645b7aca8bf82281ba00f39808826241eb6232",
+      "writer_valid": false
+    },
+    {
+      "id": "truncated-utf8",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n---\n"
+        },
+        {
+          "hex": "e282"
+        }
+      ],
+      "size": 71,
+      "sha256": "e10da1c60f8a273f4d54e521faec2fc23231c125e956e0e0072129046b6eabf1",
+      "writer_valid": false
+    },
+    {
+      "id": "overlong-utf8",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n---\n"
+        },
+        {
+          "hex": "c0af"
+        }
+      ],
+      "size": 71,
+      "sha256": "05ae73d47fd48098845832fd48173da0b7582b2f24d88ff3133e5f33a991782d",
+      "writer_valid": false
+    },
+    {
+      "id": "surrogate-utf8",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n---\n"
+        },
+        {
+          "hex": "eda080"
+        }
+      ],
+      "size": 72,
+      "sha256": "69e02b9bc63edb62ffd4457f8042f1a77c84a7881b6322a5cc4b4425fb30ebf2",
+      "writer_valid": false
+    },
+    {
+      "id": "above-unicode",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n---\n"
+        },
+        {
+          "hex": "f4908080"
+        }
+      ],
+      "size": 73,
+      "sha256": "ae046171c6dba049814cbe4e18d14bcb62a3ce973e6df93d0e1ecd01cb6c43c7",
+      "writer_valid": false
+    },
+    {
+      "id": "surrogate-escape",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nnotes: \"\\uD800\"\n---\n"
+        }
+      ],
+      "size": 85,
+      "sha256": "082cf0c07133069b68377fb124c98a5475e7e882b810672da4102682a45fe08b",
+      "writer_valid": false
+    },
+    {
+      "id": "surrogate-unknown",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nunknown: \"\\uD800\"\n---\n"
+        }
+      ],
+      "size": 87,
+      "sha256": "a40dfee13e778a8a1e0c3e9ed560e666d558fb018deff48e710c86d914b6861d",
+      "writer_valid": false,
+      "reader_status": "none"
+    },
+    {
+      "id": "year-zero",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"0000-02-29\"\n---\n"
+        }
+      ],
+      "size": 69,
+      "sha256": "ac0ee5be7740dedf03478799ef4f854839d5dad19eb8adb98f2752271fb332a8",
+      "writer_valid": true
+    },
+    {
+      "id": "year-0099",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"0099-01-01\"\n---\n"
+        }
+      ],
+      "size": 69,
+      "sha256": "124df3ea55ed923b140a4fd4e4ffa0ab40df3827b8b915a5355cfb2bea59e869",
+      "writer_valid": true
+    },
+    {
+      "id": "year-0100-leap",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"0100-02-29\"\n---\n"
+        }
+      ],
+      "size": 69,
+      "sha256": "f489160bce3f23350169f54ecfd7eb5960956d9dad23910102df234c013c6020",
+      "writer_valid": false
+    },
+    {
+      "id": "year-2000-leap",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2000-02-29\"\n---\n"
+        }
+      ],
+      "size": 69,
+      "sha256": "21e70c716eef8bbf46081217da71e21429bf0bda6ecb3394353045daa9d68703",
+      "writer_valid": true
+    },
+    {
+      "id": "bad-date",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-02-30\"\n---\n"
+        }
+      ],
+      "size": 69,
+      "sha256": "f03a6ebf220778708031892f8bc2bad1db0f571405db28e258cc63e4e1633ea9",
+      "writer_valid": false
+    },
+    {
+      "id": "unquoted-date",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: 2026-10-13\n---\n"
+        }
+      ],
+      "size": 67,
+      "sha256": "a94f01f7814d95132feccf8dad8b0e54c45138944e4e76efdb8a5a419b0cf779",
+      "writer_valid": true
+    },
+    {
+      "id": "scalar-count-279",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nnotes: \"😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀\"\n---\n"
+        }
+      ],
+      "size": 1195,
+      "sha256": "54e3114fa520b4bd728e2f78a9f29227ae074c6e9d0bbe7b70007b5989cd9715",
+      "writer_valid": true
+    },
+    {
+      "id": "scalar-count-280",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nnotes: \"😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀\"\n---\n"
+        }
+      ],
+      "size": 1199,
+      "sha256": "4556aa7788f692d5918e751289221221bd7723cd3e1129b38d6166cae264d0a2",
+      "writer_valid": true
+    },
+    {
+      "id": "scalar-count-281",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nnotes: \"😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀\"\n---\n"
+        }
+      ],
+      "size": 1203,
+      "sha256": "401a404d897320829d8a1adddeb996cf9e3d36e696661fa54311b9921757db28",
+      "writer_valid": false
+    },
+    {
+      "id": "duplicate-decoded-key",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nreading: {tone: warm, \"\\u0074one\": direct}\n---\n"
+        }
+      ],
+      "size": 112,
+      "sha256": "52b2ef78ac8e5d3fbf4b28d36188c82f53025102ec047d24bd1899ba5c8bf7a6",
+      "writer_valid": false
+    },
+    {
+      "id": "yaml-directive",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n%YAML 1.2\n---\n"
+        }
+      ],
+      "size": 79,
+      "sha256": "9d2ab982092186a5a1993ef765a9100ef793ceecce1762afae14193a08ab8d63",
+      "writer_valid": false
+    },
+    {
+      "id": "non-string-key",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nreading: {1: warm}\n---\n"
+        }
+      ],
+      "size": 88,
+      "sha256": "2a7d6a00dc831fcd6dd0f753c7e6127f320faa93a66c92f54601dbe55c5601eb",
+      "writer_valid": false
+    },
+    {
+      "id": "replacement-scalar",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nnotes: \"Literal �\"\n---\n"
+        }
+      ],
+      "size": 90,
+      "sha256": "f4864258c8c2c6ab8f0cda2c84b961de48c639c0be0bc2a02035522f7a93dbe5",
+      "writer_valid": true
+    },
+    {
+      "id": "personal-whitespace-body",
+      "filename": "HUMANS.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n---\n\n"
+        }
+      ],
+      "size": 70,
+      "sha256": "ef40f8a6e745a7347909665de61d30de0872477e414a49ba7e3baa2cb6685101",
+      "writer_valid": false
+    },
+    {
+      "id": "total-max-minus-one",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "hex": "efbbbf"
+        },
+        {
+          "text": "---\r\nhumans: \"0.3\"\r\nid: sample\r\nname: Example\r\nupdated: \"2026-10-13\"\r\n#"
+        },
+        {
+          "text": "x",
+          "repeat": 20412
+        },
+        {
+          "text": "\r\n---\r\n"
+        },
+        {
+          "text": "x",
+          "repeat": 4095
+        }
+      ],
+      "size": 24588,
+      "sha256": "c5c6ba5c5fdfad0d74ec7a253f87c627ded1597c0a7974349b87289d97b7df52",
+      "writer_valid": true,
+      "frontmatter_bytes": 20480,
+      "body_bytes": 4095
+    },
+    {
+      "id": "total-max-plus-one",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "hex": "efbbbf"
+        },
+        {
+          "text": "---\r\nhumans: \"0.3\"\r\nid: sample\r\nname: Example\r\nupdated: \"2026-10-13\"\r\n#"
+        },
+        {
+          "text": "x",
+          "repeat": 20412
+        },
+        {
+          "text": "\r\n---\r\n"
+        },
+        {
+          "text": "x",
+          "repeat": 4097
+        }
+      ],
+      "size": 24590,
+      "sha256": "0f3dbbd5b32b6baa6b181c9f91d738a202c05ef8ab9a7b6060fbe7eac444d5f9",
+      "writer_valid": false,
+      "frontmatter_bytes": 20480,
+      "body_bytes": 4097
+    },
+    {
+      "id": "unicode17-assigned-scalar",
+      "filename": "sample.md",
+      "segments": [
+        {
+          "text": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nnotes: \"🫪\"\n---\n"
+        }
+      ],
+      "size": 83,
+      "sha256": "5cff05252c75360b58d9d65b8e215c62af03544d0869a797aa139a0ad9bc0987",
+      "writer_valid": true
+    },
+    {
+      "id": "maximal-me-header-no-variants",
+      "filename": "HUMANS.md",
+      "segments": [
+        {
+          "text": "---\n# HUMANS.md 0.3: how to work with me. Form only, never a permission: repo rules and your harness win.\n# Stored states are inactive: never apply one, and never infer one from content.\n# out_of_scope_steps: whether to LIST next steps outside the task (merge, deploy) in your closing lines.\nhumans: \"0.3\"\nid: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\nname: nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn\naliases:\n  - \"0000000000000000000000000000000000000000\"\n  - \"1111111111111111111111111111111111111111\"\n  - \"2222222222222222222222222222222222222222\"\n  - \"3333333333333333333333333333333333333333\"\n  - \"4444444444444444444444444444444444444444\"\nidentities:\n  email: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee@ex.com\n  slack: TAAAAAAAAAAAAAAAAAAAA/UBBBBBBBBBBBBBBBBBBBB\n  github: ggggggggggggggggggggggggggggggggggggggg\n  gitlab: lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll\n  entra: 00000000-0000-0000-0000-000000000000\n  google: oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo@ex.com\nlanguages:\n  - aa\n  - ab\n  - ae\n  - af\n  - ak\n  - am\n  - an\n  - ar\n  - as\n  - av\nupdated: 2026-10-15\nvisibility: anyone_with_file\nreading:\n  lead_with: decision_needed\n  length: standard\n  max_words: 2000\n  structure: numbered\n  visual:\n    - table\n    - diagram\n    - chart\n    - example\n    - text\n  technical_depth: non_technical\n  jargon: define\n  tone: neutral\n  evidence: numbers_and_sources\n  uncertainty: flag_explicitly\n  close_with: one_question\ndeciding:\n  reversible: decide_and_report\n  batch_questions: as_they_come\n  default_answer: when_obvious\n  asks_per_message: one\n  format: options_then_recommendation\n  question_style: yes_confirms_recommendation\n  challenge: welcome_early\n  out_of_scope_steps: omit_unless_blocking\ninterrupting:\n  interrupt_for: blocking_or_risky\n  group_by: project\n  when_focused: summary_later\n  channel_hint: async_written\n  progress_updates: every_message\n  quiet_hours:\n    time_zone: America/Argentina/Buenos_Aires\n    from: 19:00\n    to: 08:00\n    all_day:\n      - monday\n      - tuesday\n      - wednesday\n      - thursday\n      - friday\n      - saturday\n      - sunday\ncontext:\n  role: director-of-engineering\n  knows_well:\n    - distributed-systems\n    - project-management\n    - incident-response\n    - people-management\n    - billing-payments\n    - customer-support\n    - machine-learning\n    - product-strategy\n    - data-pipelines\n    - design-systems\n    - infrastructure\n    - accessibility\n    - csharp-dotnet\n    - documentation\n    - identity-auth\n  knows_little:\n    - observability\n    - privacy-gdpr\n    - cloud-azure\n    - cloud-costs\n    - open-source\n    - performance\n    - ux-research\n    - cloudflare\n    - compliance\n    - javascript\n    - kubernetes\n    - llm-agents\n    - networking\n    - typescript\n    - analytics\n  decides:\n    - incident-escalation\n    - security-exceptions\n    - team-organization\n    - copy-and-content\n    - roadmap-priority\n    - release-timing\n    - schema-changes\n    - api-contracts\n    - release-scope\n    - vendor-choice\n  context_updated: 2026-10-15\navoid:\n  - walls_of_text\n  - filler_intro\n  - filler_outro\n  - hedging\n  - emoji\n  - rhetorical_questions\n  - multiple_asks\n  - unexplained_acronyms\n  - passive_voice\n  - exclamation\n  - long_preamble\n  - nested_bullets\n  - sarcasm\n  - recap\n  - idioms\nnotes: wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n---\n"
+        }
+      ],
+      "size": 4246,
+      "sha256": "db58545d622fb7ded2b1e4b5c22a2981690294c47ce0544fa5513011a4565a6e",
+      "writer_valid": true,
+      "frontmatter_bytes": 4238,
+      "body_bytes": 0
+    },
+    {
+      "id": "maximal-me-header-all-variants",
+      "filename": "HUMANS.md",
+      "segments": [
+        {
+          "text": "---\n# HUMANS.md 0.3: how to work with me. Form only, never a permission: repo rules and your harness win.\n# Stored states are inactive: never apply one, and never infer one from content.\n# out_of_scope_steps: whether to LIST next steps outside the task (merge, deploy) in your closing lines.\nhumans: \"0.3\"\nid: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\nname: nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn\naliases:\n  - \"0000000000000000000000000000000000000000\"\n  - \"1111111111111111111111111111111111111111\"\n  - \"2222222222222222222222222222222222222222\"\n  - \"3333333333333333333333333333333333333333\"\n  - \"4444444444444444444444444444444444444444\"\nidentities:\n  email: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee@ex.com\n  slack: TAAAAAAAAAAAAAAAAAAAA/UBBBBBBBBBBBBBBBBBBBB\n  github: ggggggggggggggggggggggggggggggggggggggg\n  gitlab: lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll\n  entra: 00000000-0000-0000-0000-000000000000\n  google: oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo@ex.com\nlanguages:\n  - aa\n  - ab\n  - ae\n  - af\n  - ak\n  - am\n  - an\n  - ar\n  - as\n  - av\nupdated: 2026-10-15\nvisibility: anyone_with_file\nreading:\n  lead_with: decision_needed\n  length: standard\n  max_words: 2000\n  structure: numbered\n  visual:\n    - table\n    - diagram\n    - chart\n    - example\n    - text\n  technical_depth: non_technical\n  jargon: define\n  tone: neutral\n  evidence: numbers_and_sources\n  uncertainty: flag_explicitly\n  close_with: one_question\ndeciding:\n  reversible: decide_and_report\n  batch_questions: as_they_come\n  default_answer: when_obvious\n  asks_per_message: one\n  format: options_then_recommendation\n  question_style: yes_confirms_recommendation\n  challenge: welcome_early\n  out_of_scope_steps: omit_unless_blocking\ninterrupting:\n  interrupt_for: blocking_or_risky\n  group_by: project\n  when_focused: summary_later\n  channel_hint: async_written\n  progress_updates: every_message\n  quiet_hours:\n    time_zone: America/Argentina/Buenos_Aires\n    from: 19:00\n    to: 08:00\n    all_day:\n      - monday\n      - tuesday\n      - wednesday\n      - thursday\n      - friday\n      - saturday\n      - sunday\ncontext:\n  role: director-of-engineering\n  knows_well:\n    - distributed-systems\n    - project-management\n    - incident-response\n    - people-management\n    - billing-payments\n    - customer-support\n    - machine-learning\n    - product-strategy\n    - data-pipelines\n    - design-systems\n    - infrastructure\n    - accessibility\n    - csharp-dotnet\n    - documentation\n    - identity-auth\n  knows_little:\n    - observability\n    - privacy-gdpr\n    - cloud-azure\n    - cloud-costs\n    - open-source\n    - performance\n    - ux-research\n    - cloudflare\n    - compliance\n    - javascript\n    - kubernetes\n    - llm-agents\n    - networking\n    - typescript\n    - analytics\n  decides:\n    - incident-escalation\n    - security-exceptions\n    - team-organization\n    - copy-and-content\n    - roadmap-priority\n    - release-timing\n    - schema-changes\n    - api-contracts\n    - release-scope\n    - vendor-choice\n  context_updated: 2026-10-15\navoid:\n  - walls_of_text\n  - filler_intro\n  - filler_outro\n  - hedging\n  - emoji\n  - rhetorical_questions\n  - multiple_asks\n  - unexplained_acronyms\n  - passive_voice\n  - exclamation\n  - long_preamble\n  - nested_bullets\n  - sarcasm\n  - recap\n  - idioms\nstates:\n  incident:\n    lead_with: decision_needed\n    length: standard\n    max_words: 2000\n    structure: numbered\n    visual:\n      - table\n      - diagram\n      - chart\n      - example\n      - text\n    technical_depth: non_technical\n    jargon: define\n    tone: neutral\n    evidence: numbers_and_sources\n    uncertainty: flag_explicitly\n    close_with: one_question\n    reversible: decide_and_report\n    batch_questions: as_they_come\n    default_answer: when_obvious\n    asks_per_message: one\n    format: options_then_recommendation\n    question_style: yes_confirms_recommendation\n    challenge: welcome_early\n    out_of_scope_steps: omit_unless_blocking\n    interrupt_for: blocking_or_risky\n    group_by: project\n    when_focused: summary_later\n    channel_hint: async_written\n    progress_updates: every_message\n  low_bandwidth:\n    lead_with: decision_needed\n    length: standard\n    max_words: 2000\n    structure: numbered\n    visual:\n      - table\n      - diagram\n      - chart\n      - example\n      - text\n    technical_depth: non_technical\n    jargon: define\n    tone: neutral\n    evidence: numbers_and_sources\n    uncertainty: flag_explicitly\n    close_with: one_question\n    reversible: decide_and_report\n    batch_questions: as_they_come\n    default_answer: when_obvious\n    asks_per_message: one\n    format: options_then_recommendation\n    question_style: yes_confirms_recommendation\n    challenge: welcome_early\n    out_of_scope_steps: omit_unless_blocking\n    interrupt_for: blocking_or_risky\n    group_by: project\n    when_focused: summary_later\n    channel_hint: async_written\n    progress_updates: every_message\n  focus:\n    lead_with: decision_needed\n    length: standard\n    max_words: 2000\n    structure: numbered\n    visual:\n      - table\n      - diagram\n      - chart\n      - example\n      - text\n    technical_depth: non_technical\n    jargon: define\n    tone: neutral\n    evidence: numbers_and_sources\n    uncertainty: flag_explicitly\n    close_with: one_question\n    reversible: decide_and_report\n    batch_questions: as_they_come\n    default_answer: when_obvious\n    asks_per_message: one\n    format: options_then_recommendation\n    question_style: yes_confirms_recommendation\n    challenge: welcome_early\n    out_of_scope_steps: omit_unless_blocking\n    interrupt_for: blocking_or_risky\n    group_by: project\n    when_focused: summary_later\n    channel_hint: async_written\n    progress_updates: every_message\n  mobile:\n    lead_with: decision_needed\n    length: standard\n    max_words: 2000\n    structure: numbered\n    visual:\n      - table\n      - diagram\n      - chart\n      - example\n      - text\n    technical_depth: non_technical\n    jargon: define\n    tone: neutral\n    evidence: numbers_and_sources\n    uncertainty: flag_explicitly\n    close_with: one_question\n    reversible: decide_and_report\n    batch_questions: as_they_come\n    default_answer: when_obvious\n    asks_per_message: one\n    format: options_then_recommendation\n    question_style: yes_confirms_recommendation\n    challenge: welcome_early\n    out_of_scope_steps: omit_unless_blocking\n    interrupt_for: blocking_or_risky\n    group_by: project\n    when_focused: summary_later\n    channel_hint: async_written\n    progress_updates: every_message\nnotes: wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n---\n"
+        }
+      ],
+      "size": 7490,
+      "sha256": "744b4ff19fcf3af41cd75841500109e959f8d634340af5e9029345a474825bca",
+      "writer_valid": true,
+      "frontmatter_bytes": 7482,
+      "body_bytes": 0
+    }
+  ]
+}

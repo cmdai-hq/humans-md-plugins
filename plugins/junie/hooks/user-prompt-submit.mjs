@@ -2,7 +2,7 @@
 // The Junie extension's UserPromptSubmit hook: the owner's ~/.humans/HUMANS.md, the location SPEC § 5
 // fixes, once per session. Junie drops SessionStart context and adds UserPromptSubmit context to the
 // prompt, so the profile goes with the first prompt of a session and stays in its history.
-// runtime.mjs and humans.mjs are copied here by the generator from the Claude Code plugin.
+// runtime.mjs and humans.mjs are copied here from the Claude Code plugin by `npm run build`.
 // Hook input never selects a file or asserts ownership: only its session id is read, to mark the session.
 import { createHash } from 'node:crypto';
 import { closeSync, constants, lstatSync, mkdirSync, openSync, readdirSync, unlinkSync } from 'node:fs';

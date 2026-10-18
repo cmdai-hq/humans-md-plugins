@@ -1,0 +1,1331 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://humansmd.dev/schema/0.3/humans-group.schema.json",
+  "title": "Experimental merged HUMANS.md profile, version 0.3 (draft)",
+  "description": "Deterministic experimental output under SPEC § 9. No active state, identity, notes, anonymity, presence or orchestration guarantee. Cross-field counts and exact merge behavior also require procedural checks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "humans_group",
+    "coverage",
+    "conflicts"
+  ],
+  "properties": {
+    "humans_group": {
+      "const": "0.3"
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "with_profile",
+        "total"
+      ],
+      "properties": {
+        "with_profile": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stale": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/language"
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "maxItems": 10
+    },
+    "reading": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lead_with": {
+          "enum": [
+            "tldr",
+            "decision_needed",
+            "context",
+            "question",
+            "next_action"
+          ],
+          "description": "What the first line holds."
+        },
+        "length": {
+          "enum": [
+            "minimal",
+            "short",
+            "standard",
+            "thorough"
+          ]
+        },
+        "max_words": {
+          "type": "integer",
+          "minimum": 20,
+          "maximum": 2000,
+          "description": "Cap on the entire message, including an appendix, tables and code; never bypass via an unsolicited thread or extra message."
+        },
+        "structure": {
+          "enum": [
+            "bullets",
+            "prose",
+            "mixed",
+            "numbered"
+          ]
+        },
+        "visual": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "table",
+              "diagram",
+              "chart",
+              "example",
+              "text"
+            ]
+          },
+          "uniqueItems": true,
+          "maxItems": 2,
+          "description": "Preferred forms, most wanted first.",
+          "minItems": 1
+        },
+        "technical_depth": {
+          "enum": [
+            "non_technical",
+            "balanced",
+            "expert"
+          ]
+        },
+        "jargon": {
+          "enum": [
+            "avoid",
+            "define",
+            "ok"
+          ]
+        },
+        "tone": {
+          "enum": [
+            "direct",
+            "neutral",
+            "warm"
+          ]
+        },
+        "evidence": {
+          "enum": [
+            "numbers_and_sources",
+            "key_numbers",
+            "light"
+          ]
+        },
+        "uncertainty": {
+          "enum": [
+            "flag_explicitly",
+            "inline"
+          ],
+          "description": "flag_explicitly: say what was checked and what was assumed."
+        },
+        "close_with": {
+          "enum": [
+            "next_action",
+            "one_question",
+            "nothing"
+          ],
+          "description": "What the last line holds; never invent an action or a question to fill it."
+        },
+        "appendix_depth": {
+          "enum": [
+            "balanced",
+            "expert"
+          ],
+          "description": "Optional depth for separately requested details or an appendix within the same whole-message max_words cap."
+        }
+      },
+      "minProperties": 1
+    },
+    "deciding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reversible": {
+          "enum": [
+            "decide_and_report",
+            "ask"
+          ],
+          "description": "Only for actions the agent is already allowed to take. Never grants a permission."
+        },
+        "batch_questions": {
+          "enum": [
+            "end_of_task",
+            "as_they_come"
+          ]
+        },
+        "default_answer": {
+          "enum": [
+            "always",
+            "when_obvious"
+          ]
+        },
+        "asks_per_message": {
+          "enum": [
+            "one",
+            "few",
+            "any"
+          ]
+        },
+        "format": {
+          "enum": [
+            "recommendation_first",
+            "options_then_recommendation",
+            "options_only"
+          ]
+        },
+        "question_style": {
+          "enum": [
+            "open",
+            "multiple_choice",
+            "yes_confirms_recommendation"
+          ],
+          "description": "How each question is phrased; yes_confirms_recommendation falls back to multiple_choice without a recommendation."
+        },
+        "challenge": {
+          "enum": [
+            "welcome_early",
+            "after_draft",
+            "on_request"
+          ]
+        },
+        "out_of_scope_steps": {
+          "enum": [
+            "omit_unless_blocking",
+            "list"
+          ]
+        }
+      },
+      "minProperties": 1
+    },
+    "interrupting": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "interrupt_for": {
+          "enum": [
+            "blocking_only",
+            "blocking_or_risky",
+            "anything"
+          ]
+        },
+        "group_by": {
+          "enum": [
+            "project",
+            "none"
+          ]
+        },
+        "channel_hint": {
+          "enum": [
+            "async_written",
+            "sync_call",
+            "either"
+          ]
+        },
+        "progress_updates": {
+          "enum": [
+            "every_message",
+            "phase_changes",
+            "end_only"
+          ],
+          "description": "How a long task reports where it stands in its own conversation; never a reason to message elsewhere."
+        }
+      },
+      "minProperties": 1
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "knows_well": {
+          "type": "array",
+          "maxItems": 15,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/topic"
+          },
+          "minItems": 1,
+          "description": "Intersection over every eligible member; absent or empty list prevents a common-knowledge claim."
+        },
+        "knows_little": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/topic"
+          },
+          "minItems": 1,
+          "maxItems": 81
+        }
+      },
+      "minProperties": 1
+    },
+    "avoid": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "walls_of_text",
+          "filler_intro",
+          "filler_outro",
+          "hedging",
+          "emoji",
+          "rhetorical_questions",
+          "multiple_asks",
+          "unexplained_acronyms",
+          "passive_voice",
+          "exclamation",
+          "long_preamble",
+          "nested_bullets",
+          "sarcasm",
+          "recap",
+          "idioms"
+        ]
+      },
+      "minItems": 1
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "field"
+        ],
+        "properties": {
+          "field": {
+            "enum": [
+              "reading.lead_with",
+              "reading.length",
+              "reading.max_words",
+              "reading.structure",
+              "reading.technical_depth",
+              "reading.jargon",
+              "reading.tone",
+              "reading.evidence",
+              "reading.uncertainty",
+              "reading.close_with",
+              "deciding.reversible",
+              "deciding.batch_questions",
+              "deciding.default_answer",
+              "deciding.asks_per_message",
+              "deciding.format",
+              "deciding.question_style",
+              "deciding.challenge",
+              "deciding.out_of_scope_steps",
+              "interrupting.interrupt_for",
+              "interrupting.group_by",
+              "interrupting.channel_hint",
+              "interrupting.progress_updates"
+            ]
+          },
+          "values": {
+            "type": "array",
+            "description": "Included only when at least 3 eligible members voted for this field. No anonymity guarantee.",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "count"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    }
+                  ]
+                },
+                "count": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "minItems": 2,
+            "uniqueItems": true
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "reading.lead_with"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "tldr",
+                          "decision_needed",
+                          "context",
+                          "question",
+                          "next_action"
+                        ],
+                        "description": "What the first line holds."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "reading.length"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "minimal",
+                          "short",
+                          "standard",
+                          "thorough"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "reading.max_words"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "integer",
+                        "minimum": 20,
+                        "maximum": 2000,
+                        "description": "Cap on the entire message, including an appendix, tables and code; never bypass via an unsolicited thread or extra message."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "reading.structure"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "bullets",
+                          "prose",
+                          "mixed",
+                          "numbered"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "reading.technical_depth"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "non_technical",
+                          "balanced",
+                          "expert"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "reading.jargon"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "avoid",
+                          "define",
+                          "ok"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "reading.tone"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "direct",
+                          "neutral",
+                          "warm"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "reading.evidence"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "numbers_and_sources",
+                          "key_numbers",
+                          "light"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "reading.uncertainty"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "flag_explicitly",
+                          "inline"
+                        ],
+                        "description": "flag_explicitly: say what was checked and what was assumed."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "reading.close_with"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "next_action",
+                          "one_question",
+                          "nothing"
+                        ],
+                        "description": "What the last line holds; never invent an action or a question to fill it."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "deciding.reversible"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "decide_and_report",
+                          "ask"
+                        ],
+                        "description": "Only for actions the agent is already allowed to take. Never grants a permission."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "deciding.batch_questions"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "end_of_task",
+                          "as_they_come"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "deciding.default_answer"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "always",
+                          "when_obvious"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "deciding.asks_per_message"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "one",
+                          "few",
+                          "any"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "deciding.format"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "recommendation_first",
+                          "options_then_recommendation",
+                          "options_only"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "deciding.question_style"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "open",
+                          "multiple_choice",
+                          "yes_confirms_recommendation"
+                        ],
+                        "description": "How each question is phrased; yes_confirms_recommendation falls back to multiple_choice without a recommendation."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "deciding.challenge"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "welcome_early",
+                          "after_draft",
+                          "on_request"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "deciding.out_of_scope_steps"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "omit_unless_blocking",
+                          "list"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "interrupting.interrupt_for"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "blocking_only",
+                          "blocking_or_risky",
+                          "anything"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "interrupting.group_by"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "project",
+                          "none"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "interrupting.channel_hint"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "async_written",
+                          "sync_call",
+                          "either"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "field": {
+                  "const": "interrupting.progress_updates"
+                }
+              },
+              "required": [
+                "field"
+              ]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "enum": [
+                          "every_message",
+                          "phase_changes",
+                          "end_only"
+                        ],
+                        "description": "How a long task reports where it stands in its own conversation; never a reason to message elsewhere."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "maxItems": 22
+    }
+  },
+  "$defs": {
+    "topic": {
+      "enum": [
+        "javascript",
+        "typescript",
+        "python",
+        "php",
+        "ruby",
+        "go",
+        "rust",
+        "java",
+        "kotlin",
+        "swift",
+        "c-cpp",
+        "csharp-dotnet",
+        "elixir",
+        "scala",
+        "sql",
+        "shell",
+        "react",
+        "vue",
+        "svelte",
+        "angular",
+        "node",
+        "symfony",
+        "laravel",
+        "rails",
+        "django",
+        "spring",
+        "frontend",
+        "backend",
+        "mobile",
+        "apis",
+        "distributed-systems",
+        "databases",
+        "postgres",
+        "mysql",
+        "mongodb",
+        "redis",
+        "search",
+        "caching",
+        "messaging",
+        "data-pipelines",
+        "analytics",
+        "machine-learning",
+        "llm-agents",
+        "infrastructure",
+        "kubernetes",
+        "docker",
+        "terraform",
+        "ci-cd",
+        "observability",
+        "incident-response",
+        "performance",
+        "security",
+        "identity-auth",
+        "networking",
+        "cloud-aws",
+        "cloud-gcp",
+        "cloud-azure",
+        "cloudflare",
+        "cloud-costs",
+        "testing",
+        "accessibility",
+        "design-systems",
+        "ux-research",
+        "product-strategy",
+        "roadmap",
+        "pricing",
+        "billing-payments",
+        "growth",
+        "seo",
+        "marketing",
+        "sales",
+        "customer-support",
+        "compliance",
+        "privacy-gdpr",
+        "legal",
+        "finance",
+        "hiring",
+        "people-management",
+        "project-management",
+        "documentation",
+        "open-source"
+      ]
+    },
+    "language": {
+      "enum": [
+        "aa",
+        "ab",
+        "ae",
+        "af",
+        "ak",
+        "am",
+        "an",
+        "ar",
+        "as",
+        "av",
+        "ay",
+        "az",
+        "ba",
+        "be",
+        "bg",
+        "bi",
+        "bm",
+        "bn",
+        "bo",
+        "br",
+        "bs",
+        "ca",
+        "ce",
+        "ch",
+        "co",
+        "cr",
+        "cs",
+        "cu",
+        "cv",
+        "cy",
+        "da",
+        "de",
+        "dv",
+        "dz",
+        "ee",
+        "el",
+        "en",
+        "eo",
+        "es",
+        "et",
+        "eu",
+        "fa",
+        "ff",
+        "fi",
+        "fj",
+        "fo",
+        "fr",
+        "fy",
+        "ga",
+        "gd",
+        "gl",
+        "gn",
+        "gu",
+        "gv",
+        "ha",
+        "he",
+        "hi",
+        "ho",
+        "hr",
+        "ht",
+        "hu",
+        "hy",
+        "hz",
+        "ia",
+        "id",
+        "ie",
+        "ig",
+        "ii",
+        "ik",
+        "io",
+        "is",
+        "it",
+        "iu",
+        "ja",
+        "jv",
+        "ka",
+        "kg",
+        "ki",
+        "kj",
+        "kk",
+        "kl",
+        "km",
+        "kn",
+        "ko",
+        "kr",
+        "ks",
+        "ku",
+        "kv",
+        "kw",
+        "ky",
+        "la",
+        "lb",
+        "lg",
+        "li",
+        "ln",
+        "lo",
+        "lt",
+        "lu",
+        "lv",
+        "mg",
+        "mh",
+        "mi",
+        "mk",
+        "ml",
+        "mn",
+        "mr",
+        "ms",
+        "mt",
+        "my",
+        "na",
+        "nb",
+        "nd",
+        "ne",
+        "ng",
+        "nl",
+        "nn",
+        "no",
+        "nr",
+        "nv",
+        "ny",
+        "oc",
+        "oj",
+        "om",
+        "or",
+        "os",
+        "pa",
+        "pi",
+        "pl",
+        "ps",
+        "pt",
+        "qu",
+        "rm",
+        "rn",
+        "ro",
+        "ru",
+        "rw",
+        "sa",
+        "sc",
+        "sd",
+        "se",
+        "sg",
+        "si",
+        "sk",
+        "sl",
+        "sm",
+        "sn",
+        "so",
+        "sq",
+        "sr",
+        "ss",
+        "st",
+        "su",
+        "sv",
+        "sw",
+        "ta",
+        "te",
+        "tg",
+        "th",
+        "ti",
+        "tk",
+        "tl",
+        "tn",
+        "to",
+        "tr",
+        "ts",
+        "tt",
+        "tw",
+        "ty",
+        "ug",
+        "uk",
+        "ur",
+        "uz",
+        "ve",
+        "vi",
+        "vo",
+        "wa",
+        "wo",
+        "xh",
+        "yi",
+        "yo",
+        "za",
+        "zh",
+        "zu"
+      ],
+      "description": "ISO 639-1 code."
+    }
+  }
+}
