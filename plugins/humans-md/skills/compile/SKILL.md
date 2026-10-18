@@ -11,7 +11,7 @@ license: Apache-2.0
 compatibility: Needs Node 22.18+ for the plugin's scripts/humans.mjs and authorized local write access.
 metadata:
   internal: true
-  spec: humans-md 0.3-draft.2026-10-15.1
+  spec: humans-md 0.3-draft.2026-10-18.1
   status: prototype; native compiler evidence pending
 ---
 

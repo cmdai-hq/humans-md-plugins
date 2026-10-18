@@ -1,6 +1,6 @@
 {
   "name": "opencode-humans-md",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Adds your own ~/.humans/HUMANS.md to each OpenCode session, so the agent knows how long its replies should be, what it can decide without asking, and when to interrupt you.",
   "keywords": [
     "opencode",
