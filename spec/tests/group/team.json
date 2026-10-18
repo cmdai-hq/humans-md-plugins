@@ -1,0 +1,321 @@
+{
+  "description": "Three eligible profiles and one unavailable member; per-field conflict counts only for three actual voters.",
+  "today": "2026-10-14",
+  "members": [
+    "../../examples/tristan.md",
+    "../../examples/sam.md",
+    "../../examples/jordan.md",
+    null
+  ],
+  "expect": {
+    "humans_group": "0.3",
+    "coverage": {
+      "with_profile": 3,
+      "total": 4
+    },
+    "languages": [
+      "en"
+    ],
+    "reading": {
+      "lead_with": "tldr",
+      "length": "short",
+      "structure": "mixed",
+      "visual": [
+        "example",
+        "table"
+      ],
+      "technical_depth": "non_technical",
+      "appendix_depth": "expert",
+      "jargon": "avoid",
+      "tone": "neutral",
+      "evidence": "numbers_and_sources",
+      "uncertainty": "flag_explicitly",
+      "close_with": "nothing"
+    },
+    "deciding": {
+      "reversible": "ask",
+      "batch_questions": "end_of_task",
+      "default_answer": "always",
+      "asks_per_message": "one",
+      "format": "options_then_recommendation",
+      "question_style": "multiple_choice",
+      "challenge": "welcome_early",
+      "out_of_scope_steps": "omit_unless_blocking"
+    },
+    "interrupting": {
+      "interrupt_for": "blocking_only",
+      "group_by": "project",
+      "channel_hint": "async_written",
+      "progress_updates": "phase_changes"
+    },
+    "context": {
+      "knows_little": [
+        "databases",
+        "kubernetes",
+        "ci-cd"
+      ]
+    },
+    "avoid": [
+      "walls_of_text",
+      "filler_intro",
+      "filler_outro",
+      "hedging",
+      "emoji",
+      "multiple_asks",
+      "unexplained_acronyms",
+      "passive_voice",
+      "exclamation",
+      "long_preamble",
+      "nested_bullets",
+      "idioms"
+    ],
+    "conflicts": [
+      {
+        "field": "reading.lead_with",
+        "values": [
+          {
+            "value": "context",
+            "count": 1
+          },
+          {
+            "value": "decision_needed",
+            "count": 1
+          },
+          {
+            "value": "tldr",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "reading.length",
+        "values": [
+          {
+            "value": "short",
+            "count": 2
+          },
+          {
+            "value": "thorough",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "reading.structure",
+        "values": [
+          {
+            "value": "bullets",
+            "count": 1
+          },
+          {
+            "value": "mixed",
+            "count": 1
+          },
+          {
+            "value": "prose",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "reading.technical_depth",
+        "values": [
+          {
+            "value": "expert",
+            "count": 2
+          },
+          {
+            "value": "non_technical",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "reading.jargon",
+        "values": [
+          {
+            "value": "ok",
+            "count": 2
+          },
+          {
+            "value": "avoid",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "reading.tone",
+        "values": [
+          {
+            "value": "direct",
+            "count": 1
+          },
+          {
+            "value": "neutral",
+            "count": 1
+          },
+          {
+            "value": "warm",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "reading.evidence",
+        "values": [
+          {
+            "value": "numbers_and_sources",
+            "count": 2
+          },
+          {
+            "value": "key_numbers",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "reading.uncertainty",
+        "values": [
+          {
+            "value": "flag_explicitly",
+            "count": 2
+          },
+          {
+            "value": "inline",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "reading.close_with"
+      },
+      {
+        "field": "deciding.reversible",
+        "values": [
+          {
+            "value": "decide_and_report",
+            "count": 2
+          },
+          {
+            "value": "ask",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "deciding.batch_questions",
+        "values": [
+          {
+            "value": "end_of_task",
+            "count": 2
+          },
+          {
+            "value": "as_they_come",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "deciding.default_answer",
+        "values": [
+          {
+            "value": "always",
+            "count": 2
+          },
+          {
+            "value": "when_obvious",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "deciding.asks_per_message",
+        "values": [
+          {
+            "value": "any",
+            "count": 1
+          },
+          {
+            "value": "few",
+            "count": 1
+          },
+          {
+            "value": "one",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "deciding.format",
+        "values": [
+          {
+            "value": "options_then_recommendation",
+            "count": 2
+          },
+          {
+            "value": "recommendation_first",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "deciding.question_style"
+      },
+      {
+        "field": "deciding.challenge",
+        "values": [
+          {
+            "value": "welcome_early",
+            "count": 2
+          },
+          {
+            "value": "after_draft",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "deciding.out_of_scope_steps"
+      },
+      {
+        "field": "interrupting.interrupt_for",
+        "values": [
+          {
+            "value": "blocking_or_risky",
+            "count": 2
+          },
+          {
+            "value": "blocking_only",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "interrupting.group_by",
+        "values": [
+          {
+            "value": "project",
+            "count": 2
+          },
+          {
+            "value": "none",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "field": "interrupting.channel_hint",
+        "values": [
+          {
+            "value": "async_written",
+            "count": 2
+          },
+          {
+            "value": "either",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  }
+}

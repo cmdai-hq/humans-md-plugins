@@ -1,0 +1,17 @@
+{
+  "name": "humans-md-spec-tools",
+  "private": true,
+  "type": "module",
+  "description": "Reference tools for the HUMANS.md spec: validator, withholding, group merge",
+  "scripts": {
+    "test": "node validate.mjs ../examples/*.md ../tests/schema-valid-but-withheld/*.md && node validate.mjs --expect-invalid ../tests/invalid/*.md && node withhold.mjs ../tests/withholding.json && node merge.mjs ../tests/group/team.json && node merge.mjs ../tests/group/incident-pair.json && node check-terms.mjs && node --test test.mjs",
+    "test:mutations": "node mutations.mjs",
+    "test:unicode": "node --test test-unicode.mjs"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "yaml": "^2.8.1"
+  },
+  "license": "Apache-2.0"
+}

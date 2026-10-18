@@ -1,0 +1,639 @@
+{
+  "description": "Abstract entry-point contracts, not a claim these CLI commands are already implemented. Reject state selectors by presence, including owner:true. Unknown/malformed directory fixtures never echo names. Each control_request must succeed on the same fixture before its added state-selector rejection counts; otherwise missing required arguments or unrelated failures could produce a vacuous pass. CLI arguments are logical fields to map to the actual documented CLI syntax.",
+  "rejected_arguments": [
+    {
+      "entry_point": "get_profile",
+      "arguments": {
+        "id": "sample",
+        "state": "incident"
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "id": "sample"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "get_profile",
+      "arguments": {
+        "id": "sample",
+        "state": "incident",
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "id": "sample"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "get_profile",
+      "arguments": {
+        "id": "sample",
+        "state": null
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "id": "sample"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "get_profile",
+      "arguments": {
+        "id": "sample",
+        "state": null,
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "id": "sample"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "get_profile",
+      "arguments": {
+        "id": "sample",
+        "state": ""
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "id": "sample"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "get_profile",
+      "arguments": {
+        "id": "sample",
+        "state": "",
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "id": "sample"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "get_profile",
+      "arguments": {
+        "id": "sample",
+        "activeStates": []
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "id": "sample"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "get_profile",
+      "arguments": {
+        "id": "sample",
+        "activeStates": [],
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "id": "sample"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "get_audience_profile",
+      "arguments": {
+        "ids": [
+          "sample"
+        ],
+        "state": "incident"
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "ids": [
+          "sample"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "get_audience_profile",
+      "arguments": {
+        "ids": [
+          "sample"
+        ],
+        "state": "incident",
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "ids": [
+          "sample"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "get_audience_profile",
+      "arguments": {
+        "ids": [
+          "sample"
+        ],
+        "state": null
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "ids": [
+          "sample"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "get_audience_profile",
+      "arguments": {
+        "ids": [
+          "sample"
+        ],
+        "state": null,
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "ids": [
+          "sample"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "get_audience_profile",
+      "arguments": {
+        "ids": [
+          "sample"
+        ],
+        "state": ""
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "ids": [
+          "sample"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "get_audience_profile",
+      "arguments": {
+        "ids": [
+          "sample"
+        ],
+        "state": "",
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "ids": [
+          "sample"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "get_audience_profile",
+      "arguments": {
+        "ids": [
+          "sample"
+        ],
+        "activeStates": []
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "ids": [
+          "sample"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "get_audience_profile",
+      "arguments": {
+        "ids": [
+          "sample"
+        ],
+        "activeStates": [],
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "ids": [
+          "sample"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "serve",
+      "arguments": {
+        "file": "sample.md",
+        "state": "incident"
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "serve",
+      "arguments": {
+        "file": "sample.md",
+        "state": "incident",
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "serve",
+      "arguments": {
+        "file": "sample.md",
+        "state": null
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "serve",
+      "arguments": {
+        "file": "sample.md",
+        "state": null,
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "serve",
+      "arguments": {
+        "file": "sample.md",
+        "state": ""
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "serve",
+      "arguments": {
+        "file": "sample.md",
+        "state": "",
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "serve",
+      "arguments": {
+        "file": "sample.md",
+        "activeStates": []
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "serve",
+      "arguments": {
+        "file": "sample.md",
+        "activeStates": [],
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "merge",
+      "arguments": {
+        "files": [
+          "sample.md"
+        ],
+        "state": "incident"
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "files": [
+          "sample.md"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "merge",
+      "arguments": {
+        "files": [
+          "sample.md"
+        ],
+        "state": "incident",
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "files": [
+          "sample.md"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "merge",
+      "arguments": {
+        "files": [
+          "sample.md"
+        ],
+        "state": null
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "files": [
+          "sample.md"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "merge",
+      "arguments": {
+        "files": [
+          "sample.md"
+        ],
+        "state": null,
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "files": [
+          "sample.md"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "merge",
+      "arguments": {
+        "files": [
+          "sample.md"
+        ],
+        "state": ""
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "files": [
+          "sample.md"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "merge",
+      "arguments": {
+        "files": [
+          "sample.md"
+        ],
+        "state": "",
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "files": [
+          "sample.md"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "merge",
+      "arguments": {
+        "files": [
+          "sample.md"
+        ],
+        "activeStates": []
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "files": [
+          "sample.md"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "merge",
+      "arguments": {
+        "files": [
+          "sample.md"
+        ],
+        "activeStates": [],
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "files": [
+          "sample.md"
+        ]
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "render-agent",
+      "arguments": {
+        "file": "sample.md",
+        "state": "incident"
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "render-agent",
+      "arguments": {
+        "file": "sample.md",
+        "state": "incident",
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "render-agent",
+      "arguments": {
+        "file": "sample.md",
+        "state": null
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "render-agent",
+      "arguments": {
+        "file": "sample.md",
+        "state": null,
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "render-agent",
+      "arguments": {
+        "file": "sample.md",
+        "state": ""
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "render-agent",
+      "arguments": {
+        "file": "sample.md",
+        "state": "",
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "render-agent",
+      "arguments": {
+        "file": "sample.md",
+        "activeStates": []
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    },
+    {
+      "entry_point": "render-agent",
+      "arguments": {
+        "file": "sample.md",
+        "activeStates": [],
+        "owner": true
+      },
+      "expect_error": "UNSUPPORTED_ARGUMENT",
+      "expect_no_profile": true,
+      "control_request": {
+        "file": "sample.md"
+      },
+      "control_must_succeed": true
+    }
+  ],
+  "resolution": [
+    {
+      "case": "unknown-id",
+      "untrusted_payload": "DIRECTORY_PAYLOAD",
+      "expect": {
+        "status": "none"
+      }
+    },
+    {
+      "case": "unknown-group",
+      "untrusted_payload": "DIRECTORY_PAYLOAD",
+      "expect": {
+        "status": "none"
+      }
+    },
+    {
+      "case": "malformed-directory",
+      "untrusted_payload": "DIRECTORY_PAYLOAD",
+      "expect": {
+        "status": "none"
+      }
+    },
+    {
+      "case": "ambiguous-without-selection",
+      "untrusted_payload": "DIRECTORY_PAYLOAD",
+      "expect": {
+        "status": "none"
+      }
+    }
+  ]
+}

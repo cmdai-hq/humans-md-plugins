@@ -1,0 +1,97 @@
+{
+  "description": "Group integration input bytes represented as UTF-8 source strings. Distinct slots are distinct already-resolved recipients. Parse and authorize each member before merging; count invalid/future/private/unauthorized/absent slots only in total. A \"0.2\" member with visibility public reads as anyone_with_file. No notes or directory prose in output.",
+  "cases": [
+    {
+      "id": "parse-and-authorize-each-member",
+      "today": "2026-10-13",
+      "trusted_audience": "org",
+      "members": [
+        {
+          "filename": "sample.md",
+          "source": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nvisibility: org\nnotes: \"I have ADHD.\"\n---\n"
+        },
+        {
+          "filename": "sample.md",
+          "source": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nvisibility: private\nnotes: \"I have ADHD.\"\n---\n"
+        },
+        {
+          "filename": "sample.md",
+          "source": "---\nhumans: \"0.4\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n---\n"
+        },
+        {
+          "filename": "sample.md",
+          "source": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nreading: {max_words: \"149\"}\n---\n"
+        },
+        null
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 1,
+          "total": 5
+        },
+        "conflicts": []
+      }
+    },
+    {
+      "id": "unauthenticated-group-cannot-read-org",
+      "today": "2026-10-13",
+      "trusted_audience": "none",
+      "members": [
+        {
+          "filename": "sample.md",
+          "source": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nvisibility: org\nnotes: \"I have ADHD.\"\n---\n"
+        },
+        {
+          "filename": "sample.md",
+          "source": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nvisibility: anyone_with_file\nnotes: \"I have ADHD.\"\n---\n"
+        },
+        {
+          "filename": "sample.md",
+          "source": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nvisibility: private\nnotes: \"I have ADHD.\"\n---\n"
+        },
+        {
+          "filename": "sample.md",
+          "source": "---\nhumans: \"0.2\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nvisibility: public\nreading: {lead_with: tldr}\n---\n"
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 2,
+          "total": 4
+        },
+        "reading": {
+          "lead_with": "tldr"
+        },
+        "conflicts": []
+      }
+    },
+    {
+      "id": "owner-group-still-excludes-private",
+      "today": "2026-10-13",
+      "trusted_audience": "owner",
+      "members": [
+        {
+          "filename": "sample.md",
+          "source": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nvisibility: private\nnotes: \"I have ADHD.\"\n---\n"
+        },
+        {
+          "filename": "sample.md",
+          "source": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\nunknown: {diagnosis: \"UNKNOWN_PAYLOAD\"}\nreading: {lead_with: tldr, unknown: NESTED_PAYLOAD}\n---\n"
+        }
+      ],
+      "expect": {
+        "humans_group": "0.3",
+        "coverage": {
+          "with_profile": 1,
+          "total": 2
+        },
+        "reading": {
+          "lead_with": "tldr"
+        },
+        "conflicts": []
+      }
+    }
+  ]
+}

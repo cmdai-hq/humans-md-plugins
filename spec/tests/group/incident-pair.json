@@ -1,0 +1,109 @@
+{
+  "description": "Two profiles with stored variants: base preferences only, no state activation and no conflict values below three votes.",
+  "today": "2026-10-14",
+  "members": [
+    "../../examples/tristan.md",
+    "../../examples/sam.md"
+  ],
+  "expect": {
+    "humans_group": "0.3",
+    "coverage": {
+      "with_profile": 2,
+      "total": 2
+    },
+    "languages": [
+      "en"
+    ],
+    "reading": {
+      "lead_with": "tldr",
+      "length": "short",
+      "structure": "mixed",
+      "visual": [
+        "table",
+        "example"
+      ],
+      "technical_depth": "non_technical",
+      "appendix_depth": "expert",
+      "jargon": "avoid",
+      "tone": "neutral",
+      "evidence": "key_numbers",
+      "uncertainty": "flag_explicitly",
+      "close_with": "next_action"
+    },
+    "deciding": {
+      "reversible": "ask",
+      "batch_questions": "end_of_task",
+      "default_answer": "always",
+      "asks_per_message": "one",
+      "format": "options_then_recommendation",
+      "question_style": "yes_confirms_recommendation",
+      "challenge": "after_draft",
+      "out_of_scope_steps": "omit_unless_blocking"
+    },
+    "interrupting": {
+      "interrupt_for": "blocking_only",
+      "group_by": "project",
+      "channel_hint": "either"
+    },
+    "context": {
+      "knows_little": [
+        "databases",
+        "kubernetes",
+        "ci-cd"
+      ]
+    },
+    "avoid": [
+      "walls_of_text",
+      "filler_intro",
+      "filler_outro",
+      "hedging",
+      "multiple_asks",
+      "unexplained_acronyms",
+      "passive_voice",
+      "long_preamble",
+      "nested_bullets",
+      "idioms"
+    ],
+    "conflicts": [
+      {
+        "field": "reading.lead_with"
+      },
+      {
+        "field": "reading.structure"
+      },
+      {
+        "field": "reading.technical_depth"
+      },
+      {
+        "field": "reading.jargon"
+      },
+      {
+        "field": "reading.tone"
+      },
+      {
+        "field": "reading.evidence"
+      },
+      {
+        "field": "reading.uncertainty"
+      },
+      {
+        "field": "deciding.reversible"
+      },
+      {
+        "field": "deciding.asks_per_message"
+      },
+      {
+        "field": "deciding.format"
+      },
+      {
+        "field": "deciding.challenge"
+      },
+      {
+        "field": "interrupting.interrupt_for"
+      },
+      {
+        "field": "interrupting.channel_hint"
+      }
+    ]
+  }
+}
