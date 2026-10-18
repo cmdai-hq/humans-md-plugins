@@ -1,7 +1,7 @@
 {
   "name": "humans-md",
   "displayName": "HUMANS.md",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Loads your own HUMANS.md at the start of each session, so Claude knows how long its replies should be, what it can decide without asking, and when to interrupt you. Includes /humans-md:compile to write the file.",
   "author": {
     "name": "Tristan Bessoussa",
