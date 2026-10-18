@@ -54,11 +54,11 @@ Steps 3 and 4 run the HUMANS.md command line (CLI), written `<humans-md>` below.
 
 1. Claude Code fills in this skill's folder here: `${CLAUDE_SKILL_DIR}`. If that shows an absolute path, `<humans-md>` is `node "<that path>/scripts/humans.mjs"`. If it still shows a dollar sign and braces, your client did not fill it in: never pass that text to a shell.
 2. Otherwise, use the absolute folder your client gave for this skill: its location in the skill list (Codex, Gemini CLI, GitHub Copilot), the "Base directory for this skill" line (OpenCode), or the path you read this SKILL.md from. Take the folder that contains this SKILL.md, and turn a `file://` URL into a path. `<humans-md>` is `node "<that folder>/scripts/humans.mjs"`.
-3. If you know no absolute path, first make `<temp-dir>`, the folder step 3 writes its draft to, with `mktemp -d`: a new, empty folder outside the project. Then `<humans-md>` is `npx --prefix "<temp-dir>" -y @humans-md/cli@0.3.1`. With `--prefix`, npm takes that folder as the project, so the user's project cannot answer with its own `node_modules`, `package.json` or `.npmrc`. Tell the user it downloads the published CLI from npm.
+3. If you know no absolute path, first make `<temp-dir>`, the folder step 3 writes its draft to, with `mktemp -d`: a new, empty folder outside the project. Then `<humans-md>` is `npx --prefix "<temp-dir>" -y @humans-md/cli@0.3.2`. With `--prefix`, npm takes that folder as the project, so the user's project cannot answer with its own `node_modules`, `package.json` or `.npmrc`. Tell the user it downloads the published CLI from npm.
 
-Then run `<humans-md> --version`. It must print `0.3.1`; otherwise stop and tell the user.
+Then run `<humans-md> --version`. It must print `0.3.2`; otherwise stop and tell the user.
 
-Done when: `<humans-md>` is this skill's own `scripts/humans.mjs` by absolute path, or the pinned npm package, and it printed `0.3.1`.
+Done when: `<humans-md>` is this skill's own `scripts/humans.mjs` by absolute path, or the pinned npm package, and it printed `0.3.2`.
 
 ## 3. Validate and preview
 

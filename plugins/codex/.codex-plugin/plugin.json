@@ -1,6 +1,6 @@
 {
   "name": "humans-md",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Loads your own HUMANS.md at the start of each Codex session, so Codex knows how long its replies should be, what it can decide without asking, and when to interrupt you.",
   "author": {
     "name": "Tristan Bessoussa",
