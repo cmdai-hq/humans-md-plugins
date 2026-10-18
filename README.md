@@ -185,7 +185,7 @@ The fields it recognizes, labelled as data, then one plain sentence per preferen
 
 ## Compatibility
 
-Format version: 0.3 draft (`0.3-draft.2026-10-18.1`). macOS only. "Tested" means a real session on the version named loaded the profile and the model quoted a value from it; it says nothing about how well a model follows the preferences. "From GitHub" means plugin 0.3.0 installed with the command in this README; "local copy" means the 0.3.0 build tested before it was published. 0.3.1 changes only the plain sentences after the data (a sentence for `languages`; `minimal`, `short` and `max_words` now put failures, risks and decisions first and say how many items were left out) and loads the same way; Claude Code CLI 2.1.302 loaded a local copy of the 0.3.1 build.
+Format version: 0.3 draft (`0.3-draft.2026-10-18.1`). macOS only. "Tested" means a real session on the version named loaded the profile and the model quoted a value from it; it says nothing about how well a model follows the preferences. "From GitHub" means plugin 0.3.0 installed with the command in this README; "local copy" means the 0.3.0 build tested before it was published. 0.3.1 changes only the plain sentences after the data (a sentence for `languages`; `minimal`, `short` and `max_words` now put failures, risks and decisions first and say how many items were left out) and loads the same way; Claude Code CLI 2.1.302 loaded a local copy of the 0.3.1 build. 0.3.2 has the same profile handling as 0.3.1; it is the first version built and published from this repository by its release workflow, with npm provenance.
 
 | Client | Version | Status (2026-10-17) |
 |---|---|---|

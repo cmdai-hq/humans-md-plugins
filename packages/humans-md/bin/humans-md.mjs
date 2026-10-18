@@ -16203,7 +16203,7 @@ if (args.length === 0 && (cmd === "--help" || cmd === "-h" || cmd === "help")) {
   process.exit(0);
 }
 if (args.length === 0 && cmd === "--version") {
-  process.stdout.write("0.3.1\n");
+  process.stdout.write("0.3.2\n");
   process.exit(0);
 }
 var fail = () => {
@@ -16304,7 +16304,7 @@ if (cmd === "sync") {
   }
   process.stderr.write(diagnostics(codes));
   const rerun = rerunCommand({ to, target: target && destination, profile: positional[0] && file, guidance }, homedir2());
-  sync(makeBlock(rendered.output, today, "0.3.1", rerun));
+  sync(makeBlock(rendered.output, today, "0.3.2", rerun));
 }
 process.stdout.write(rendered.output);
 process.stderr.write(diagnostics(codes));
