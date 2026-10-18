@@ -83,10 +83,30 @@ jobs:
         with:
           name: derived
           path: ${{ runner.temp }}
-      - name: Unpack the derived files
+      - name: Unpack the derived files (untrusted, the build ran upstream code)
         run: |
-          rm -rf spec plugins skills packages
-          tar -xzf "$RUNNER_TEMP/derived.tgz"
+          archive="$RUNNER_TEMP/derived.tgz"
+          # Listings go to files first: under pipefail, `tar | grep -q` can pass on a SIGPIPE.
+          tar -tzvf "$archive" > "$RUNNER_TEMP/long.txt"
+          tar -tzf "$archive" > "$RUNNER_TEMP/names.txt"
+          # Only regular files and directories: no symlinks, hard links or devices.
+          if grep -qvE '^[-d]' "$RUNNER_TEMP/long.txt"; then echo "refusing: a member is not a regular file or directory"; exit 1; fi
+          # Only paths under the four derived folders, never absolute or with a .. segment.
+          while IFS= read -r member; do
+            case "$member" in
+              /* | ../* | */../* | */.. | ..) echo "refusing: $member"; exit 1 ;;
+              spec | spec/* | plugins | plugins/* | skills | skills/* | packages | packages/*) ;;
+              *) echo "refusing: $member"; exit 1 ;;
+            esac
+          done < "$RUNNER_TEMP/names.txt"
+          out="$RUNNER_TEMP/derived"
+          mkdir "$out"
+          tar -xzf "$archive" -C "$out" --no-same-owner --no-same-permissions
+          if [ -n "$(find "$out" ! -type f ! -type d)" ]; then echo "refusing: unexpected file type"; exit 1; fi
+          for folder in spec plugins skills packages; do
+            rm -rf "$folder"
+            cp -R "$out/$folder" "$folder"
+          done
       - name: Open or update the pull request
         id: pr
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
