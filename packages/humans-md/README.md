@@ -32,6 +32,34 @@ No profile yet? Copy the [example](https://github.com/cmdai-hq/HUMANS.md/blob/ma
 - A missing, invalid or too large profile prints `{"status":"none"}`, never part of a profile. Comments, unknown fields and the Markdown body are always left out.
 - Exit codes: `0` success (including `{"status":"none"}`), `1` invalid or missing profile (`check`, `sync`) or a target `sync` refuses, `2` invalid arguments, with the usage on stderr, before any file is read.
 
+### What `check` reports
+
+One line, at most 512 bytes: `{"ok":false,"issues":[{"path":"$.reading.max_words","message":"OUT_OF_RANGE","severity":"error"}]}`. `path` is the field at fault (`$` is the whole file) and `message` a code from this table. `check` never prints a value, or a key it does not know: an unknown key is reported at the block that holds it. A `warning` does not make the profile invalid.
+
+| Code | What to fix |
+|---|---|
+| `MISSING` | Add this required field. |
+| `UNKNOWN_FIELD` | The block at `path` holds a key the format does not have: look for a typo or wrong indentation. |
+| `NOT_AN_ALLOWED_VALUE` | Use a value from the field's list ([example](https://github.com/cmdai-hq/HUMANS.md/blob/main/examples/HUMANS.md)). |
+| `WRONG_TYPE` | For example a list where one value is expected, or `humans: 0.3` without quotes. |
+| `OUT_OF_RANGE` | A number too small or too large, a text too long, or too many items. |
+| `WRONG_FORMAT` | A date that is not `"YYYY-MM-DD"`, an `id` with other characters than `a-z`, `0-9` and `-`, a time that is not on the hour or half hour. |
+| `NOT_PLAIN_TEXT` | The text holds a link, an email address, markup or a control character. |
+| `DUPLICATE_VALUE` | The list holds the same value twice. |
+| `EMPTY_RANGE` | `quiet_hours` starts and ends at the same time. |
+| `BODY_NOT_ALLOWED` | Remove everything after the closing `---`, blank lines included. |
+| `FRONTMATTER_DELIMITERS` | The file must start with a `---` line and close with another. |
+| `YAML_INVALID` | The YAML does not parse, or a key appears twice. |
+| `YAML_FEATURE_NOT_ALLOWED` | Remove anchors (`&`), aliases (`*`), tags (`!`), directives and document markers. |
+| `TOO_LARGE` | Over 24,589 bytes in all, or 20 KiB between the `---` lines. |
+| `NOT_UTF8` | Save the file as UTF-8. |
+| `FILENAME_MISMATCH` | At `$`: the file, or the file its link points to, is not named exactly `HUMANS.md`, capitals included (`humans.md` opens on macOS but is not loaded). At `$.id`: a shared `<id>.md` whose `id` differs from its file name. |
+| `UNSUPPORTED_VERSION` | `humans` must be `"0.3"`. |
+| `PROFILE_UNAVAILABLE` | The file is missing or cannot be read. |
+| `PROFILE_INVALID` | Invalid, and `check` found no place to point at. |
+| `NOTE_WITHHELD_AGENT_DIRECTED` (warning) | Your notes read like instructions to an agent: your agent gets your profile without them. |
+| `DRAFT_FILENAME_UNCHECKED` (warning) | `--draft` skipped the file name rule. |
+
 ## Hook configuration
 
 Add one hook to your existing configuration. These snippets follow each client's documentation as read on 2026-10-16; none has been tested in a real session yet.

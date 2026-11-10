@@ -51,7 +51,7 @@ var require_identity = __commonJS({
     var NODE_TYPE = /* @__PURE__ */ Symbol.for("yaml.node.type");
     var isAlias = (node) => !!node && typeof node === "object" && node[NODE_TYPE] === ALIAS;
     var isDocument = (node) => !!node && typeof node === "object" && node[NODE_TYPE] === DOC;
-    var isMap3 = (node) => !!node && typeof node === "object" && node[NODE_TYPE] === MAP;
+    var isMap4 = (node) => !!node && typeof node === "object" && node[NODE_TYPE] === MAP;
     var isPair = (node) => !!node && typeof node === "object" && node[NODE_TYPE] === PAIR;
     var isScalar = (node) => !!node && typeof node === "object" && node[NODE_TYPE] === SCALAR;
     var isSeq = (node) => !!node && typeof node === "object" && node[NODE_TYPE] === SEQ;
@@ -87,7 +87,7 @@ var require_identity = __commonJS({
     exports.isAlias = isAlias;
     exports.isCollection = isCollection;
     exports.isDocument = isDocument;
-    exports.isMap = isMap3;
+    exports.isMap = isMap4;
     exports.isNode = isNode;
     exports.isPair = isPair;
     exports.isScalar = isScalar;
@@ -269,10 +269,10 @@ var require_directives = __commonJS({
     };
     var escapeTagName = (tn) => tn.replace(/[!,[\]{}]/g, (ch) => escapeChars[ch]);
     var Directives = class _Directives {
-      constructor(yaml2, tags) {
+      constructor(yaml3, tags) {
         this.docStart = null;
         this.docEnd = false;
-        this.yaml = Object.assign({}, _Directives.defaultYaml, yaml2);
+        this.yaml = Object.assign({}, _Directives.defaultYaml, yaml3);
         this.tags = Object.assign({}, _Directives.defaultTags, tags);
       }
       clone() {
@@ -4199,9 +4199,9 @@ var require_resolve_flow_collection = __commonJS({
     var blockMsg = "Block collections are not allowed within flow collections";
     var isBlock = (token) => token && (token.type === "block-map" || token.type === "block-seq");
     function resolveFlowCollection({ composeNode, composeEmptyNode }, ctx, fc, onError, tag) {
-      const isMap3 = fc.start.source === "{";
-      const fcName = isMap3 ? "flow map" : "flow sequence";
-      const NodeClass = tag?.nodeClass ?? (isMap3 ? YAMLMap.YAMLMap : YAMLSeq.YAMLSeq);
+      const isMap4 = fc.start.source === "{";
+      const fcName = isMap4 ? "flow map" : "flow sequence";
+      const NodeClass = tag?.nodeClass ?? (isMap4 ? YAMLMap.YAMLMap : YAMLSeq.YAMLSeq);
       const coll = new NodeClass(ctx.schema);
       coll.flow = true;
       const atRoot = ctx.atRoot;
@@ -4237,7 +4237,7 @@ var require_resolve_flow_collection = __commonJS({
             offset = props.end;
             continue;
           }
-          if (!isMap3 && ctx.options.strict && utilContainsNewline.containsNewline(key))
+          if (!isMap4 && ctx.options.strict && utilContainsNewline.containsNewline(key))
             onError(
               key,
               // checked by containsNewline()
@@ -4277,7 +4277,7 @@ var require_resolve_flow_collection = __commonJS({
             }
           }
         }
-        if (!isMap3 && !sep && !props.found) {
+        if (!isMap4 && !sep && !props.found) {
           const valueNode = value ? composeNode(ctx, value, props, onError) : composeEmptyNode(ctx, props.end, sep, null, props, onError);
           coll.items.push(valueNode);
           offset = valueNode.range[2];
@@ -4300,7 +4300,7 @@ var require_resolve_flow_collection = __commonJS({
             startOnNewline: false
           });
           if (valueProps.found) {
-            if (!isMap3 && !props.found && ctx.options.strict) {
+            if (!isMap4 && !props.found && ctx.options.strict) {
               if (sep)
                 for (const st of sep) {
                   if (st === valueProps.found)
@@ -4332,7 +4332,7 @@ var require_resolve_flow_collection = __commonJS({
           const pair = new Pair.Pair(keyNode, valueNode);
           if (ctx.options.keepSourceTokens)
             pair.srcToken = collItem;
-          if (isMap3) {
+          if (isMap4) {
             const map = coll;
             if (utilMapIncludes.mapIncludes(ctx, map.items, keyNode))
               onError(keyStart, "DUPLICATE_KEY", "Map keys must be unique");
@@ -4348,7 +4348,7 @@ var require_resolve_flow_collection = __commonJS({
           offset = valueNode ? valueNode.range[2] : valueProps.end;
         }
       }
-      const expectedEnd = isMap3 ? "}" : "]";
+      const expectedEnd = isMap4 ? "}" : "]";
       const [ce, ...ee] = fc.end;
       let cePos = offset;
       if (ce?.source === expectedEnd)
@@ -5747,7 +5747,7 @@ var require_lexer = __commonJS({
     var flowIndicatorChars = new Set(",[]{}");
     var invalidAnchorChars = new Set(" ,[]{}\n\r	");
     var isNotAnchorChar = (ch) => !ch || invalidAnchorChars.has(ch);
-    var Lexer = class {
+    var Lexer2 = class {
       constructor() {
         this.atEnd = false;
         this.blockScalarIndent = -1;
@@ -6310,7 +6310,7 @@ var require_lexer = __commonJS({
         return yield* this.pushToIndex(i, false);
       }
     };
-    exports.Lexer = Lexer;
+    exports.Lexer = Lexer2;
   }
 });
 
@@ -7373,50 +7373,50 @@ import { homedir as homedir2 } from "node:os";
 import { basename as basename3, isAbsolute as isAbsolute2, join as join2 } from "node:path";
 
 // core/src/cli-files.ts
-import { basename, resolve } from "node:path";
+import { basename, resolve as resolve2 } from "node:path";
 import { realpathSync } from "node:fs";
 
 // spec/tools/bytes.mjs
 import { openSync, readSync, closeSync } from "node:fs";
 
 // spec/tools/yaml-data.mjs
-function yamlData(source, yaml2) {
+function yamlData(source, yaml3) {
   const options = { schema: "core", uniqueKeys: true, strict: true, prettyErrors: false, keepSourceTokens: true };
-  const tokens = [...new yaml2.Parser().parse(source)];
+  const tokens = [...new yaml3.Parser().parse(source)];
   const documents = tokens.filter((t) => t.type === "document");
   if (documents.length !== 1) throw Error("PROFILE_INVALID");
   const document = documents[0];
   const collections = [], pending = [document.value];
   while (pending.length) {
     const token = pending.pop();
-    if (!yaml2.CST.isCollection(token)) continue;
+    if (!yaml3.CST.isCollection(token)) continue;
     collections.push(token);
     for (const item of token.items) {
-      if (yaml2.CST.isCollection(item.key)) throw Error("PROFILE_INVALID");
+      if (yaml3.CST.isCollection(item.key)) throw Error("PROFILE_INVALID");
       if (item.value) pending.push(item.value);
     }
   }
   const values = /* @__PURE__ */ new Map();
   function compose(stream, shells) {
-    const docs = [...new yaml2.Composer(options).compose(stream)];
+    const docs = [...new yaml3.Composer(options).compose(stream)];
     if (docs.length !== 1 || docs[0].errors.length || docs[0].warnings.length) throw Error("PROFILE_INVALID");
     const result = {}, work = [{ node: docs[0].contents, parent: result, key: "value" }];
     while (work.length) {
       const { node, parent, key } = work.pop();
       if (shells.has(node?.srcToken)) {
         parent[key] = shells.get(node.srcToken);
-      } else if (node == null || yaml2.isScalar(node)) {
+      } else if (node == null || yaml3.isScalar(node)) {
         const value = node == null ? null : node.value;
         if (!jsonScalar(value)) throw Error("PROFILE_INVALID");
         parent[key] = value;
-      } else if (yaml2.isMap(node)) {
+      } else if (yaml3.isMap(node)) {
         const data = /* @__PURE__ */ Object.create(null);
         parent[key] = data;
         for (const pair of [...node.items].reverse()) {
-          if (!yaml2.isScalar(pair.key) || typeof pair.key.value !== "string" || !jsonScalar(pair.key.value)) throw Error("PROFILE_INVALID");
+          if (!yaml3.isScalar(pair.key) || typeof pair.key.value !== "string" || !jsonScalar(pair.key.value)) throw Error("PROFILE_INVALID");
           work.push({ node: pair.value, parent: data, key: pair.key.value });
         }
-      } else if (yaml2.isSeq(node)) {
+      } else if (yaml3.isSeq(node)) {
         const data = new Array(node.items.length);
         parent[key] = data;
         node.items.forEach((child, i) => work.push({ node: child, parent: data, key: i }));
@@ -7428,7 +7428,7 @@ function yamlData(source, yaml2) {
   for (const token of collections.reverse()) {
     const shells = /* @__PURE__ */ new Map();
     const shallow = { ...token, items: token.items.map((item) => {
-      if (!yaml2.CST.isCollection(item.value)) return item;
+      if (!yaml3.CST.isCollection(item.value)) return item;
       const child = values.get(item.value);
       const shell = { ...item.value, items: [] };
       if (shell.type !== "flow-collection") shell.offset = child.end;
@@ -7480,7 +7480,7 @@ function shape(value, node, schema, filterEnums) {
   }
   return value;
 }
-function parseCore(input, opts, { yaml: yaml2, schema, validate, validateRead, withhold }) {
+function parseCore(input, opts, { yaml: yaml3, schema, validate, validateRead, withhold }) {
   try {
     if (opts.draft && opts.mode !== "write") return invalid("UNSUPPORTED_ARGUMENT");
     let source = typeof input === "string" ? input : decodeBytes(input);
@@ -7491,10 +7491,10 @@ function parseCore(input, opts, { yaml: yaml2, schema, validate, validateRead, w
     if (!match) return invalid();
     const front = match[1] ?? "", body = match[2];
     if (new TextEncoder().encode(front).length > MAX_FRONTMATTER_BYTES || new TextEncoder().encode(body).length > MAX_BODY_BYTES || opts.kind === "me" && body.length !== 0) return invalid();
-    for (const lexeme of new yaml2.Lexer().lex(front)) {
-      if (["anchor", "alias", "tag", "directive-line", "doc-start", "doc-end"].includes(yaml2.CST.tokenType(lexeme))) return invalid();
+    for (const lexeme of new yaml3.Lexer().lex(front)) {
+      if (["anchor", "alias", "tag", "directive-line", "doc-start", "doc-end"].includes(yaml3.CST.tokenType(lexeme))) return invalid();
     }
-    const raw = yamlData(front, yaml2);
+    const raw = yamlData(front, yaml3);
     if (!isMap(raw)) return invalid();
     if (typeof raw.humans !== "string") return invalid();
     if (opts.mode === "write" ? raw.humans !== WRITE_VERSION : !READ_VERSIONS.includes(raw.humans)) return invalid("UNSUPPORTED_VERSION");
@@ -15690,11 +15690,104 @@ function parseProfile(source, opts = { mode: "read" }) {
   return parseCore(source, opts, dependencies);
 }
 
-// core/src/cli-files.ts
-function loadProfile(file2, mode, draft2 = false) {
-  const name = basename(file2), me = name === "HUMANS.md";
+// core/src/profile/locate.ts
+var yaml2 = __toESM(require_dist(), 1);
+var KEYWORDS = {
+  required: "MISSING",
+  additionalProperties: "UNKNOWN_FIELD",
+  type: "WRONG_TYPE",
+  enum: "NOT_AN_ALLOWED_VALUE",
+  const: "NOT_AN_ALLOWED_VALUE",
+  minimum: "OUT_OF_RANGE",
+  maximum: "OUT_OF_RANGE",
+  minLength: "OUT_OF_RANGE",
+  maxLength: "OUT_OF_RANGE",
+  maxItems: "OUT_OF_RANGE",
+  pattern: "WRONG_FORMAT",
+  format: "WRONG_FORMAT",
+  not: "NOT_PLAIN_TEXT",
+  uniqueItems: "DUPLICATE_VALUE"
+};
+var LOCATED_CODES = [
+  ...new Set(Object.values(KEYWORDS)),
+  "TOO_LARGE",
+  "NOT_UTF8",
+  "FRONTMATTER_DELIMITERS",
+  "BODY_NOT_ALLOWED",
+  "YAML_FEATURE_NOT_ALLOWED",
+  "YAML_INVALID",
+  "FILENAME_MISMATCH",
+  "EMPTY_RANGE"
+];
+var resolve = (node) => node.$ref ? node.$ref.slice(2).split("/").reduce((s, k) => s[k], humans_schema_default) : node;
+function declaredPath(pointer, last) {
+  let node = humans_schema_default, path = "$";
+  for (const key of [...pointer.split("/").slice(1), ...last === void 0 ? [] : [last]]) {
+    const properties = node.properties;
+    if (!properties || !Object.hasOwn(properties, key)) break;
+    path += "." + key;
+    node = resolve(properties[key]);
+  }
+  return path;
+}
+var isMap2 = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
+var size = (s) => new TextEncoder().encode(s).length;
+function locateInvalid(bytes2, opts) {
+  const at = (path, message) => [{ path, message, severity: "error" }];
   try {
-    return parseProfile(readBounded(file2), { mode, kind: me ? "me" : "repo", draft: draft2, expectedId: me ? void 0 : name.endsWith(".md") ? name.slice(0, -3) : "" });
+    if (bytes2.byteLength > MAX_FILE_BYTES) return at("$", "TOO_LARGE");
+    let source;
+    try {
+      source = decodeBytes(bytes2);
+    } catch {
+      return at("$", "NOT_UTF8");
+    }
+    source = source.replace(/^﻿/u, "");
+    if (source.includes("\uFEFF") || /\r(?!\n)/u.test(source)) return void 0;
+    const match = /^---\r?\n([\s\S]*?\r?\n)?---(?:\r?\n|$)([\s\S]*)$/u.exec(source);
+    if (!match) return at("$", "FRONTMATTER_DELIMITERS");
+    const front = match[1] ?? "", body = match[2];
+    if (size(front) > MAX_FRONTMATTER_BYTES || size(body) > MAX_BODY_BYTES) return at("$", "TOO_LARGE");
+    if (opts.kind === "me" && body.length !== 0) return at("$", "BODY_NOT_ALLOWED");
+    for (const lexeme of new yaml2.Lexer().lex(front)) {
+      if (["anchor", "alias", "tag", "directive-line", "doc-start", "doc-end"].includes(yaml2.CST.tokenType(lexeme))) return at("$", "YAML_FEATURE_NOT_ALLOWED");
+    }
+    let raw;
+    try {
+      raw = yamlData(front, yaml2);
+    } catch {
+      return at("$", "YAML_INVALID");
+    }
+    if (!isMap2(raw)) return at("$", "WRONG_TYPE");
+    if (typeof raw.humans !== "string") return at("$.humans", Object.hasOwn(raw, "humans") ? "WRONG_TYPE" : "MISSING");
+    if (raw.humans !== WRITE_VERSION) return void 0;
+    if (opts.expectedId !== void 0 && !opts.draft && raw.id !== opts.expectedId) return at("$.id", "FILENAME_MISMATCH");
+    if (!validate_profile_default(raw)) {
+      const found = /* @__PURE__ */ new Map();
+      for (const e of validate_profile_default.errors ?? []) {
+        const code = KEYWORDS[e.keyword];
+        if (!code) continue;
+        const path = declaredPath(e.instancePath, e.keyword === "required" ? e.params.missingProperty : void 0);
+        if (!found.has(path)) found.set(path, { path, message: code, severity: "error" });
+      }
+      return found.size ? [...found.values()] : void 0;
+    }
+    const quiet = isMap2(raw.interrupting) ? raw.interrupting.quiet_hours : void 0;
+    if (isMap2(quiet) && quiet.from === quiet.to) return at("$.interrupting.quiet_hours", "EMPTY_RANGE");
+    return void 0;
+  } catch {
+    return void 0;
+  }
+}
+
+// core/src/cli-files.ts
+var named = (file2, draft2) => {
+  const name = basename(file2), me = name === "HUMANS.md";
+  return { kind: me ? "me" : "repo", draft: draft2, expectedId: me ? void 0 : name.endsWith(".md") ? name.slice(0, -3) : "" };
+};
+function loadProfile(file2, mode, draft2 = false) {
+  try {
+    return parseProfile(readBounded(file2), { mode, ...named(file2, draft2) });
   } catch (error) {
     return invalid(error instanceof Error && "code" in error && error.code === "PROFILE_INVALID" ? "PROFILE_INVALID" : "PROFILE_UNAVAILABLE");
   }
@@ -15708,8 +15801,21 @@ var real = (file2) => {
 };
 function checkProfile(file2, draft2 = false) {
   if (!draft2 && basename(file2) === "HUMANS.md" && basename(real(file2)) !== "HUMANS.md") return { ok: false, issues: invalid("FILENAME_MISMATCH").issues };
-  const { issues: issues2 } = loadProfile(file2, "write", draft2);
-  return { ok: !issues2.some((i) => i.severity === "error"), issues: issues2 };
+  let { issues: issues2 } = loadProfile(file2, "write", draft2);
+  const ok = !issues2.some((i) => i.severity === "error");
+  if (issues2.some((i) => i.message === "PROFILE_INVALID")) {
+    let located;
+    try {
+      located = locateInvalid(readBounded(file2), named(file2, draft2));
+    } catch (error) {
+      if (error instanceof Error && "code" in error && error.code === "PROFILE_INVALID") located = invalid("TOO_LARGE").issues;
+    }
+    if (located) {
+      while (located.length > 1 && Buffer.byteLength(JSON.stringify({ ok, issues: located })) >= 512) located.pop();
+      issues2 = located;
+    }
+  }
+  return { ok, issues: issues2 };
 }
 var CODES = /* @__PURE__ */ new Set(["PROFILE_INVALID", "UNSUPPORTED_VERSION", "PROFILE_UNAVAILABLE", "NOTE_WITHHELD_AGENT_DIRECTED", "DRAFT_FILENAME_UNCHECKED", "UNSUPPORTED_ARGUMENT", "RENDER_LIMIT"]);
 function diagnostics(codes2) {
@@ -15901,8 +16007,8 @@ var INSTRUCTION_ORDER = [
   ...Object.keys(humans_schema_default.$defs.interrupting.properties).filter((f) => f !== "when_focused").map((f) => `interrupting.${f}`),
   "avoid"
 ];
-var isMap2 = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
-var quietHours2 = (v) => isMap2(v) && typeof v.time_zone === "string" && TIME_ZONES.includes(v.time_zone) && typeof v.from === "string" && QUIET_TIME.test(v.from) && typeof v.to === "string" && QUIET_TIME.test(v.to) && v.from !== v.to && (v.all_day === void 0 || Array.isArray(v.all_day) && v.all_day.every((d) => typeof d === "string" && WEEKDAYS.includes(d)));
+var isMap3 = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
+var quietHours2 = (v) => isMap3(v) && typeof v.time_zone === "string" && TIME_ZONES.includes(v.time_zone) && typeof v.from === "string" && QUIET_TIME.test(v.from) && typeof v.to === "string" && QUIET_TIME.test(v.to) && v.from !== v.to && (v.all_day === void 0 || Array.isArray(v.all_day) && v.all_day.every((d) => typeof d === "string" && WEEKDAYS.includes(d)));
 function asInstructions(served, language = "en") {
   if (!Object.hasOwn(instructions_default.languages, language)) throw new Error("UNSUPPORTED_ARGUMENT");
   const table = instructions_default.languages[language];
@@ -15910,7 +16016,7 @@ function asInstructions(served, language = "en") {
   const out = [];
   const closed = (field, value) => {
     const entry = Object.hasOwn(table, field) ? table[field] : void 0;
-    if (typeof value === "string" && isMap2(entry) && Object.hasOwn(entry, value)) out.push(entry[value]);
+    if (typeof value === "string" && isMap3(entry) && Object.hasOwn(entry, value)) out.push(entry[value]);
   };
   const single = (field) => {
     const entry = Object.hasOwn(table, field) ? table[field] : void 0;
@@ -15928,7 +16034,7 @@ function asInstructions(served, language = "en") {
     }
     const [block, name] = field.split(".");
     const values = served[block];
-    if (!isMap2(values) || !Object.hasOwn(values, name)) continue;
+    if (!isMap3(values) || !Object.hasOwn(values, name)) continue;
     const value = values[name];
     if (name === "max_words") {
       if (typeof value === "number" && Number.isInteger(value) && value >= 20 && value <= 2e3) single(field);
