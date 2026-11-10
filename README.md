@@ -55,7 +55,7 @@ Each plugin reads `~/.humans/HUMANS.md` and nothing else. Install one plugin per
 <details>
 <summary><b>Claude Code</b> (CLI, Desktop, VS Code)</summary>
 
-- **Install:** `claude plugin install humans-md --marketplace cmdai-hq/humans-md-plugins`. In a session: `/plugin install humans-md --marketplace cmdai-hq/humans-md-plugins`, then choose to install it for you.
+- **Install:** `claude plugin install humans-md --marketplace cmdai-hq/humans-md-plugins`. In a session: `/plugin install humans-md --marketplace cmdai-hq/humans-md-plugins`, then choose to install it for you. `--marketplace` needs Claude Code 2.1.292 or later from the shell and 2.1.275 or later in a session ([Claude Code docs](https://code.claude.com/docs/en/discover-plugins#add-a-marketplace-and-install-in-one-command)); on an older version, add the marketplace first with `claude plugin marketplace add cmdai-hq/humans-md-plugins`, then `claude plugin install humans-md@humans-md`.
 - **Another file:** set **Your HUMANS.md** in `/config`. The file must be named `HUMANS.md`.
 - **Update:** `claude plugin update humans-md@humans-md`, or **Update now** in `/plugin`. Claude Code does not update this marketplace by itself unless you turn on auto-update for it in the Marketplaces tab of `/plugin`.
 - **Uninstall:** `claude plugin uninstall humans-md@humans-md`, then `claude plugin marketplace remove humans-md`.
@@ -65,7 +65,7 @@ Each plugin reads `~/.humans/HUMANS.md` and nothing else. Install one plugin per
 <summary><b>Codex</b></summary>
 
 - **Install:** `codex plugin marketplace add cmdai-hq/humans-md-plugins`, then `codex plugin add humans-md@humans-md`.
-- **Trust the hook:** Codex runs a plugin's hook only after you trust it. Open `/hooks`, review the HUMANS.md hook and trust it. Codex asks again after each update.
+- **Trust the hook:** Codex runs a plugin's hook only after you trust it. Open `/hooks`, review the HUMANS.md hook and trust it. Codex records trust against the hook's content ([Codex docs](https://learn.chatgpt.com/docs/hooks)): after any update that changes it, the hook is skipped, your profile is not loaded, and Codex prints a startup warning that points to `/hooks` until you trust it again.
 - **Codex IDE extension:** it does not load plugins. Use the [hand-written hook](packages/humans-md#hook-configuration) there.
 - **Update:** `codex plugin marketplace upgrade humans-md`, then trust the hook again in `/hooks`.
 - **Uninstall:** `codex plugin remove humans-md@humans-md`, then `codex plugin marketplace remove humans-md`.
