@@ -23,6 +23,8 @@ try {
     ['unknown-cli-flag', "if (args.some(a => a.startsWith('-')", "if (false && args.some(a => a.startsWith('-')", 'validate.mjs'],
     ['merge-selector-presence', "Object.hasOwn(options, 'state') || Object.hasOwn(options, 'activeStates')", "options.state || options.activeStates", 'merge.mjs'],
     ['merge-cli-selector', 'try { rejectSelectors(c); }', 'try { /* selector guard removed */ }', 'merge.mjs'],
+    ['merge-today-date', 'if (typeof today !== "string" || !calendarDate(today))', 'if (false)', 'merge.mjs'],
+    ['merge-cli-case-shape', 'if (!Array.isArray(c.members) || c.members.some((m) => m !== null && typeof m !== "string")) reject();', '', 'merge.mjs'],
     ['expect-invalid-unavailable', '!unavailable && (!!result.profile !== expectInvalid)', '(!!result.profile !== expectInvalid)', 'validate.mjs'],
     ['oversize-unavailable', "error.code === 'PROFILE_INVALID'", 'false', 'validate.mjs'],
     ['previous-version-read', "Object.freeze(['0.3', '0.2'])", "Object.freeze(['0.3'])"],

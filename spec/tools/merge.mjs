@@ -7,6 +7,7 @@ import { isDeepStrictEqual } from "node:util";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { loadProfile } from "./validate.mjs";
+import { calendarDate } from "./reader-core.mjs";
 import { readJson } from "./lib.mjs";
 
 const profileSchema = readJson("schema/humans.schema.json");
@@ -96,6 +97,9 @@ function rejectSelectors(options) {
 export function merge(profiles, options) {
   rejectSelectors(options);
   const { today } = options;
+  // Staleness needs an explicit calendar date (SPEC § 3.2): a missing or malformed one is an argument
+  // error, never "nobody is stale", and a timestamp would move the 365-day boundary.
+  if (typeof today !== "string" || !calendarDate(today)) throw new Error('UNSUPPORTED_ARGUMENT');
   const members = profiles.filter((p) => p && p.visibility !== "private");
   const out = { humans_group: "0.3", coverage: { with_profile: members.length, total: profiles.length } };
   const stale = members.filter((p) => (Date.parse(today) - Date.parse(p.updated)) / 864e5 > STALE_DAYS).length;
@@ -159,9 +163,16 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     process.stderr.write('UNSUPPORTED_ARGUMENT\n'); process.exit(2);
   }
   const [casePath] = args;
-  const c = JSON.parse(readFileSync(casePath, "utf8"));
+  /** Exit 2 with the static argument code: a case file is caller input, so no path, parser text or content reaches stderr (SPEC § 8). */
+  const reject = () => { process.stderr.write('UNSUPPORTED_ARGUMENT\n'); process.exit(2); };
+  let c;
+  try { c = JSON.parse(readFileSync(casePath, "utf8")); }
+  catch { reject(); }
+  if (c === null || typeof c !== "object" || Array.isArray(c)) reject();
   try { rejectSelectors(c); }
-  catch { process.stderr.write('UNSUPPORTED_ARGUMENT\n'); process.exit(2); }
+  catch { reject(); }
+  if (!Array.isArray(c.members) || c.members.some((m) => m !== null && typeof m !== "string")) reject();
+  if (typeof c.today !== "string" || !calendarDate(c.today)) reject();
   /**
    * Resolve a fixture member relative to its case file and return its parsed profile,
    * or null for a null member or a load without a profile.

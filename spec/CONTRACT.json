@@ -4,7 +4,7 @@
   "repository": "https://github.com/cmdai-hq/HUMANS.md",
   "source_revision_note": "Content manifest for this contract revision. Consumers also pin the canonical commit that contains these files.",
   "files": {
-    "CHANGELOG.md": "cd790fa9fd922df1a5e1444e3ade4023481c1603334aadcf55c8f50fae5e0687",
+    "CHANGELOG.md": "cf71db59ff521b38c4d69b36fbe1d3368d198f8a1150cbaf4ebbc58d7ef9c15f",
     "CONFORMANCE.md": "0dfcc11fbf4c408d75c5271f7c110212309c57bf5de6e0e87b628470c50cbf93",
     "CONTRIBUTING.md": "733ba3a03c81ecac1e6db12c1bcad98b52b414228897845ebc4ee1f281e36639",
     "LICENSE": "9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411",
