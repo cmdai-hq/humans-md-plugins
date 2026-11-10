@@ -8,18 +8,18 @@ import { optionsFor, parserCases } from '../../spec/tools/conformance.mjs';
 
 const root = join(import.meta.dirname, '../../spec');
 type Node = { $ref?: string; properties?: Record<string, Node> };
-/** Every path the schema declares, written `$.a.b`. */
+/** Every path the schema declares, written `/a/b`. */
 function declared(node: Node = schema as Node, path = '$', out = new Set<string>()): Set<string> {
   if (node.$ref) node = node.$ref.slice(2).split('/').reduce((s, k) => (s as Record<string, Node>)[k], schema as Node);
   out.add(path);
-  for (const [key, child] of Object.entries(node.properties ?? {})) declared(child, `${path}.${key}`, out);
+  for (const [key, child] of Object.entries(node.properties ?? {})) declared(child, `${path === '$' ? '' : path}/${key}`, out);
   return out;
 }
 
 it('over every shared vector, a place is given only to a strict-writer PROFILE_INVALID, in declared names and static codes', () => {
   const paths = declared();
-  expect(paths.has('$.interrupting.quiet_hours.time_zone')).toBe(true);
-  expect(paths.has('$.states.incident.max_words')).toBe(true);
+  expect(paths.has('/interrupting/quiet_hours/time_zone')).toBe(true);
+  expect(paths.has('/states/incident/max_words')).toBe(true);
   let located = 0;
   for (const c of parserCases(root).filter((c: any) => !c.stringOnly)) {
     const opts = optionsFor(c, 'write');
@@ -49,13 +49,13 @@ it('over every shared vector, a place is given only to a strict-writer PROFILE_I
 
 it('a path keeps declared names only: no array index, no key of the file', () => {
   expect(declaredPath('')).toBe('$');
-  expect(declaredPath('/reading/max_words')).toBe('$.reading.max_words');
-  expect(declaredPath('/avoid/3')).toBe('$.avoid');
-  expect(declaredPath('/states/incident/visual/0')).toBe('$.states.incident.visual');
-  expect(declaredPath('/states/PAYLOAD_KEY/length')).toBe('$.states');
+  expect(declaredPath('/reading/max_words')).toBe('/reading/max_words');
+  expect(declaredPath('/avoid/3')).toBe('/avoid');
+  expect(declaredPath('/states/incident/visual/0')).toBe('/states/incident/visual');
+  expect(declaredPath('/states/PAYLOAD_KEY/length')).toBe('/states');
   expect(declaredPath('/PAYLOAD_KEY/reading')).toBe('$');
-  expect(declaredPath('/interrupting/quiet_hours', 'time_zone')).toBe('$.interrupting.quiet_hours.time_zone');
+  expect(declaredPath('/interrupting/quiet_hours', 'time_zone')).toBe('/interrupting/quiet_hours/time_zone');
   // A missing name is appended only below a fully declared path.
-  expect(declaredPath('/states/PAYLOAD_KEY', 'length')).toBe('$.states');
+  expect(declaredPath('/states/PAYLOAD_KEY', 'length')).toBe('/states');
   for (const key of ['__proto__', 'constructor', 'toString', 'hasOwnProperty']) expect(declaredPath(`/${key}`)).toBe('$');
 });

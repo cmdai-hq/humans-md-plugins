@@ -15722,14 +15722,14 @@ var LOCATED_CODES = [
 ];
 var resolve = (node) => node.$ref ? node.$ref.slice(2).split("/").reduce((s, k) => s[k], humans_schema_default) : node;
 function declaredPath(pointer, last) {
-  let node = humans_schema_default, path = "$";
+  let node = humans_schema_default, path = "";
   for (const key of [...pointer.split("/").slice(1), ...last === void 0 ? [] : [last]]) {
     const properties = node.properties;
     if (!properties || !Object.hasOwn(properties, key)) break;
-    path += "." + key;
+    path += "/" + key;
     node = resolve(properties[key]);
   }
-  return path;
+  return path || "$";
 }
 var isMap2 = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
 var size = (s) => new TextEncoder().encode(s).length;
@@ -15760,9 +15760,9 @@ function locateInvalid(bytes2, opts) {
       return at("$", "YAML_INVALID");
     }
     if (!isMap2(raw)) return at("$", "WRONG_TYPE");
-    if (typeof raw.humans !== "string") return at("$.humans", Object.hasOwn(raw, "humans") ? "WRONG_TYPE" : "MISSING");
+    if (typeof raw.humans !== "string") return at("/humans", Object.hasOwn(raw, "humans") ? "WRONG_TYPE" : "MISSING");
     if (raw.humans !== WRITE_VERSION) return void 0;
-    if (opts.expectedId !== void 0 && !opts.draft && raw.id !== opts.expectedId) return at("$.id", "FILENAME_MISMATCH");
+    if (opts.expectedId !== void 0 && !opts.draft && raw.id !== opts.expectedId) return at("/id", "FILENAME_MISMATCH");
     if (!validate_profile_default(raw)) {
       const found = /* @__PURE__ */ new Map();
       for (const e of validate_profile_default.errors ?? []) {
@@ -15774,7 +15774,7 @@ function locateInvalid(bytes2, opts) {
       return found.size ? [...found.values()] : void 0;
     }
     const quiet = isMap2(raw.interrupting) ? raw.interrupting.quiet_hours : void 0;
-    if (isMap2(quiet) && quiet.from === quiet.to) return at("$.interrupting.quiet_hours", "EMPTY_RANGE");
+    if (isMap2(quiet) && quiet.from === quiet.to) return at("/interrupting/quiet_hours", "EMPTY_RANGE");
     return void 0;
   } catch {
     return void 0;

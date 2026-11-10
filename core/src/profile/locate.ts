@@ -25,18 +25,19 @@ interface Node { $ref?: string; properties?: Record<string, Node> }
 /** The schema node a local `$ref` names, or the node itself. */
 const resolve = (node: Node): Node => node.$ref ? node.$ref.slice(2).split('/').reduce((s, k) => (s as Record<string, Node>)[k], schema as Node) : node;
 /**
- * `$` followed by each key of a JSON Pointer that the schema declares as a property, stopping at
- * the first that it does not: an array index, or a key that only the file has.
+ * The keys of a JSON Pointer that the schema declares as properties, as a JSON Pointer (the form
+ * the withheld-notes warning already uses, `/notes`), stopping at the first key the schema does not
+ * declare: an array index, or a key that only the file has. `$` when none is declared: the file as a whole.
  */
 export function declaredPath(pointer: string, last?: string): string {
-  let node = schema as Node, path = '$';
+  let node = schema as Node, path = '';
   for (const key of [...pointer.split('/').slice(1), ...(last === undefined ? [] : [last])]) {
     const properties = node.properties;
     if (!properties || !Object.hasOwn(properties, key)) break;
-    path += '.' + key;
+    path += '/' + key;
     node = resolve(properties[key]);
   }
-  return path;
+  return path || '$';
 }
 const isMap = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object' && !Array.isArray(v);
 const size = (s: string) => new TextEncoder().encode(s).length;
@@ -65,10 +66,10 @@ export function locateInvalid(bytes: Uint8Array, opts: Pick<ParseOptions, 'kind'
     let raw: unknown;
     try { raw = yamlData(front, yaml); } catch { return at('$', 'YAML_INVALID'); }
     if (!isMap(raw)) return at('$', 'WRONG_TYPE');
-    if (typeof raw.humans !== 'string') return at('$.humans', Object.hasOwn(raw, 'humans') ? 'WRONG_TYPE' : 'MISSING');
+    if (typeof raw.humans !== 'string') return at('/humans', Object.hasOwn(raw, 'humans') ? 'WRONG_TYPE' : 'MISSING');
     // Another version is UNSUPPORTED_VERSION, the reader's own code: nothing to place.
     if (raw.humans !== WRITE_VERSION) return undefined;
-    if (opts.expectedId !== undefined && !opts.draft && raw.id !== opts.expectedId) return at('$.id', 'FILENAME_MISMATCH');
+    if (opts.expectedId !== undefined && !opts.draft && raw.id !== opts.expectedId) return at('/id', 'FILENAME_MISMATCH');
     if (!validate(raw)) {
       const found = new Map<string, Issue>();
       for (const e of (validate.errors ?? []) as { instancePath: string; keyword: string; params: { missingProperty?: string } }[]) {
@@ -80,7 +81,7 @@ export function locateInvalid(bytes: Uint8Array, opts: Pick<ParseOptions, 'kind'
       return found.size ? [...found.values()] : undefined;
     }
     const quiet = isMap(raw.interrupting) ? raw.interrupting.quiet_hours : undefined;
-    if (isMap(quiet) && quiet.from === quiet.to) return at('$.interrupting.quiet_hours', 'EMPTY_RANGE');
+    if (isMap(quiet) && quiet.from === quiet.to) return at('/interrupting/quiet_hours', 'EMPTY_RANGE');
     return undefined;
   } catch { return undefined; }
 }

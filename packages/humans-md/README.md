@@ -34,7 +34,7 @@ No profile yet? Copy the [example](https://github.com/cmdai-hq/HUMANS.md/blob/ma
 
 ### What `check` reports
 
-One line, at most 512 bytes: `{"ok":false,"issues":[{"path":"$.reading.max_words","message":"OUT_OF_RANGE","severity":"error"}]}`. `path` is the field at fault (`$` is the whole file) and `message` a code from this table. `check` never prints a value, or a key it does not know: an unknown key is reported at the block that holds it. A `warning` does not make the profile invalid.
+One line, at most 512 bytes: `{"ok":false,"issues":[{"path":"/reading/max_words","message":"OUT_OF_RANGE","severity":"error"}]}`. `path` is the field at fault (`$` is the whole file) and `message` a code from this table. `check` never prints a value, or a key it does not know: an unknown key is reported at the block that holds it. A `warning` does not make the profile invalid.
 
 | Code | What to fix |
 |---|---|
@@ -53,7 +53,7 @@ One line, at most 512 bytes: `{"ok":false,"issues":[{"path":"$.reading.max_words
 | `YAML_FEATURE_NOT_ALLOWED` | Remove anchors (`&`), aliases (`*`), tags (`!`), directives and document markers. |
 | `TOO_LARGE` | Over 24,589 bytes in all, or 20 KiB between the `---` lines. |
 | `NOT_UTF8` | Save the file as UTF-8. |
-| `FILENAME_MISMATCH` | At `$`: the file, or the file its link points to, is not named exactly `HUMANS.md`, capitals included (`humans.md` opens on macOS but is not loaded). At `$.id`: a shared `<id>.md` whose `id` differs from its file name. |
+| `FILENAME_MISMATCH` | At `$`: the file, or the file its link points to, is not named exactly `HUMANS.md`, capitals included (`humans.md` opens on macOS but is not loaded). At `/id`: a shared `<id>.md` whose `id` differs from its file name. |
 | `UNSUPPORTED_VERSION` | `humans` must be `"0.3"`. |
 | `PROFILE_UNAVAILABLE` | The file is missing or cannot be read. |
 | `PROFILE_INVALID` | Invalid, and `check` found no place to point at. |
