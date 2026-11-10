@@ -1,5 +1,21 @@
 # Changelog
 
+## Reference tools — 2026-11-10
+
+Not a change to the format or its contract id.
+
+- `merge(profiles, { today })` now requires `today` as a real `YYYY-MM-DD` calendar date string and throws `UNSUPPORTED_ARGUMENT` otherwise. Before, a missing or malformed value made every member non-stale, an impossible date such as `2026-02-30` was accepted, and a timestamp with an offset moved the 365-day boundary (§ 3.2 asks for an explicit date and whole UTC days).
+- `node merge.mjs <case.json>` maps a missing or malformed case file to the static `UNSUPPORTED_ARGUMENT` diagnostic with exit 2. Before, an uncaught JSON syntax error printed the tool's stack and could quote the start of the file on stderr, against § 8.
+- Evidence, deterministic checks: two new `node:test` cases and two new mutations (`merge-today-date`, `merge-cli-case-shape`) in `tools/`; no vector changed.
+
+## Integrations 0.3.1 and 0.3.2 — 2026-10-18
+
+Not a change to the format or its contract id.
+
+- Release 0.3.1 of [cmdai-hq/humans-md-plugins](https://github.com/cmdai-hq/humans-md-plugins) (`c9956a0`, [#7](https://github.com/cmdai-hq/humans-md-plugins/pull/7)) renders the instruction sentences of contract `0.3-draft.2026-10-18.1`: the `languages` sentence and the wording of `minimal`, `short` and `max_words`. Same scope: the owner's own `~/.humans/HUMANS.md` only.
+- Release 0.3.2 (`c7a44f9`, tag `v0.3.2`, [#9](https://github.com/cmdai-hq/humans-md-plugins/pull/9)) has the same profile handling as 0.3.1. It is the first release built and published by that repository's release workflow, so npm attaches provenance; 0.3.1 was published by hand and has none.
+- Evidence, registry and repository records read on 10 November 2026, not a session trial: npm lists `@humans-md/cli` 0.3.1 (published 18 October 2026, 03:13 UTC) and 0.3.2 (19:57 UTC), and 0.3.2 carries a SLSA provenance attestation. No client session is recorded here with 0.3.1 or 0.3.2: the session evidence below is for 0.3.0 and earlier, and none of it establishes how closely a model follows the preferences.
+
 ## 0.3-draft.2026-10-18.1 — 2026-10-18
 
 Unpublished draft; no stable release or tag is introduced. Merged in [#9](https://github.com/cmdai-hq/HUMANS.md/pull/9). Changing three sentences and adding one is a contract change (§ 6.4); the frame and projection bytes are unchanged.
