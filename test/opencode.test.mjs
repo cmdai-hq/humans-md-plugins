@@ -285,11 +285,15 @@ test('without a profile, calls made together share one render; later calls rende
 appendFileSync(process.env.HOME + '/renders', 'x\\n');
 ${say(ABSENT)}`, async dir => inTemp(async h => {
   const [hook] = await setupV2(await load(dir));
-  const call = sessionID => { const event = v2Event(sessionID); return withEnv({ HOME: h }, () => hook.callback(event)).then(() => event.system[1].text); };
-  assert.deepEqual(await Promise.all([call('ses_a'), call('ses_a'), call('ses_a')]), [ABSENT, ABSENT, ABSENT]);
-  assert.equal(renders(h).length, 1, 'one render for calls made together');
-  assert.equal(await call('ses_a'), ABSENT);
-  assert.equal(renders(h).length, 2, 'the absence was not kept');
+  const call = async sessionID => { const event = v2Event(sessionID); await hook.callback(event); return event.system[1].text; };
+  // HOME is set once around the calls: calls made together would each save and restore it, and
+  // could leave it pointing at this temporary folder after it is removed.
+  await withEnv({ HOME: h }, async () => {
+    assert.deepEqual(await Promise.all([call('ses_a'), call('ses_a'), call('ses_a')]), [ABSENT, ABSENT, ABSENT]);
+    assert.equal(renders(h).length, 1, 'one render for calls made together');
+    assert.equal(await call('ses_a'), ABSENT);
+    assert.equal(renders(h).length, 2, 'the absence was not kept');
+  });
 })));
 
 test('a project instruction quoting the frame with a made-up profile does not replace yours', async () => {

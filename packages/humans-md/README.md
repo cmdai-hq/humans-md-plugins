@@ -51,7 +51,7 @@ One line, at most 512 bytes: `{"ok":false,"issues":[{"path":"/reading/max_words"
 | `FRONTMATTER_DELIMITERS` | The file must start with a `---` line and close with another. |
 | `YAML_INVALID` | The YAML does not parse, or a key appears twice. |
 | `YAML_FEATURE_NOT_ALLOWED` | Remove anchors (`&`), aliases (`*`), tags (`!`), directives and document markers. |
-| `TOO_LARGE` | Over 24,589 bytes in all, or 20 KiB between the `---` lines. |
+| `TOO_LARGE` | Over 24,589 bytes in all, over 20 KiB between the `---` lines, or over 4 KiB after them (a shared `<id>.md` may have a body; `HUMANS.md` has none). |
 | `NOT_UTF8` | Save the file as UTF-8. |
 | `FILENAME_MISMATCH` | At `$`: the file, or the file its link points to, is not named exactly `HUMANS.md`, capitals included (`humans.md` opens on macOS but is not loaded). At `/id`: a shared `<id>.md` whose `id` differs from its file name. |
 | `UNSUPPORTED_VERSION` | `humans` must be `"0.3"`. |
