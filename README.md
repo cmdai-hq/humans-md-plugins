@@ -107,6 +107,7 @@ Each plugin reads `~/.humans/HUMANS.md` and nothing else. Install one plugin per
 
 - **Install (OpenCode 2):** `opencode plugin add 'github:cmdai-hq/humans-md-plugins#main::path:plugins/opencode'`. It needs `git`.
 - **Background service:** if nothing loads, run `opencode service restart` from a terminal where `node --version` works.
+- **After a fix:** a profile that was missing or invalid is read again at the next message, in the same session. A profile that loaded stays as it was until a new session.
 - **OpenCode 1** (npm `opencode-ai`, 1.18.29 or later; also works on OpenCode 2):
   ```sh
   git clone --depth 1 https://github.com/cmdai-hq/humans-md-plugins /tmp/humans-md-plugins
