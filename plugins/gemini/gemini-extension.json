@@ -1,0 +1,5 @@
+{
+  "name": "humans-md",
+  "version": "0.3.2",
+  "description": "Loads your own ~/.humans/HUMANS.md at the start of each session, so Gemini knows how long its replies should be, what it can decide without asking, and when to interrupt you."
+}

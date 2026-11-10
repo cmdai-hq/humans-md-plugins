@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "name": "humans-md",
+            "type": "command",
+            "command": "r=\"${extensionPath}\"; case \"$r\" in /*) cd \"$r\" && exec node hooks/session-start.mjs;; esac",
+            "timeout": 10000,
+            "description": "Loads your own ~/.humans/HUMANS.md as presentation data at session start."
+          }
+        ]
+      }
+    ]
+  }
+}

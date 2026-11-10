@@ -21,6 +21,8 @@ const PLUGINS = [
   { name: 'codex', hook: 'hooks/session-start.mjs', event: { hook_event_name: 'SessionStart', source: 'startup' }, absent: absentFor('codex'), said: 'systemMessage' },
   { name: 'copilot', hook: 'scripts/session-start.mjs', event: { sessionId: 's1', source: 'startup' }, absent: absentFor('copilot'), said: 'progress' },
   { name: 'cursor', hook: 'hooks/session-start.mjs', event: { hook_event_name: 'sessionStart' }, absent: absentFor('cursor') },
+  // Gemini CLI sends `hook_event_name` and reads the Claude envelope (test/gemini.test.mjs).
+  { name: 'gemini', hook: 'hooks/session-start.mjs', event: { hook_event_name: 'SessionStart', source: 'startup' }, absent: absentFor('claude'), said: 'systemMessage' },
 ];
 /** What the model receives: the hook's output without the line shown to the user. */
 function forModel(p, stdout) {
@@ -151,6 +153,7 @@ test('no hook command runs a `node` from the session directory, even with an emp
     ['codex', hooks('codex/hooks/hooks.json').hooks.SessionStart[0].hooks[0].command, { PLUGIN_ROOT: join(root, 'plugins/codex') }, PLUGINS[1].event],
     ['devin', hooks('devin/hooks.json').SessionStart[0].hooks[0].command, { DEVIN_PLUGIN_ROOT: join(root, 'plugins/devin') }, { hook_event_name: 'SessionStart', source: 'startup' }],
     ['junie', hooks('junie/hooks/hooks.json').hooks.UserPromptSubmit[0].hooks[0].command.replaceAll('${JUNIE_EXTENSION_ROOT}', join(root, 'plugins/junie')), {}, { hook_event_name: 'UserPromptSubmit', session_id: `path-${process.pid}` }],
+    ['gemini', hooks('gemini/hooks/hooks.json').hooks.SessionStart[0].hooks[0].command.replaceAll('${extensionPath}', join(root, 'plugins/gemini')), {}, { hook_event_name: 'SessionStart', source: 'startup' }],
   ];
   for (const [client, command, env, event] of cases) {
     const h = mkdtempSync(join(tmpdir(), 'humans-md-path-'));

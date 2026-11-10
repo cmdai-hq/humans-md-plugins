@@ -40,6 +40,7 @@ Or let your agent write it with you: see [Write your profile](#write-your-profil
 | GitHub Copilot CLI | `copilot plugin marketplace add cmdai-hq/humans-md-plugins && copilot plugin install humans-md@humans-md` |
 | Cursor | `agent plugin marketplace add https://github.com/cmdai-hq/humans-md-plugins`, then `/add-plugin humans-md` in a Cursor chat |
 | Google Antigravity | `agy plugin install https://github.com/cmdai-hq/humans-md-plugins/tree/main/plugins/antigravity` |
+| Gemini CLI (not tested) | `git clone --depth 1 https://github.com/cmdai-hq/humans-md-plugins /tmp/humans-md-plugins && gemini extensions install /tmp/humans-md-plugins/plugins/gemini` |
 | OpenCode | `opencode plugin add 'github:cmdai-hq/humans-md-plugins#main::path:plugins/opencode'` |
 | Devin (Desktop and CLI) | `devin plugins install cmdai-hq/humans-md-plugins#plugins/devin --local` |
 | JetBrains Junie | `npx -y @humans-md/cli sync --to junie` |
@@ -101,6 +102,18 @@ Each plugin reads `~/.humans/HUMANS.md` and nothing else. Install one plugin per
 - **App and IDE:** they read the same plugin folder, but have not been tried.
 - **Update:** `agy plugin uninstall humans-md`, then run the install command again.
 - **Uninstall:** `agy plugin uninstall humans-md`.
+</details>
+
+<details>
+<summary><b>Gemini CLI</b> (not tested)</summary>
+
+- **Not tested:** this extension is written from [Gemini CLI's documentation](https://geminicli.com/docs/extensions/reference/) as read on 2026-11-10, when the latest release was 0.67.0. It has not been run in a Gemini CLI session yet.
+- **Install:** from a shell, `git clone --depth 1 https://github.com/cmdai-hq/humans-md-plugins /tmp/humans-md-plugins`, then `gemini extensions install /tmp/humans-md-plugins/plugins/gemini`, confirm, and start a new session. Gemini CLI copies the folder. Its documentation gives no way to install from a folder inside a GitHub repository, so the repository address alone does not install this extension.
+- **Needs** macOS or Linux, and hooks left on (the setting `hooksConfig.enabled`, on by default). `/hooks panel` should list the hook as `humans-md`.
+- **When it loads:** when a session starts, is resumed, or is cleared with `/clear`. It is not loaded again after a compression (`/compress`, or the one Gemini CLI runs by itself in a long conversation): your profile comes back with `/clear` or a new session.
+- **Antigravity account:** Gemini CLI's documentation says Antigravity CLI replaced it for unpaid and Google One users on 2026-06-18. There, use the Google Antigravity plugin.
+- **Update:** `git -C /tmp/humans-md-plugins pull`, then `gemini extensions update humans-md`. Gemini CLI compares the version in that folder with the installed one; if the folder is gone, uninstall and install again.
+- **Uninstall:** `gemini extensions uninstall humans-md`.
 </details>
 
 <details>
@@ -173,11 +186,11 @@ When your profile is there but your agent did not get it as written (invalid, mi
 HUMANS.md: your profile is not valid, so your agent did not get it. To see what to fix, run: npx -y @humans-md/cli check
 ```
 
-Claude Code, Codex, GitHub Copilot CLI and the Junie extension show it. Cursor, Antigravity, OpenCode and Devin document no way for a hook to show its user a line without changing the session, so there a profile that does not load stays silent. A profile that does not exist is never reported. This follows each client's hook documentation as read on 2026-11-10; it has not been tried in a real session yet.
+Claude Code, Codex, GitHub Copilot CLI, Gemini CLI and the Junie extension show it. Cursor, Antigravity, OpenCode and Devin document no way for a hook to show its user a line without changing the session, so there a profile that does not load stays silent. A profile that does not exist is never reported. This follows each client's hook documentation as read on 2026-11-10; it has not been tried in a real session yet.
 
 1. Run `npx -y @humans-md/cli check` and fix what it reports: each issue gives the field at fault (`path`) and a code (`message`), [listed here](packages/humans-md/README.md#what-check-reports). A file named `humans.md` opens on macOS but is not loaded: `check` reports `FILENAME_MISMATCH`.
 2. Check that `node --version` prints 22.18 or later where your client starts. Desktop apps opened from the Dock may not see a `node` installed with nvm or Homebrew: start the app from a terminal once, or install Node from [nodejs.org](https://nodejs.org).
-3. Codex: check that the hook is trusted in `/hooks`. Cursor: open the Output panel, choose **Hooks** and look for `sessionStart`.
+3. Codex: check that the hook is trusted in `/hooks`. Cursor: open the Output panel, choose **Hooks** and look for `sessionStart`. Gemini CLI: `/hooks panel` should list `humans-md`.
 4. On a work machine, your administrator may block plugins or hooks.
 5. Your profile shows up twice: two plugins load it (for example Cursor importing the Claude Code plugin). Remove one.
 
@@ -208,6 +221,7 @@ Format version: 0.3 draft (`0.3-draft.2026-10-18.1`). macOS only. "Tested" means
 | Devin CLI | 3000.11.92 | Tested from GitHub |
 | Junie CLI, copy with `npx -y @humans-md/cli sync --to junie` | 26.10.12 | Tested with `@humans-md/cli` 0.3.0 from npm |
 | Junie CLI EAP, extension | 26.10.20 | Tested, local copy: first prompt of each session |
+| Gemini CLI | 0.67.0 (documentation only) | Not tested: written from the documentation read on 2026-11-10, never run in a session |
 | GitHub Copilot CLI, VS Code Copilot, OpenCode 1, Devin Desktop window, Cline, Warp | | Not tested |
 
 ## Not in these packages

@@ -27,6 +27,8 @@ const CLIENTS = [
   { name: 'VS Code, Local harness', plugin: 'copilot', hook: 'scripts/session-start.mjs', event: { ...sessionStart, session_id: 's-1', source: 'new' }, cli: 'claude', channel: 'systemMessage' },
   // Junie's hook answers the first prompt of each session only: every run here is a new session.
   { name: 'Junie', plugin: 'junie', hook: 'hooks/user-prompt-submit.mjs', event: () => ({ hook_event_name: 'UserPromptSubmit', session_id: `s-${++sessions}`, prompt: 'hello' }), cli: 'copilot', channel: 'systemMessage' },
+  // Built from Gemini CLI's documentation, not run in it: `systemMessage` is "Displayed immediately to the user in the terminal".
+  { name: 'Gemini CLI', plugin: 'gemini', hook: 'hooks/session-start.mjs', event: { ...sessionStart, session_id: 's-1', cwd: '/tmp' }, cli: 'claude', channel: 'systemMessage' },
   // No documented channel that leaves the session as it was: nothing is added.
   { name: 'Cursor', plugin: 'cursor', hook: 'hooks/session-start.mjs', event: { hook_event_name: 'sessionStart' }, cli: 'cursor' },
   { name: 'Devin', plugin: 'devin', hook: 'scripts/session-start.mjs', event: sessionStart, cli: 'claude' },
