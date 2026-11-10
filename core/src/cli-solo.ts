@@ -3,10 +3,9 @@
 // Running it on your machine with your file is the owner's explicit local selection (SPEC § 6.1);
 // `show` and `hook` accept only a file named HUMANS.md (SPEC § 5): a shared `<id>.md` is someone
 // else's and is refused before any read.
-import { realpathSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { basename, isAbsolute, join } from 'node:path';
-import { loadProfile, diagnostics } from './cli-files.js';
+import { checkProfile, loadProfile, diagnostics, real } from './cli-files.js';
 import { serveOwner } from './profile/view.js';
 import { renderProjection, type Adapter } from './profile/render.js';
 import { HINTS, SyncError, TARGETS, makeBlock, rerunCommand, syncFile, type Client, type SyncCode } from './sync.js';
@@ -88,14 +87,12 @@ const sync = (block: string | null): never => {
 if (cmd === 'sync' && remove) sync(null);
 const today = new Date().toISOString().slice(0, 10);
 if (cmd === 'check') {
-  const { issues } = loadProfile(file, 'write', draft);
-  const ok = !issues.some(i => i.severity === 'error');
-  process.stdout.write(JSON.stringify({ ok, issues }) + '\n'); process.exit(ok ? 0 : 1);
+  const result = checkProfile(file, draft);
+  process.stdout.write(JSON.stringify(result) + '\n'); process.exit(result.ok ? 0 : 1);
 }
 // Loading as the owner: an absolute path, never relative (a hook runs in the session's directory,
 // where a repository could ship its own `.humans/HUMANS.md`), to a file named HUMANS.md.
 // A link named HUMANS.md to someone's `<id>.md` is not the owner's file either.
-const real = (f: string) => { try { return realpathSync.native(f); } catch { return f; } };
 if (!isAbsolute(file) || basename(file) !== 'HUMANS.md' || basename(real(file)) !== 'HUMANS.md') fail();
 const { profile, withheld, issues } = loadProfile(file, 'read');
 const codes = issues.map(i => i.message);

@@ -165,7 +165,7 @@ To keep the file elsewhere, for example in a dotfiles repository, make `~/.human
 
 ## Troubleshooting
 
-1. Run `npx -y @humans-md/cli check` and fix what it reports.
+1. Run `npx -y @humans-md/cli check` and fix what it reports. A file named `humans.md` opens on macOS but is not loaded: `check` reports `FILENAME_MISMATCH`.
 2. Check that `node --version` prints 22.18 or later where your client starts. Desktop apps opened from the Dock may not see a `node` installed with nvm or Homebrew: start the app from a terminal once, or install Node from [nodejs.org](https://nodejs.org).
 3. Codex: check that the hook is trusted in `/hooks`. Cursor: open the Output panel, choose **Hooks** and look for `sessionStart`.
 4. On a work machine, your administrator may block plugins or hooks.

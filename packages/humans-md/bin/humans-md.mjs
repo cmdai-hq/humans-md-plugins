@@ -7369,12 +7369,12 @@ var require_dist = __commonJS({
 });
 
 // core/src/cli-solo.ts
-import { realpathSync as realpathSync2 } from "node:fs";
 import { homedir as homedir2 } from "node:os";
 import { basename as basename3, isAbsolute as isAbsolute2, join as join2 } from "node:path";
 
 // core/src/cli-files.ts
 import { basename, resolve } from "node:path";
+import { realpathSync } from "node:fs";
 
 // spec/tools/bytes.mjs
 import { openSync, readSync, closeSync } from "node:fs";
@@ -15699,6 +15699,18 @@ function loadProfile(file2, mode, draft2 = false) {
     return invalid(error instanceof Error && "code" in error && error.code === "PROFILE_INVALID" ? "PROFILE_INVALID" : "PROFILE_UNAVAILABLE");
   }
 }
+var real = (file2) => {
+  try {
+    return realpathSync.native(file2);
+  } catch {
+    return file2;
+  }
+};
+function checkProfile(file2, draft2 = false) {
+  if (!draft2 && basename(file2) === "HUMANS.md" && basename(real(file2)) !== "HUMANS.md") return { ok: false, issues: invalid("FILENAME_MISMATCH").issues };
+  const { issues: issues2 } = loadProfile(file2, "write", draft2);
+  return { ok: !issues2.some((i) => i.severity === "error"), issues: issues2 };
+}
 var CODES = /* @__PURE__ */ new Set(["PROFILE_INVALID", "UNSUPPORTED_VERSION", "PROFILE_UNAVAILABLE", "NOTE_WITHHELD_AGENT_DIRECTED", "DRAFT_FILENAME_UNCHECKED", "UNSUPPORTED_ARGUMENT", "RENDER_LIMIT"]);
 function diagnostics(codes2) {
   return [...new Set(codes2.map((c) => CODES.has(c) ? c : "PROFILE_INVALID"))].map((c) => c + "\n").join("");
@@ -15976,7 +15988,7 @@ function renderProjection(projection2, options = {}) {
 }
 
 // core/src/sync.ts
-import { closeSync as closeSync2, constants, fchmodSync, fstatSync, fsyncSync, lstatSync, mkdirSync, openSync as openSync2, readFileSync, readSync as readSync2, realpathSync, renameSync, statSync, unlinkSync, writeSync } from "node:fs";
+import { closeSync as closeSync2, constants, fchmodSync, fstatSync, fsyncSync, lstatSync, mkdirSync, openSync as openSync2, readFileSync, readSync as readSync2, realpathSync as realpathSync2, renameSync, statSync, unlinkSync, writeSync } from "node:fs";
 import { randomBytes } from "node:crypto";
 import { homedir } from "node:os";
 import { basename as basename2, dirname, isAbsolute, join } from "node:path";
@@ -16064,7 +16076,7 @@ function rerunCommand(parts, home2) {
 function existingAncestor(dir) {
   for (let d = dir; ; d = dirname(d)) {
     try {
-      return realpathSync.native(d);
+      return realpathSync2.native(d);
     } catch {
       if (dirname(d) === d) throw new SyncError("TARGET_UNAVAILABLE");
     }
@@ -16093,7 +16105,7 @@ function inDotfilesHome(realDir) {
   if (process.env.GIT_DIR || process.env.GIT_WORK_TREE) return true;
   let home2;
   try {
-    home2 = realpathSync.native(homedir());
+    home2 = realpathSync2.native(homedir());
   } catch {
     return false;
   }
@@ -16278,18 +16290,10 @@ var sync = (block) => {
 if (cmd === "sync" && remove) sync(null);
 var today = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
 if (cmd === "check") {
-  const { issues: issues2 } = loadProfile(file, "write", draft);
-  const ok = !issues2.some((i) => i.severity === "error");
-  process.stdout.write(JSON.stringify({ ok, issues: issues2 }) + "\n");
-  process.exit(ok ? 0 : 1);
+  const result = checkProfile(file, draft);
+  process.stdout.write(JSON.stringify(result) + "\n");
+  process.exit(result.ok ? 0 : 1);
 }
-var real = (f) => {
-  try {
-    return realpathSync2.native(f);
-  } catch {
-    return f;
-  }
-};
 if (!isAbsolute2(file) || basename3(file) !== "HUMANS.md" || basename3(real(file)) !== "HUMANS.md") fail();
 var { profile, withheld, issues } = loadProfile(file, "read");
 var codes = issues.map((i) => i.message);
