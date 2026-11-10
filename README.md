@@ -151,7 +151,7 @@ Each plugin reads `~/.humans/HUMANS.md` and nothing else. Install one plugin per
 
 ### Clients without a hook: a copy
 
-`humans-md sync` writes what your agents would receive into a user-level instruction file, between `<!-- humans-md:begin -->` and `<!-- humans-md:end -->`, and leaves the rest of the file as it is. It is a copy, not a live load: **run it again after each change to your HUMANS.md.** `--dry-run` shows what would change; `--remove` takes the copy out. If your home directory is in a git repository (dotfiles), check what you commit: the copy can include your private notes. More in the [package README](packages/humans-md/README.md#sync-a-copy-for-clients-without-a-hook).
+`humans-md sync` writes what your agents would receive into a user-level instruction file, between `<!-- humans-md:begin -->` and `<!-- humans-md:end -->`, and leaves the rest of the file as it is. It is a copy, not a live load: **run it again after each change to your HUMANS.md.** `--check` tells you whether the copy still matches your profile; `--dry-run` shows what would change; `--remove` takes the copy out. If your home directory is in a git repository (dotfiles), check what you commit: the copy can include your private notes. More in the [package README](packages/humans-md/README.md#sync-a-copy-for-clients-without-a-hook).
 
 ## Write your profile
 

@@ -7375,6 +7375,7 @@ import { basename as basename3, isAbsolute as isAbsolute2, join as join2 } from 
 // core/src/cli-files.ts
 import { basename, resolve as resolve2 } from "node:path";
 import { realpathSync } from "node:fs";
+import { createHash } from "node:crypto";
 
 // spec/tools/bytes.mjs
 import { openSync, readSync, closeSync } from "node:fs";
@@ -15792,6 +15793,14 @@ function loadProfile(file2, mode, draft2 = false) {
     return invalid(error instanceof Error && "code" in error && error.code === "PROFILE_INVALID" ? "PROFILE_INVALID" : "PROFILE_UNAVAILABLE");
   }
 }
+function loadBound(file2) {
+  try {
+    const bytes2 = readBounded(file2);
+    return { ...parseProfile(bytes2, { mode: "read", ...named(file2, false) }), digest: createHash("sha256").update(bytes2).digest("hex") };
+  } catch (error) {
+    return invalid(error instanceof Error && "code" in error && error.code === "PROFILE_INVALID" ? "PROFILE_INVALID" : "PROFILE_UNAVAILABLE");
+  }
+}
 var real = (file2) => {
   try {
     return realpathSync.native(file2);
@@ -16110,7 +16119,11 @@ var HINTS = {
   TARGET_TOO_LARGE: "the target is larger than 1 MiB. Nothing written.",
   TARGET_UNAVAILABLE: "the target cannot be read or written, or changed while sync ran. Nothing written.",
   TARGET_IS_PROFILE: "the target is a HUMANS.md file. Sync writes a copy into an instruction file, never into a profile.",
-  HOME_UNAVAILABLE: "HOME is not set to an absolute path, so ~ would be the current folder. Nothing written."
+  HOME_UNAVAILABLE: "HOME is not set to an absolute path, so ~ would be the current folder. Nothing written.",
+  COPY_MISSING: "the target holds no copy of your HUMANS.md. Run sync without --check to write one.",
+  BINDING_MISSING: "the copy does not say which HUMANS.md it was made from: an earlier humans-md wrote it, or its first line was edited. Run sync without --check.",
+  BINDING_MISMATCH: "the copy is not what this humans-md renders from your HUMANS.md now: the profile, the program, the options or the copy changed. Run sync without --check.",
+  BINDING_STALE: "the copy was made on another day. Run sync without --check."
 };
 var SyncError = class extends Error {
   constructor(code) {
@@ -16147,14 +16160,16 @@ function planSync(existing, block) {
   }
   if (existing === null || existing === "") return { action: "created", text: block };
   if (!found) return { action: "updated", text: existing + (existing.endsWith("\n") ? "\n" : "\n\n") + block };
-  const body = (inner) => inner.startsWith(NOTICE) && inner.includes("\n") ? inner.slice(inner.indexOf("\n") + 1) : null;
-  const next = findBlock(block);
-  if (body(found.inner) === body(next.inner)) return { action: "unchanged" };
+  if (found.inner === findBlock(block).inner) return { action: "unchanged" };
   return { action: "updated", text: existing.slice(0, found.begin.start) + block + existing.slice(found.end.end) };
 }
-function makeBlock(rendering, date, version, rerun) {
-  if (/[\r\n]|-->/.test(rerun) || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^[\w.+-]+$/.test(version)) throw new Error("UNSUPPORTED_ARGUMENT");
-  const notice = `${NOTICE}, written by humans-md ${version} on ${date}. Do not edit it here: edit your HUMANS.md, then run \`${rerun}\` again. -->`;
+function bindingOf(inner) {
+  const m = /^<!-- Generated copy of your HUMANS\.md, written by humans-md ([\w.+-]+) on (\d{4}-\d{2}-\d{2}) from the profile with SHA-256 ([0-9a-f]{64})\. /.exec(inner);
+  return m ? { version: m[1], date: m[2], digest: m[3] } : void 0;
+}
+function makeBlock(rendering, date, version, rerun, digest2) {
+  if (/[\r\n]|-->/.test(rerun) || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^[\w.+-]+$/.test(version) || !/^[0-9a-f]{64}$/.test(digest2)) throw new Error("UNSUPPORTED_ARGUMENT");
+  const notice = `${NOTICE}, written by humans-md ${version} on ${date} from the profile with SHA-256 ${digest2}. Do not edit it here: edit your HUMANS.md, then run \`${rerun}\` again. -->`;
   const block = `${BEGIN}
 ${notice}
 ${rendering}${END}
@@ -16163,7 +16178,7 @@ ${rendering}${END}
   return block;
 }
 function rerunCommand(parts, home2) {
-  const shown = (p) => {
+  const shown2 = (p) => {
     const short = p === home2 || p.startsWith(home2 + "/") ? "~" + p.slice(home2.length) : p;
     return /^[\w./~+@-]+$/.test(short) ? short : null;
   };
@@ -16171,7 +16186,7 @@ function rerunCommand(parts, home2) {
   let complete = true;
   for (const [flag, value] of [["", parts.profile], ["--target ", parts.target]]) {
     if (value === void 0) continue;
-    const s = shown(value);
+    const s = shown2(value);
     if (s === null) complete = false;
     else words.push(flag + s);
   }
@@ -16260,6 +16275,19 @@ function readTarget(target2) {
     closeSync2(fd);
   }
 }
+function checkFile(target2, block) {
+  if (!isAbsolute(homedir())) throw new SyncError("HOME_UNAVAILABLE");
+  if (!isAbsolute(target2)) throw new SyncError("TARGET_UNAVAILABLE");
+  const current = readTarget(target2);
+  const found = current === null ? void 0 : findBlock(current.text);
+  if (!found) return "COPY_MISSING";
+  const wanted = findBlock(Buffer.from(block, "utf8").toString("latin1"));
+  if (found.inner === wanted.inner) return void 0;
+  const have = bindingOf(found.inner), want = bindingOf(wanted.inner);
+  if (!have || !want) return "BINDING_MISSING";
+  if (have.digest !== want.digest || have.version !== want.version) return "BINDING_MISMATCH";
+  return have.date !== want.date ? "BINDING_STALE" : "BINDING_MISMATCH";
+}
 function syncFile(target2, block, dryRun2 = false) {
   if (!isAbsolute(homedir())) throw new SyncError("HOME_UNAVAILABLE");
   if (!isAbsolute(target2)) throw new SyncError("TARGET_UNAVAILABLE");
@@ -16309,7 +16337,7 @@ var USAGE = `humans-md: check and load your own HUMANS.md (https://humansmd.dev)
   humans-md check [file] [--draft]    validate a profile
   humans-md show [file] [--json]     what your agents receive
   humans-md hook ${CLIENTS.join("|")} [file]   the session-start hook output
-  humans-md sync [file] [--to cline|junie|--target F] [--remove] [--dry-run]
+  humans-md sync [file] [--to cline|junie|--target F] [--remove] [--dry-run] [--check]
   options for show and hook: --no-guidance, --budget-bytes N, --budget-tokens N
   file defaults to ${DEFAULT_FILE}
 `;
@@ -16334,6 +16362,7 @@ var json = false;
 var guidance = true;
 var remove = false;
 var dryRun = false;
+var check = false;
 var to;
 var target;
 var budgetBytes;
@@ -16353,6 +16382,7 @@ for (let i = 0; i < args.length; i++) {
   else if (arg === "--no-guidance" && cmd !== "check") guidance = false;
   else if (arg === "--remove" && cmd === "sync") remove = true;
   else if (arg === "--dry-run" && cmd === "sync") dryRun = true;
+  else if (arg === "--check" && cmd === "sync") check = true;
   else if (arg === "--to" && cmd === "sync" && !seen.has("--target")) {
     const value = args[++i];
     if (!Object.hasOwn(TARGETS, value ?? "")) fail();
@@ -16370,6 +16400,7 @@ for (let i = 0; i < args.length; i++) {
 var client = cmd === "hook" ? positional.shift() : void 0;
 if (cmd === "hook" && !CLIENTS.includes(client ?? "")) fail();
 if (positional.length > 1) fail();
+if (check && (remove || dryRun)) fail();
 function refuse(code) {
   process.stderr.write(`${code}
 humans-md sync: ${HINTS[code]}
@@ -16381,10 +16412,10 @@ var file = positional[0] ?? DEFAULT_FILE;
 var home = (p) => p.startsWith("~/") ? join2(homedir2(), p.slice(2)) : p;
 file = home(file);
 var destination = home(target ?? "~/" + TARGETS[to ?? "cline"]);
+var shown = destination.startsWith(homedir2() + "/") ? "~" + destination.slice(homedir2().length) : destination;
 var sync = (block) => {
   try {
     const action = syncFile(destination, block, dryRun);
-    const shown = destination.startsWith(homedir2() + "/") ? "~" + destination.slice(homedir2().length) : destination;
     const verb = (dryRun ? { created: "would create", updated: "would update", removed: "would remove the copy from" } : {})[action] ?? { created: "created", updated: "updated", unchanged: "unchanged", removed: "removed the copy from", absent: "no copy in" }[action];
     process.stdout.write(`humans-md sync: ${verb} ${shown}
 ` + (dryRun && block ? block : ""));
@@ -16392,6 +16423,18 @@ var sync = (block) => {
   } catch (e) {
     refuse(e instanceof SyncError ? e.code : "TARGET_UNAVAILABLE");
   }
+};
+var verify = (block) => {
+  let code;
+  try {
+    code = checkFile(destination, block);
+  } catch (e) {
+    code = e instanceof SyncError ? e.code : "TARGET_UNAVAILABLE";
+  }
+  if (code) refuse(code);
+  process.stdout.write(`humans-md sync: up to date ${shown}
+`);
+  process.exit(0);
 };
 if (cmd === "sync" && remove) sync(null);
 var today = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
@@ -16401,20 +16444,23 @@ if (cmd === "check") {
   process.exit(result.ok ? 0 : 1);
 }
 if (!isAbsolute2(file) || basename3(file) !== "HUMANS.md" || basename3(real(file)) !== "HUMANS.md") fail();
-var { profile, withheld, issues } = loadProfile(file, "read");
+var { profile, withheld, issues, digest } = loadBound(file);
 var codes = issues.map((i) => i.message);
 var projection = profile ? serveOwner(profile, { today, withheld }) : { status: "none" };
 var adapter = cmd === "hook" ? client : json ? "json" : "text";
 var rendered = renderProjection(projection, { adapter, budgetBytes, budgetTokens, ...guidance ? {} : { guidance: false } });
 if (rendered.diagnostic) codes.push(rendered.diagnostic);
 if (cmd === "sync") {
-  if (!profile || rendered.diagnostic) {
-    process.stderr.write(diagnostics(codes) + "humans-md sync: no copy written; run humans-md check.\n");
+  if (!profile || !digest || rendered.diagnostic) {
+    process.stderr.write(diagnostics(codes) + `humans-md sync: ${check ? "no copy can match a profile that does not load" : "no copy written"}; run humans-md check.
+`);
     process.exit(1);
   }
   process.stderr.write(diagnostics(codes));
   const rerun = rerunCommand({ to, target: target && destination, profile: positional[0] && file, guidance }, homedir2());
-  sync(makeBlock(rendered.output, today, "0.3.2", rerun));
+  const block = makeBlock(rendered.output, today, "0.3.2", rerun, digest);
+  if (check) verify(block);
+  sync(block);
 }
 process.stdout.write(rendered.output);
 process.stderr.write(diagnostics(codes));

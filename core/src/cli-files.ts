@@ -1,6 +1,7 @@
 // Trusted local-file entrance. Remote callers must supply their own authorization.
 import { basename, resolve } from 'node:path';
 import { realpathSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { readBounded } from '../../spec/tools/bytes.mjs';
 import { invalid } from '../../spec/tools/reader-core.mjs';
 import { parseProfile, type Issue, type ParseOptions, type ParseResult } from './profile/parse.js';
@@ -18,6 +19,16 @@ const named = (file: string, draft: boolean): Pick<ParseOptions, 'kind' | 'expec
 export function loadProfile(file: string, mode: 'read' | 'write', draft = false): ParseResult {
   try { return parseProfile(readBounded(file), { mode, ...named(file, draft) }); }
   catch (error) { return invalid(error instanceof Error && 'code' in error && error.code === 'PROFILE_INVALID' ? 'PROFILE_INVALID' : 'PROFILE_UNAVAILABLE'); }
+}
+/**
+ * loadProfile for reading, with the SHA-256 (hex) of the very bytes it parsed: what a stored copy
+ * of the rendering is bound to (SPEC § 5). No digest when the file cannot be read.
+ */
+export function loadBound(file: string): ParseResult & { digest?: string } {
+  try {
+    const bytes = readBounded(file);
+    return { ...parseProfile(bytes, { mode: 'read', ...named(file, false) }), digest: createHash('sha256').update(bytes).digest('hex') };
+  } catch (error) { return invalid(error instanceof Error && 'code' in error && error.code === 'PROFILE_INVALID' ? 'PROFILE_INVALID' : 'PROFILE_UNAVAILABLE'); }
 }
 /** The file a link points to, in the spelling the file system stores; the path itself when it cannot be resolved. */
 export const real = (file: string): string => { try { return realpathSync.native(file); } catch { return file; } };
