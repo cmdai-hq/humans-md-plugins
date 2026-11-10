@@ -55,7 +55,7 @@ Each plugin reads `~/.humans/HUMANS.md` and nothing else. Install one plugin per
 <details>
 <summary><b>Claude Code</b> (CLI, Desktop, VS Code)</summary>
 
-- **Install:** `claude plugin install humans-md --marketplace cmdai-hq/humans-md-plugins`. In a session: `/plugin install humans-md --marketplace cmdai-hq/humans-md-plugins`, then choose to install it for you.
+- **Install:** `claude plugin install humans-md --marketplace cmdai-hq/humans-md-plugins`. In a session: `/plugin install humans-md --marketplace cmdai-hq/humans-md-plugins`, then choose to install it for you. `--marketplace` needs Claude Code 2.1.292 or later from the shell and 2.1.275 or later in a session ([Claude Code docs](https://code.claude.com/docs/en/discover-plugins#add-a-marketplace-and-install-in-one-command)); on an older version, add the marketplace first with `claude plugin marketplace add cmdai-hq/humans-md-plugins`, then `claude plugin install humans-md@humans-md`.
 - **Another file:** set **Your HUMANS.md** in `/config`. The file must be named `HUMANS.md`.
 - **Update:** `claude plugin update humans-md@humans-md`, or **Update now** in `/plugin`. Claude Code does not update this marketplace by itself unless you turn on auto-update for it in the Marketplaces tab of `/plugin`.
 - **Uninstall:** `claude plugin uninstall humans-md@humans-md`, then `claude plugin marketplace remove humans-md`.
@@ -65,7 +65,7 @@ Each plugin reads `~/.humans/HUMANS.md` and nothing else. Install one plugin per
 <summary><b>Codex</b></summary>
 
 - **Install:** `codex plugin marketplace add cmdai-hq/humans-md-plugins`, then `codex plugin add humans-md@humans-md`.
-- **Trust the hook:** Codex runs a plugin's hook only after you trust it. Open `/hooks`, review the HUMANS.md hook and trust it. Codex asks again after each update.
+- **Trust the hook:** Codex runs a plugin's hook only after you trust it. Open `/hooks`, review the HUMANS.md hook and trust it. Codex records trust against the hook's content ([Codex docs](https://learn.chatgpt.com/docs/hooks)): after any update that changes it, the hook is skipped, your profile is not loaded, and Codex prints a startup warning that points to `/hooks` until you trust it again.
 - **Codex IDE extension:** it does not load plugins. Use the [hand-written hook](packages/humans-md#hook-configuration) there.
 - **Update:** `codex plugin marketplace upgrade humans-md`, then trust the hook again in `/hooks`.
 - **Uninstall:** `codex plugin remove humans-md@humans-md`, then `codex plugin marketplace remove humans-md`.
@@ -76,6 +76,7 @@ Each plugin reads `~/.humans/HUMANS.md` and nothing else. Install one plugin per
 
 - **Install:** `copilot plugin marketplace add cmdai-hq/humans-md-plugins`, then `copilot plugin install humans-md@humans-md`.
 - **Sandbox:** with Copilot CLI's sandbox on (`/sandbox`, off by default), the hook may not be able to read `~/.humans`, and your agent gets no profile.
+- **Needs** Copilot CLI 1.0.55 or later. The line that tells you about a profile problem is a hook progress message, which older versions do not read: with one of those problems, they would load nothing.
 - **VS Code:** VS Code lists plugins installed with Copilot CLI in its Agent Plugins view (setting `chat.plugins.enabled`). Not tried yet. With the Claude Code extension and its plugin too, VS Code may load both.
 - **Update:** `copilot plugin update humans-md`.
 - **Uninstall:** `copilot plugin uninstall humans-md`, then `copilot plugin marketplace remove humans-md`.
@@ -107,6 +108,7 @@ Each plugin reads `~/.humans/HUMANS.md` and nothing else. Install one plugin per
 
 - **Install (OpenCode 2):** `opencode plugin add 'github:cmdai-hq/humans-md-plugins#main::path:plugins/opencode'`. It needs `git`.
 - **Background service:** if nothing loads, run `opencode service restart` from a terminal where `node --version` works.
+- **After a fix:** a profile that was missing or invalid is read again at the next message, in the same session. A profile that loaded stays as it was until a new session.
 - **OpenCode 1** (npm `opencode-ai`, 1.18.29 or later; also works on OpenCode 2):
   ```sh
   git clone --depth 1 https://github.com/cmdai-hq/humans-md-plugins /tmp/humans-md-plugins
@@ -149,7 +151,7 @@ Each plugin reads `~/.humans/HUMANS.md` and nothing else. Install one plugin per
 
 ### Clients without a hook: a copy
 
-`humans-md sync` writes what your agents would receive into a user-level instruction file, between `<!-- humans-md:begin -->` and `<!-- humans-md:end -->`, and leaves the rest of the file as it is. It is a copy, not a live load: **run it again after each change to your HUMANS.md.** `--dry-run` shows what would change; `--remove` takes the copy out. If your home directory is in a git repository (dotfiles), check what you commit: the copy can include your private notes. More in the [package README](packages/humans-md/README.md#sync-a-copy-for-clients-without-a-hook).
+`humans-md sync` writes what your agents would receive into a user-level instruction file, between `<!-- humans-md:begin -->` and `<!-- humans-md:end -->`, and leaves the rest of the file as it is. It is a copy, not a live load: **run it again after each change to your HUMANS.md.** `--check` tells you whether the copy still matches your profile; `--dry-run` shows what would change; `--remove` takes the copy out. If your home directory is in a git repository (dotfiles), check what you commit: the copy can include your private notes. More in the [package README](packages/humans-md/README.md#sync-a-copy-for-clients-without-a-hook).
 
 ## Write your profile
 
@@ -165,7 +167,15 @@ To keep the file elsewhere, for example in a dotfiles repository, make `~/.human
 
 ## Troubleshooting
 
-1. Run `npx -y @humans-md/cli check` and fix what it reports.
+When your profile is there but your agent did not get it as written (invalid, misnamed, unreadable, or loaded without its notes), some clients tell you at session start, in one line that your agent never sees:
+
+```text
+HUMANS.md: your profile is not valid, so your agent did not get it. To see what to fix, run: npx -y @humans-md/cli check
+```
+
+Claude Code, Codex, GitHub Copilot CLI and the Junie extension show it. Cursor, Antigravity, OpenCode and Devin document no way for a hook to show its user a line without changing the session, so there a profile that does not load stays silent. A profile that does not exist is never reported. This follows each client's hook documentation as read on 2026-11-10; it has not been tried in a real session yet.
+
+1. Run `npx -y @humans-md/cli check` and fix what it reports: each issue gives the field at fault (`path`) and a code (`message`), [listed here](packages/humans-md/README.md#what-check-reports). A file named `humans.md` opens on macOS but is not loaded: `check` reports `FILENAME_MISMATCH`.
 2. Check that `node --version` prints 22.18 or later where your client starts. Desktop apps opened from the Dock may not see a `node` installed with nvm or Homebrew: start the app from a terminal once, or install Node from [nodejs.org](https://nodejs.org).
 3. Codex: check that the hook is trusted in `/hooks`. Cursor: open the Output panel, choose **Hooks** and look for `sessionStart`.
 4. On a work machine, your administrator may block plugins or hooks.
@@ -175,7 +185,7 @@ Restart your client after an install or an update. To update the command line: `
 
 ## What your agent receives
 
-The fields it recognizes, labelled as data, then one plain sentence per preference. Comments, unknown fields and the Markdown body are left out. If the file is missing, invalid or too large, the agent receives `{"status":"none"}`: nothing is loaded, and nothing is cut short. To leave the plain sentences out, start your client with `HUMANS_GUIDANCE=off` set (for OpenCode, in the environment of its background service), or pass `--no-guidance` to the command line.
+The fields it recognizes, labelled as data, then one plain sentence per preference. Comments, unknown fields and the Markdown body are left out. If the file is missing, invalid or too large, the agent receives `{"status":"none"}`: nothing is loaded, and nothing is cut short. What your client tells you then is in [Troubleshooting](#troubleshooting). To leave the plain sentences out, start your client with `HUMANS_GUIDANCE=off` set (for OpenCode, in the environment of its background service), or pass `--no-guidance` to the command line.
 
 ## Privacy and limits
 

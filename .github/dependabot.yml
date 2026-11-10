@@ -11,3 +11,21 @@ updates:
         patterns: ['*']
     commit-message:
       prefix: ci
+  # The root manifest is the only one with dependencies (spec/ is a pinned mirror, updated upstream).
+  # `yaml` is bundled into the published command line, and `ajv` writes the validator bundled with
+  # it. When a bump changes the built files, CI's build check fails: run `npm run build` on the
+  # pull request and commit the result.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      # Build and test tools only: what ends up in the bundle gets a pull request of its own.
+      tooling:
+        patterns: ['*']
+        exclude-patterns: ['yaml', 'ajv', 'ajv-formats']
+    commit-message:
+      prefix: chore
+      include: scope

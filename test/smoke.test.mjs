@@ -18,6 +18,8 @@ const runHook = (env, input = session, args = []) => run(hook, args, { input, en
 const projected = stdout => JSON.parse(JSON.parse(stdout).hookSpecificOutput.additionalContext.split('\n')[1]);
 // The CLI's own absence envelope: the hook must give the model the same bytes when it fails.
 const ABSENT = run(bin, ['hook', 'claude', '/nonexistent/HUMANS.md']).stdout;
+/** What the model receives: the hook's output without the `systemMessage` Claude Code shows the user. */
+const forModel = stdout => { const { systemMessage, ...rest } = JSON.parse(stdout); return JSON.stringify(rest) + '\n'; };
 /** Run with a temporary directory, removed afterwards. */
 const inTemp = fn => { const dir = mkdtempSync(join(tmpdir(), 'humans-md-smoke-')); try { fn(dir); } finally { rmSync(dir, { recursive: true, force: true }); } };
 
@@ -102,7 +104,10 @@ test('plugin hook loads only your HUMANS.md', () => {
   assert.equal(projected(runHook({ HOME: home }).stdout).status, 'found');
   // A relative path, or a path in the hook input: nothing else is read, the model gets the absence.
   inTemp(empty => {
-    assert.equal(runHook({ HOME: empty, CLAUDE_PLUGIN_OPTION_PROFILE: '.humans/HUMANS.md' }).stdout, ABSENT);
+    const relative = runHook({ HOME: empty, CLAUDE_PLUGIN_OPTION_PROFILE: '.humans/HUMANS.md' });
+    assert.equal(forModel(relative.stdout), ABSENT);
+    // The setting is wrong, so the user is told (test/notices.test.mjs).
+    assert.match(JSON.parse(relative.stdout).systemMessage, /^HUMANS\.md: the profile path set for this plugin is not absolute/);
     assert.equal(runHook({ HOME: empty }, JSON.stringify({ hook_event_name: 'SessionStart', profile })).stdout, ABSENT);
   });
   // Not a SessionStart event: no output at all.
@@ -120,7 +125,7 @@ test('a profile shared by someone else (`<id>.md`) is never loaded as your own',
     assert.equal(cli.stdout, '');
   }
   const viaHook = runHook({ CLAUDE_PLUGIN_OPTION_PROFILE: colleague });
-  assert.equal(viaHook.stdout, ABSENT);
+  assert.equal(forModel(viaHook.stdout), ABSENT);
   assert.doesNotMatch(viaHook.stdout + viaHook.stderr, /Invented|alice/);
 }));
 

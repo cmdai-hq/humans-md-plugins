@@ -3,6 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { chmodSync, existsSync, linkSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -43,7 +44,10 @@ test('creates ~/.agents/AGENTS.md, private, with what show prints between the ma
   assert.equal(r.stdout, 'humans-md sync: created ~/.agents/AGENTS.md\n');
   const text = readFileSync(agents(home), 'utf8');
   assert.ok(text.startsWith(BEGIN + '\n<!-- Generated copy of your HUMANS.md, written by humans-md '));
-  assert.match(text.split('\n')[1], / on \d{4}-\d{2}-\d{2}\. Do not edit it here: edit your HUMANS\.md, then run `humans-md sync` again\. -->$/);
+  // The binding SPEC § 5 asks of a stored copy: the renderer's version, the day, the source file's digest.
+  const version = JSON.parse(readFileSync(join(root, 'packages/humans-md/package.json'), 'utf8')).version;
+  const today = new Date().toISOString().slice(0, 10), digest = createHash('sha256').update(fixture).digest('hex');
+  assert.equal(text.split('\n')[1], `<!-- Generated copy of your HUMANS.md, written by humans-md ${version} on ${today} from the profile with SHA-256 ${digest}. Do not edit it here: edit your HUMANS.md, then run \`humans-md sync\` again. -->`);
   assert.ok(text.endsWith(END + '\n'));
   assert.equal(content(text), show(home));
   assert.equal(statSync(agents(home)).mode & 0o777, 0o600);
@@ -81,6 +85,81 @@ test('runs again without changes: nothing rewritten', () => inHome(home => {
   assert.equal(after.ino, before.ino);
   assert.equal(after.mtimeMs, before.mtimeMs);
   assert.deepEqual(readFileSync(agents(home)), bytes);
+}));
+
+/** Assert a failed `sync --check`: exit 1, one static code and hint, nothing written. */
+const rejected = (home, code, args = []) => {
+  const before = existsSync(agents(home)) ? [readFileSync(agents(home)), statSync(agents(home)).mtimeMs] : null;
+  refused(sync(home, ['--check', ...args]), code, agents(home), before && before[0]);
+  if (before) assert.equal(statSync(agents(home)).mtimeMs, before[1]);
+};
+
+test('--check accepts the copy that sync would write now, and rejects any other with a static code', () => inHome(home => {
+  const profile = join(home, '.humans/HUMANS.md');
+  // No copy yet: nothing is created by checking.
+  rejected(home, 'COPY_MISSING');
+  assert.equal(existsSync(join(home, '.agents')), false);
+  sync(home);
+  const written = readFileSync(agents(home), 'utf8');
+  const ok = sync(home, ['--check']);
+  assert.deepEqual([ok.status, ok.stdout, ok.stderr], [0, 'humans-md sync: up to date ~/.agents/AGENTS.md\n', '']);
+  // The profile changed since: even a comment, which changes no rendered field, changes its bytes.
+  writeFileSync(profile, fixture.replace('max_words: 150', 'max_words: 120'));
+  rejected(home, 'BINDING_MISMATCH');
+  writeFileSync(profile, fixture.replace('# Stored states', '# Edited. Stored states'));
+  rejected(home, 'BINDING_MISMATCH');
+  writeFileSync(profile, fixture);
+  assert.equal(sync(home, ['--check']).status, 0);
+  // The copy was edited by hand.
+  writeFileSync(agents(home), written.replace('"max_words":150', '"max_words":999'));
+  rejected(home, 'BINDING_MISMATCH');
+  // Made on an earlier day: the same source and renderer, an old date.
+  const today = new Date().toISOString().slice(0, 10);
+  writeFileSync(agents(home), written.replace(` on ${today} from`, ' on 2026-01-01 from'));
+  rejected(home, 'BINDING_STALE');
+  assert.equal(sync(home).stdout, 'humans-md sync: updated ~/.agents/AGENTS.md\n');
+  assert.equal(readFileSync(agents(home), 'utf8'), written);
+  // Rendered with other options than the ones asked for.
+  rejected(home, 'BINDING_MISMATCH', ['--no-guidance']);
+  // The profile is gone or invalid: no copy can match it.
+  for (const [text, code] of [[null, 'PROFILE_UNAVAILABLE'], [fixture + '\n', 'PROFILE_INVALID']]) {
+    if (text === null) rmSync(profile); else writeFileSync(profile, text);
+    const r = sync(home, ['--check']);
+    assert.deepEqual([r.status, r.stdout], [1, '']);
+    assert.match(r.stderr, new RegExp(`^${code}\\nhumans-md sync: [^\\n]+\\n$`));
+    assert.equal(readFileSync(agents(home), 'utf8'), written);
+  }
+}));
+
+test('a copy written before bindings is rejected by --check, and still replaced or removed by sync', () => inHome(home => {
+  mkdirSync(join(home, '.agents'));
+  // As humans-md 0.3.2 wrote it: the same rendering, no source digest in the first line.
+  const old = `# Mine\n\n${BEGIN}\n<!-- Generated copy of your HUMANS.md, written by humans-md 0.3.2 on 2026-10-17. Do not edit it here: edit your HUMANS.md, then run \`humans-md sync\` again. -->\n${show(home)}${END}\n`;
+  writeFileSync(agents(home), old);
+  rejected(home, 'BINDING_MISSING');
+  assert.equal(sync(home, ['--dry-run']).stdout.split('\n')[0], 'humans-md sync: would update ~/.agents/AGENTS.md');
+  assert.equal(sync(home).stdout, 'humans-md sync: updated ~/.agents/AGENTS.md\n');
+  assert.match(readFileSync(agents(home), 'utf8'), /^# Mine\n\n<!-- humans-md:begin -->\n<!-- Generated copy of your HUMANS\.md, written by humans-md [^\n]+ from the profile with SHA-256 [0-9a-f]{64}\. /);
+  assert.equal(sync(home, ['--check']).status, 0);
+  writeFileSync(agents(home), old);
+  assert.equal(sync(home, ['--remove']).stdout, 'humans-md sync: removed the copy from ~/.agents/AGENTS.md\n');
+  assert.equal(readFileSync(agents(home), 'utf8'), '# Mine\n');
+}));
+
+test('--check goes with --to and --target only, and refuses what sync refuses to read', () => inHome(home => {
+  sync(home, ['--to', 'junie']);
+  assert.equal(sync(home, ['--check', '--to', 'junie']).stdout, 'humans-md sync: up to date ~/.junie/AGENTS.md\n');
+  rejected(home, 'COPY_MISSING');
+  for (const args of [['--check', '--remove'], ['--check', '--dry-run'], ['--dry-run', '--check'], ['--check', '--check']]) {
+    const r = sync(home, args);
+    assert.equal(r.status, 2, args.join(' '));
+    assert.match(r.stderr, /^UNSUPPORTED_ARGUMENT\nhumans-md: [\s\S]*humans-md sync \[file\]/);
+    assert.ok(Buffer.byteLength(r.stderr) < 512, 'SPEC § 8: diagnostics under 512 bytes');
+  }
+  mkdirSync(join(home, '.agents'));
+  writeFileSync(agents(home), `${BEGIN}\nold\n${END}\n${BEGIN}\nold\n${END}\n`);
+  rejected(home, 'TARGET_MARKERS_INVALID');
+  refused(sync('rel', ['--check']), 'HOME_UNAVAILABLE');
 }));
 
 test('--remove takes the block out and gives back the original bytes, even without a profile', () => inHome(home => {

@@ -3,13 +3,12 @@
 // Running it on your machine with your file is the owner's explicit local selection (SPEC § 6.1);
 // `show` and `hook` accept only a file named HUMANS.md (SPEC § 5): a shared `<id>.md` is someone
 // else's and is refused before any read.
-import { realpathSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { basename, isAbsolute, join } from 'node:path';
-import { loadProfile, diagnostics } from './cli-files.js';
+import { checkProfile, loadBound, diagnostics, real } from './cli-files.js';
 import { serveOwner } from './profile/view.js';
 import { renderProjection, type Adapter } from './profile/render.js';
-import { HINTS, SyncError, TARGETS, makeBlock, rerunCommand, syncFile, type Client, type SyncCode } from './sync.js';
+import { HINTS, SyncError, TARGETS, checkFile, makeBlock, rerunCommand, syncFile, type Client, type SyncCode } from './sync.js';
 declare const __HUMANS_MD_VERSION__: string;
 const CLIENTS = ['claude', 'codex', 'cursor', 'copilot'] as const satisfies readonly Adapter[];
 const DEFAULT_FILE = '~/.humans/HUMANS.md';
@@ -18,7 +17,7 @@ const USAGE = `humans-md: check and load your own HUMANS.md (https://humansmd.de
   humans-md check [file] [--draft]    validate a profile
   humans-md show [file] [--json]     what your agents receive
   humans-md hook ${CLIENTS.join('|')} [file]   the session-start hook output
-  humans-md sync [file] [--to cline|junie|--target F] [--remove] [--dry-run]
+  humans-md sync [file] [--to cline|junie|--target F] [--remove] [--dry-run] [--check]
   options for show and hook: --no-guidance, --budget-bytes N, --budget-tokens N
   file defaults to ${DEFAULT_FILE}
 `;
@@ -32,7 +31,7 @@ if (args.length === 0 && cmd === '--version') { process.stdout.write(__HUMANS_MD
 const fail = (): never => { process.stderr.write('UNSUPPORTED_ARGUMENT\n' + USAGE); process.exit(2); };
 // Validate every option and cardinality before ANY profile/path IO.
 if (cmd !== 'check' && cmd !== 'show' && cmd !== 'hook' && cmd !== 'sync') fail();
-let draft = false, json = false, guidance = true, remove = false, dryRun = false;
+let draft = false, json = false, guidance = true, remove = false, dryRun = false, check = false;
 let to: Client | undefined, target: string | undefined;
 let budgetBytes: number | undefined, budgetTokens: number | undefined;
 const positional: string[] = [], seen = new Set<string>();
@@ -46,6 +45,7 @@ for (let i = 0; i < args.length; i++) {
   else if (arg === '--no-guidance' && cmd !== 'check') guidance = false;
   else if (arg === '--remove' && cmd === 'sync') remove = true;
   else if (arg === '--dry-run' && cmd === 'sync') dryRun = true;
+  else if (arg === '--check' && cmd === 'sync') check = true;
   else if (arg === '--to' && cmd === 'sync' && !seen.has('--target')) {
     const value = args[++i];
     if (!Object.hasOwn(TARGETS, value ?? '')) fail();
@@ -62,6 +62,8 @@ for (let i = 0; i < args.length; i++) {
 const client = cmd === 'hook' ? positional.shift() : undefined;
 if (cmd === 'hook' && !(CLIENTS as readonly string[]).includes(client ?? '')) fail();
 if (positional.length > 1) fail();
+// --check compares and writes nothing: it neither removes nor previews.
+if (check && (remove || dryRun)) fail();
 /** Refuse the sync step with a static code and hint: nothing written. */
 function refuse(code: SyncCode): never { process.stderr.write(`${code}\nhumans-md sync: ${HINTS[code]}\n`); process.exit(1); }
 // With HOME empty or relative, `~/` would be the current folder: sync writes nothing, removes nothing.
@@ -71,11 +73,11 @@ let file = positional[0] ?? DEFAULT_FILE;
 const home = (p: string) => p.startsWith('~/') ? join(homedir(), p.slice(2)) : p;
 file = home(file);
 const destination = home(target ?? '~/' + TARGETS[to ?? 'cline']);
+const shown = destination.startsWith(homedir() + '/') ? '~' + destination.slice(homedir().length) : destination;
 /** Run the sync step and exit: a static code and hint on failure, nothing written. */
 const sync = (block: string | null): never => {
   try {
     const action = syncFile(destination, block, dryRun);
-    const shown = destination.startsWith(homedir() + '/') ? '~' + destination.slice(homedir().length) : destination;
     const verb = (dryRun ? { created: 'would create', updated: 'would update', removed: 'would remove the copy from' } as Record<string, string> : {})[action]
       ?? { created: 'created', updated: 'updated', unchanged: 'unchanged', removed: 'removed the copy from', absent: 'no copy in' }[action];
     process.stdout.write(`humans-md sync: ${verb} ${shown}\n` + (dryRun && block ? block : ''));
@@ -84,20 +86,29 @@ const sync = (block: string | null): never => {
     refuse(e instanceof SyncError ? e.code : 'TARGET_UNAVAILABLE');
   }
 };
+/**
+ * `sync --check`: compare the stored copy with the block for the profile as rendered now and exit,
+ * 0 when it is that block, else 1 with a static code and hint (SPEC § 5). Nothing is written.
+ */
+const verify = (block: string): never => {
+  let code: SyncCode | undefined;
+  try { code = checkFile(destination, block); } catch (e) { code = e instanceof SyncError ? e.code : 'TARGET_UNAVAILABLE'; }
+  if (code) refuse(code);
+  process.stdout.write(`humans-md sync: up to date ${shown}\n`);
+  process.exit(0);
+};
 // Removing the copy reads no profile: it works after the profile is gone.
 if (cmd === 'sync' && remove) sync(null);
 const today = new Date().toISOString().slice(0, 10);
 if (cmd === 'check') {
-  const { issues } = loadProfile(file, 'write', draft);
-  const ok = !issues.some(i => i.severity === 'error');
-  process.stdout.write(JSON.stringify({ ok, issues }) + '\n'); process.exit(ok ? 0 : 1);
+  const result = checkProfile(file, draft);
+  process.stdout.write(JSON.stringify(result) + '\n'); process.exit(result.ok ? 0 : 1);
 }
 // Loading as the owner: an absolute path, never relative (a hook runs in the session's directory,
 // where a repository could ship its own `.humans/HUMANS.md`), to a file named HUMANS.md.
 // A link named HUMANS.md to someone's `<id>.md` is not the owner's file either.
-const real = (f: string) => { try { return realpathSync.native(f); } catch { return f; } };
 if (!isAbsolute(file) || basename(file) !== 'HUMANS.md' || basename(real(file)) !== 'HUMANS.md') fail();
-const { profile, withheld, issues } = loadProfile(file, 'read');
+const { profile, withheld, issues, digest } = loadBound(file);
 const codes = issues.map(i => i.message);
 const projection = profile ? serveOwner(profile, { today, withheld }) : { status: 'none' as const };
 const adapter = (cmd === 'hook' ? client : json ? 'json' : 'text') as Adapter;
@@ -105,11 +116,17 @@ const adapter = (cmd === 'hook' ? client : json ? 'json' : 'text') as Adapter;
 const rendered = renderProjection(projection, { adapter, budgetBytes, budgetTokens, ...(guidance ? {} : { guidance: false }) });
 if (rendered.diagnostic) codes.push(rendered.diagnostic);
 if (cmd === 'sync') {
-  // A missing, invalid or oversized profile writes nothing: no copy of an absence.
-  if (!profile || rendered.diagnostic) { process.stderr.write(diagnostics(codes) + 'humans-md sync: no copy written; run humans-md check.\n'); process.exit(1); }
+  // A missing, invalid or oversized profile writes nothing: no copy of an absence. No copy matches it either.
+  if (!profile || !digest || rendered.diagnostic) {
+    process.stderr.write(diagnostics(codes) + `humans-md sync: ${check ? 'no copy can match a profile that does not load' : 'no copy written'}; run humans-md check.\n`);
+    process.exit(1);
+  }
   process.stderr.write(diagnostics(codes));
   const rerun = rerunCommand({ to, target: target && destination, profile: positional[0] && file, guidance }, homedir());
-  sync(makeBlock(rendered.output, today, __HUMANS_MD_VERSION__, rerun));
+  // The copy is bound to the bytes just read, this program's version and today (SPEC § 5).
+  const block = makeBlock(rendered.output, today, __HUMANS_MD_VERSION__, rerun, digest);
+  if (check) verify(block);
+  sync(block);
 }
 process.stdout.write(rendered.output);
 process.stderr.write(diagnostics(codes));

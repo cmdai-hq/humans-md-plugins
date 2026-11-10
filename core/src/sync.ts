@@ -1,7 +1,10 @@
 // `humans-md sync`: a copy of the owner's rendered profile in a marked block of a user-level
 // instruction file, for clients that run no hook and load no plugin. This is a fallback, not a
-// conformant adapter: SPEC § 5 wants a renderer at each load, and this copy is only as fresh as
-// the last `humans-md sync`. The rest of the target file is kept byte for byte.
+// conformant adapter: SPEC § 5 wants a renderer at each load. The copy carries the binding § 5
+// asks of a stored artifact (source-profile byte digest, renderer version, evaluation date), and
+// `humans-md sync --check` rejects a missing, mismatched or stale one; the client itself reads the
+// file without checking, so the copy is only as fresh as the last `humans-md sync`. The rest of
+// the target file is kept byte for byte.
 import { closeSync, constants, fchmodSync, fstatSync, fsyncSync, lstatSync, mkdirSync, openSync, readFileSync, readSync, realpathSync, renameSync, statSync, unlinkSync, writeSync, type Stats } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { homedir } from 'node:os';
@@ -17,7 +20,9 @@ export const MAX_TARGET_BYTES = 1_048_576;
 export const TARGETS = { cline: '.agents/AGENTS.md', junie: '.junie/AGENTS.md' } as const;
 export type Client = keyof typeof TARGETS;
 
-export type SyncCode = 'TARGET_NOT_REGULAR' | 'TARGET_IN_REPOSITORY' | 'TARGET_MARKERS_INVALID' | 'TARGET_TOO_LARGE' | 'TARGET_UNAVAILABLE' | 'TARGET_IS_PROFILE' | 'HOME_UNAVAILABLE';
+/** Why `sync --check` rejects a copy (SPEC § 5: a missing, mismatched or stale binding). */
+export type CheckCode = 'COPY_MISSING' | 'BINDING_MISSING' | 'BINDING_MISMATCH' | 'BINDING_STALE';
+export type SyncCode = 'TARGET_NOT_REGULAR' | 'TARGET_IN_REPOSITORY' | 'TARGET_MARKERS_INVALID' | 'TARGET_TOO_LARGE' | 'TARGET_UNAVAILABLE' | 'TARGET_IS_PROFILE' | 'HOME_UNAVAILABLE' | CheckCode;
 /** Static explanations: never a path, a file excerpt or profile text (SPEC § 8). */
 export const HINTS: Record<SyncCode, string> = {
   TARGET_NOT_REGULAR: 'the target is a symbolic link, a hard link or not a regular file. Nothing written.',
@@ -27,6 +32,10 @@ export const HINTS: Record<SyncCode, string> = {
   TARGET_UNAVAILABLE: 'the target cannot be read or written, or changed while sync ran. Nothing written.',
   TARGET_IS_PROFILE: 'the target is a HUMANS.md file. Sync writes a copy into an instruction file, never into a profile.',
   HOME_UNAVAILABLE: 'HOME is not set to an absolute path, so ~ would be the current folder. Nothing written.',
+  COPY_MISSING: 'the target holds no copy of your HUMANS.md. Run sync without --check to write one.',
+  BINDING_MISSING: 'the copy does not say which HUMANS.md it was made from: an earlier humans-md wrote it, or its first line was edited. Run sync without --check.',
+  BINDING_MISMATCH: 'the copy is not what this humans-md renders from your HUMANS.md now: the profile, the program, the options or the copy changed. Run sync without --check.',
+  BINDING_STALE: 'the copy was made on another day. Run sync without --check.',
 };
 export class SyncError extends Error {
   constructor(readonly code: SyncCode) { super(code); }
@@ -63,7 +72,9 @@ export function findBlock(s: string): { begin: Line; end: Line; inner: string } 
 
 /**
  * Plan the new file text. `block` is the full marked block (binary string, ending with LF), or null
- * to remove it. A block whose rendered content is unchanged is left as it is, its date included.
+ * to remove it. A block is left as it is only when it is the block to write, binding included:
+ * another source, renderer version or day writes it again (SPEC § 5). A block written before
+ * bindings is replaced like any other.
  */
 export function planSync(existing: string | null, block: string | null): Plan {
   const found = existing === null ? undefined : findBlock(existing);
@@ -78,19 +89,30 @@ export function planSync(existing: string | null, block: string | null): Plan {
   }
   if (existing === null || existing === '') return { action: 'created', text: block };
   if (!found) return { action: 'updated', text: existing + (existing.endsWith('\n') ? '\n' : '\n\n') + block };
-  const body = (inner: string) => inner.startsWith(NOTICE) && inner.includes('\n') ? inner.slice(inner.indexOf('\n') + 1) : null;
-  const next = findBlock(block)!;
-  if (body(found.inner) === body(next.inner)) return { action: 'unchanged' };
+  if (found.inner === findBlock(block)!.inner) return { action: 'unchanged' };
   return { action: 'updated', text: existing.slice(0, found.begin.start) + block + existing.slice(found.end.end) };
+}
+
+export interface Binding { version: string; date: string; digest: string }
+/**
+ * The binding in a block's first line (SPEC § 5): the renderer's version, the evaluation date and
+ * the SHA-256 of the source profile's bytes. Undefined for a block written before bindings, or
+ * whose first line was edited. The single-person copy has one reader, its owner.
+ */
+export function bindingOf(inner: string): Binding | undefined {
+  const m = /^<!-- Generated copy of your HUMANS\.md, written by humans-md ([\w.+-]+) on (\d{4}-\d{2}-\d{2}) from the profile with SHA-256 ([0-9a-f]{64})\. /.exec(inner);
+  return m ? { version: m[1], date: m[2], digest: m[3] } : undefined;
 }
 
 /**
  * The marked block around a text rendering (frame, JSON line and sentences, ending with LF), as UTF-8
- * text. `rerun` is the command to run again; it must not contain a line break or `-->`.
+ * text. Its first line is the binding bindingOf reads: `version` rendered it on `date` from the
+ * profile whose bytes have the SHA-256 `digest` (64 lowercase hex digits). `rerun` is the command
+ * to run again; it must not contain a line break or `-->`.
  */
-export function makeBlock(rendering: string, date: string, version: string, rerun: string): string {
-  if (/[\r\n]|-->/.test(rerun) || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^[\w.+-]+$/.test(version)) throw new Error('UNSUPPORTED_ARGUMENT');
-  const notice = `${NOTICE}, written by humans-md ${version} on ${date}. Do not edit it here: edit your HUMANS.md, then run \`${rerun}\` again. -->`;
+export function makeBlock(rendering: string, date: string, version: string, rerun: string, digest: string): string {
+  if (/[\r\n]|-->/.test(rerun) || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^[\w.+-]+$/.test(version) || !/^[0-9a-f]{64}$/.test(digest)) throw new Error('UNSUPPORTED_ARGUMENT');
+  const notice = `${NOTICE}, written by humans-md ${version} on ${date} from the profile with SHA-256 ${digest}. Do not edit it here: edit your HUMANS.md, then run \`${rerun}\` again. -->`;
   const block = `${BEGIN}\n${notice}\n${rendering}${END}\n`;
   // A rendering never has a marker line (it is the frame, one JSON line and fixed sentences).
   if (findBlock(block)?.begin.start !== 0) throw new Error('UNSUPPORTED_ARGUMENT');
@@ -180,6 +202,25 @@ function readTarget(target: string): { text: string; st: Stats } | null {
     return { text: buf.subarray(0, used).toString('latin1'), st };
   } catch (e) { throw e instanceof SyncError ? e : new SyncError('TARGET_UNAVAILABLE'); }
   finally { closeSync(fd); }
+}
+
+/**
+ * Whether the copy in `target` (absolute) is `block`, the block for the source as rendered now:
+ * undefined when it is, else why not (SPEC § 5). Reads like syncFile, and writes nothing.
+ */
+export function checkFile(target: string, block: string): CheckCode | undefined {
+  if (!isAbsolute(homedir())) throw new SyncError('HOME_UNAVAILABLE');
+  if (!isAbsolute(target)) throw new SyncError('TARGET_UNAVAILABLE');
+  const current = readTarget(target);
+  const found = current === null ? undefined : findBlock(current.text);
+  if (!found) return 'COPY_MISSING';
+  const wanted = findBlock(Buffer.from(block, 'utf8').toString('latin1'))!;
+  if (found.inner === wanted.inner) return undefined;
+  const have = bindingOf(found.inner), want = bindingOf(wanted.inner);
+  if (!have || !want) return 'BINDING_MISSING';
+  if (have.digest !== want.digest || have.version !== want.version) return 'BINDING_MISMATCH';
+  // Same source and renderer: another day, or else a copy or options that differ.
+  return have.date !== want.date ? 'BINDING_STALE' : 'BINDING_MISMATCH';
 }
 
 /**

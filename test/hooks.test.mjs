@@ -2,7 +2,7 @@
 // prints, the model gets either a well-formed profile or the exact absence. Run: node --test
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { chmodSync, cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -14,12 +14,21 @@ const profile = join(home, '.humans/HUMANS.md');
 const run = (file, args, opts = {}) => spawnSync(process.execPath, [file, ...args], { encoding: 'utf8', timeout: 15_000, ...opts });
 const absentFor = client => run(bin, ['hook', client, '/nonexistent/HUMANS.md']).stdout;
 const FRAME = JSON.parse(absentFor('copilot')).additionalContext.split('\n')[0];
+// `said`: what the client's user is shown beside the model's context when a profile is there but
+// not served (test/notices.test.mjs): a top-level `systemMessage`, or a progress line before the output.
 const PLUGINS = [
-  { name: 'humans-md', hook: 'hooks/session-start.mjs', event: { hook_event_name: 'SessionStart', source: 'startup' }, absent: absentFor('claude') },
-  { name: 'codex', hook: 'hooks/session-start.mjs', event: { hook_event_name: 'SessionStart', source: 'startup' }, absent: absentFor('codex') },
-  { name: 'copilot', hook: 'scripts/session-start.mjs', event: { sessionId: 's1', source: 'startup' }, absent: absentFor('copilot') },
+  { name: 'humans-md', hook: 'hooks/session-start.mjs', event: { hook_event_name: 'SessionStart', source: 'startup' }, absent: absentFor('claude'), said: 'systemMessage' },
+  { name: 'codex', hook: 'hooks/session-start.mjs', event: { hook_event_name: 'SessionStart', source: 'startup' }, absent: absentFor('codex'), said: 'systemMessage' },
+  { name: 'copilot', hook: 'scripts/session-start.mjs', event: { sessionId: 's1', source: 'startup' }, absent: absentFor('copilot'), said: 'progress' },
   { name: 'cursor', hook: 'hooks/session-start.mjs', event: { hook_event_name: 'sessionStart' }, absent: absentFor('cursor') },
 ];
+/** What the model receives: the hook's output without the line shown to the user. */
+function forModel(p, stdout) {
+  if (p.said === 'progress') return stdout.split('\n').filter(line => !line.startsWith('{"type":"progress",')).join('\n');
+  if (p.said !== 'systemMessage') return stdout;
+  const { systemMessage, ...rest } = JSON.parse(stdout);
+  return JSON.stringify(rest) + '\n';
+}
 /** Run with a temporary directory, removed afterwards. */
 const inTemp = fn => { const dir = mkdtempSync(join(tmpdir(), 'humans-md-hooks-')); try { return fn(dir); } finally { rmSync(dir, { recursive: true, force: true }); } };
 const runHook = (dir, p, { env = {}, input = JSON.stringify(p.event) } = {}) =>
@@ -56,7 +65,9 @@ for (const p of PLUGINS) {
     ]) withStub(p, body, dir => {
       const started = Date.now();
       const out = runHook(dir, p);
-      assert.equal(out.stdout, p.absent, why);
+      assert.equal(forModel(p, out.stdout), p.absent, why);
+      assert.equal(out.stdout !== p.absent, p.said !== undefined, `${why}: the user is told where the client has a way`);
+      assert.doesNotMatch(out.stdout + out.stderr, /secret|IGNORE ALL|run \{x\}/, why);
       assert.ok(Date.now() - started < 8_000, `${why}: the hook stops waiting`);
     });
   });
@@ -66,12 +77,33 @@ for (const p of PLUGINS) {
     assert.equal(runHook(dir, p, { input }).stdout, '');
   }));
 
+  test(`${p.name}: a complete event is used when the client leaves stdin open; a partial one gives nothing`, async () => {
+    /** Write `input` to the hook without closing its stdin, and wait for it to exit. */
+    const open = input => new Promise(resolve => {
+      const child = spawn(process.execPath, [join(root, 'plugins', p.name, p.hook)], { env: { PATH: process.env.PATH, HOME: home } });
+      let stdout = '', stderr = '';
+      child.stdout.on('data', d => { stdout += d; });
+      child.stderr.on('data', d => { stderr += d; });
+      child.stdin.write(input);
+      const started = Date.now();
+      child.on('exit', code => resolve({ code, stdout, stderr, ms: Date.now() - started }));
+    });
+    const event = JSON.stringify(p.event);
+    const [whole, partial] = await Promise.all([open(event), open(event.slice(0, -1))]);
+    assert.equal(whole.code, 0);
+    assert.match(whole.stdout, /Invented profile for tests\./);
+    assert.equal(whole.stdout, run(join(root, 'plugins', p.name, p.hook), [], { input: event, env: { PATH: process.env.PATH, HOME: home } }).stdout);
+    assert.equal(whole.stderr, '');
+    assert.deepEqual([partial.code, partial.stdout, partial.stderr], [0, '', 'HOOK_INPUT_INVALID\n']);
+    for (const out of [whole, partial]) assert.ok(out.ms < 6_000, 'the hook stops waiting');
+  });
+
   test(`${p.name}: a link named HUMANS.md to someone else's file is not loaded`, () => inTemp(dir => {
     mkdirSync(join(dir, 'people')); mkdirSync(join(dir, '.humans'));
     writeFileSync(join(dir, 'people/alice.md'), readFileSync(profile, 'utf8').replace('id: sam-example', 'id: alice'));
     symlinkSync(join(dir, 'people/alice.md'), join(dir, '.humans/HUMANS.md'));
     const out = run(join(root, 'plugins', p.name, p.hook), [], { input: JSON.stringify(p.event), env: { PATH: process.env.PATH, HOME: dir } });
-    assert.equal(out.stdout, p.absent);
+    assert.equal(forModel(p, out.stdout), p.absent);
     assert.doesNotMatch(out.stdout + out.stderr, /alice|Invented/);
   }));
 }

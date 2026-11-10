@@ -19,7 +19,7 @@ No profile yet? Copy the [example](https://github.com/cmdai-hq/HUMANS.md/blob/ma
 | `humans-md check [file]` | Checks a profile. Prints `{ ok, issues }`. |
 | `humans-md show [file]` | Prints what your agents receive: your fields, labelled as data, then one plain sentence per preference. `--json` prints the fields only. |
 | `humans-md hook <client> [file]` | The same output, wrapped in the JSON that `codex`, `cursor`, `copilot` or `claude` expects from a session-start hook. |
-| `humans-md sync [file]` | Copies what `show` prints into a user-level instruction file, for clients without a hook. See [Sync](#sync-a-copy-for-clients-without-a-hook). |
+| `humans-md sync [file]` | Copies what `show` prints into a user-level instruction file, for clients without a hook; `--check` tells whether that copy still matches your profile. See [Sync](#sync-a-copy-for-clients-without-a-hook). |
 
 `file` defaults to `~/.humans/HUMANS.md`.
 
@@ -31,6 +31,34 @@ No profile yet? Copy the [example](https://github.com/cmdai-hq/HUMANS.md/blob/ma
 - `show`, `hook` and `sync` read only a file named `HUMANS.md`, given as an absolute path or starting with `~/`.
 - A missing, invalid or too large profile prints `{"status":"none"}`, never part of a profile. Comments, unknown fields and the Markdown body are always left out.
 - Exit codes: `0` success (including `{"status":"none"}`), `1` invalid or missing profile (`check`, `sync`) or a target `sync` refuses, `2` invalid arguments, with the usage on stderr, before any file is read.
+
+### What `check` reports
+
+One line, at most 512 bytes: `{"ok":false,"issues":[{"path":"/reading/max_words","message":"OUT_OF_RANGE","severity":"error"}]}`. `path` is the field at fault (`$` is the whole file) and `message` a code from this table. `check` never prints a value, or a key it does not know: an unknown key is reported at the block that holds it. A `warning` does not make the profile invalid.
+
+| Code | What to fix |
+|---|---|
+| `MISSING` | Add this required field. |
+| `UNKNOWN_FIELD` | The block at `path` holds a key the format does not have: look for a typo or wrong indentation. |
+| `NOT_AN_ALLOWED_VALUE` | Use a value from the field's list ([example](https://github.com/cmdai-hq/HUMANS.md/blob/main/examples/HUMANS.md)). |
+| `WRONG_TYPE` | For example a list where one value is expected, or `humans: 0.3` without quotes. |
+| `OUT_OF_RANGE` | A number too small or too large, a text too long, or too many items. |
+| `WRONG_FORMAT` | A date that is not `"YYYY-MM-DD"`, an `id` with other characters than `a-z`, `0-9` and `-`, a time that is not on the hour or half hour. |
+| `NOT_PLAIN_TEXT` | The text holds a link, an email address, markup or a control character. |
+| `DUPLICATE_VALUE` | The list holds the same value twice. |
+| `EMPTY_RANGE` | `quiet_hours` starts and ends at the same time. |
+| `BODY_NOT_ALLOWED` | Remove everything after the closing `---`, blank lines included. |
+| `FRONTMATTER_DELIMITERS` | The file must start with a `---` line and close with another. |
+| `YAML_INVALID` | The YAML does not parse, or a key appears twice. |
+| `YAML_FEATURE_NOT_ALLOWED` | Remove anchors (`&`), aliases (`*`), tags (`!`), directives and document markers. |
+| `TOO_LARGE` | Over 24,589 bytes in all, over 20 KiB between the `---` lines, or over 4 KiB after them (a shared `<id>.md` may have a body; `HUMANS.md` has none). |
+| `NOT_UTF8` | Save the file as UTF-8. |
+| `FILENAME_MISMATCH` | At `$`: the file, or the file its link points to, is not named exactly `HUMANS.md`, capitals included (`humans.md` opens on macOS but is not loaded). At `/id`: a shared `<id>.md` whose `id` differs from its file name. |
+| `UNSUPPORTED_VERSION` | `humans` must be `"0.3"`. |
+| `PROFILE_UNAVAILABLE` | The file is missing or cannot be read. |
+| `PROFILE_INVALID` | Invalid, and `check` found no place to point at. |
+| `NOTE_WITHHELD_AGENT_DIRECTED` (warning) | Your notes read like instructions to an agent: your agent gets your profile without them. |
+| `DRAFT_FILENAME_UNCHECKED` (warning) | `--draft` skipped the file name rule. |
 
 ## Hook configuration
 
@@ -93,7 +121,7 @@ Some clients run no hook and load no plugin, but read a user-level instruction f
 
 ```text
 <!-- humans-md:begin -->
-<!-- Generated copy of your HUMANS.md, written by humans-md 0.3.0 on 2026-10-17. Do not edit it here: edit your HUMANS.md, then run `humans-md sync` again. -->
+<!-- Generated copy of your HUMANS.md, written by humans-md 0.3.2 on 2026-11-10 from the profile with SHA-256 3f2a…. Do not edit it here: edit your HUMANS.md, then run `humans-md sync` again. -->
 ...what humans-md show prints...
 <!-- humans-md:end -->
 ```
@@ -108,10 +136,22 @@ These locations follow each client's documentation as read on 2026-10-17. The Ju
 
 **This is a copy, not a live load.** A hook or plugin reads your HUMANS.md at each session start, as the format asks. A copy does not: run `humans-md sync` again after each change to your profile, or your agents keep the old one.
 
+The first line of the block says what the copy was made from: the version of `humans-md`, the day, and the SHA-256 of your HUMANS.md file. `humans-md sync --check` (with the same `--to`, `--target` and `--no-guidance` as the copy) compares the copy with what `sync` would write now, writes nothing, and exits with `1` and one code when they differ:
+
+| Code | Meaning |
+|---|---|
+| `COPY_MISSING` | The file holds no copy. |
+| `BINDING_MISSING` | The copy does not say what it was made from: `humans-md` 0.3.2 or earlier wrote it, or its first line was edited. |
+| `BINDING_MISMATCH` | Your HUMANS.md, the version of `humans-md`, the options or the copy itself changed since. |
+| `BINDING_STALE` | Same profile and version, but the copy was made on another day. |
+
+In each case, `humans-md sync` writes it again. Your client does not run this check: it reads the file as it is.
+
 - The rest of the file is kept byte for byte. One exception: after `--remove`, a file that had no final newline keeps the one sync added before its block. A new block goes at the end, after a blank line. A new file is readable by you only (mode 600).
-- Running it again without a change rewrites nothing.
+- Running it again on the same day without a change rewrites nothing. On another day, or with another version of `humans-md`, it writes the block again with its new first line.
 - `--remove` takes the block out, without reading your profile. `--dry-run` shows what would change and prints the block, without writing.
 - `--no-guidance` leaves out the plain sentences, as with `show`.
+- `--check` cannot be combined with `--remove` or `--dry-run`.
 - It refuses, writes nothing and exits with `1` when: the profile is missing or invalid; `HOME` is not an absolute path (`HOME_UNAVAILABLE`); the target is a symbolic link, a hard link or not a regular file (`TARGET_NOT_REGULAR`); the target is in a git work tree or a common dotfiles setup, since your profile can hold private notes (`TARGET_IN_REPOSITORY`, see below); the markers are duplicated, unpaired or edited (`TARGET_MARKERS_INVALID`, fix them by hand); the target is over 1 MiB (`TARGET_TOO_LARGE`) or named `HUMANS.md` (`TARGET_IS_PROFILE`).
 - Git work trees and dotfiles: sync refuses a target in a folder with a `.git` entry above it, a home directory tracked by a bare repository in `~/.dotfiles` or `~/.cfg` or by yadm, and any target while `GIT_DIR` or `GIT_WORK_TREE` is set. It reads those files without running git, and other setups are not detected: check before committing your home directory.
 - The write goes to a temporary file in the same folder, then replaces the target in one step. It keeps the target's permissions for you and removes any access for group and others.

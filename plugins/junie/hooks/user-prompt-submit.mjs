@@ -64,7 +64,8 @@ const file = selectedFile(process.argv.slice(2), '~/.humans/HUMANS.md');
 const input = await readEvent(e => e.hook_event_name === 'UserPromptSubmit' && typeof e.session_id === 'string' && SESSION_ID.test(e.session_id));
 if (input) {
   const first = markSession(input.session_id);
-  // Junie reads a top-level `additionalContext`, the envelope `humans-md hook copilot` prints.
-  if (first === true && file) renderOwner(file, 'copilot');
-  else if (first !== false) absent('copilot');
+  // Junie reads a top-level `additionalContext`, the envelope `humans-md hook copilot` prints, and
+  // shows a top-level `systemMessage` in its terminal without sending it to the agent (hooks docs).
+  if (first === true && file) renderOwner(file, 'copilot', 'systemMessage');
+  else if (first !== false) absent('copilot', 'systemMessage');
 }

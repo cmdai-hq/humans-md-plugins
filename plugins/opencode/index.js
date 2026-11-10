@@ -11,9 +11,10 @@
 // - render.mjs renders through the bundled command line and checks its output; this module checks
 //   it again. Anything unexpected becomes the static absence below: no path, reason or profile text.
 // - OpenCode does not keep a hook's system text between model calls, so the text is added to every
-//   call, rendered once per session, and never added twice to the same request. "Already there"
-//   means an entry equal to the rendered text: a project's AGENTS.md can quote the frame next to a
-//   made-up profile, and that must not stop the real one.
+//   call, and never added twice to the same request. A profile is rendered once per session; the
+//   absence is never kept, so a file fixed since, or a `node` found again, loads at the next call.
+//   "Already there" means an entry equal to the rendered text: a project's AGENTS.md can quote the
+//   frame next to a made-up profile, and that must not stop the real one.
 import { execFile } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
@@ -59,7 +60,11 @@ function render() {
   });
 }
 
-/** Text for a session: rendered on first use, then reused. A call without a session ID renders anew. */
+/**
+ * Text for a session: rendered on first use, then reused, unless it is the absence. Calls made
+ * while a render runs share it; once it has given the absence it is forgotten, so the next call
+ * renders again. A call without a session ID renders anew.
+ */
 function sessions() {
   const cache = new Map();
   return sessionID => {
@@ -69,6 +74,8 @@ function sessions() {
       text = render();
       cache.set(sessionID, text);
       if (cache.size > MAX_SESSIONS) cache.delete(cache.keys().next().value);
+      const rendering = text;
+      rendering.then(value => { if (value === ABSENT && cache.get(sessionID) === rendering) cache.delete(sessionID); });
     }
     return text;
   };

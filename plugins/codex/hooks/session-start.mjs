@@ -9,5 +9,6 @@ const input = await readEvent('SessionStart');
 // Codex reads the same SessionStart envelope as Claude Code. renderOwner forwards at most
 // 16 KiB, and hooks.json sets additionalContextLimit to 16384, so Codex never spills or cuts the
 // profile and the plain sentences fit. (`humans-md hook codex` keeps 2,500 bytes for hand-written
-// hooks that rely on Codex's default limit.)
-if (input) { if (file) renderOwner(file); else absent(); }
+// hooks that rely on Codex's default limit.) Codex surfaces a top-level `systemMessage` to the
+// user as a warning (learn.chatgpt.com/docs/hooks, "Common output fields").
+if (input) { if (file) renderOwner(file, 'claude', 'systemMessage'); else absent('claude', 'systemMessage'); }
