@@ -32,18 +32,23 @@ export function selectedFile(args) {
 }
 /**
  * Read one matching hook event with fatal UTF-8 decoding and a 64 KiB input cap.
- * Invalid input returns undefined; the 1.5 s deadline exits without context.
+ * Invalid input returns undefined. A client may leave stdin open after a complete event: at the
+ * 1.5 s deadline, what has arrived is parsed the same way, and stdin is closed.
  * Event payloads never select a profile path or establish owner authority.
  */
 export async function readEvent(eventName) {
-  const chunks = []; let size = 0;
-  const timer = setTimeout(() => { report('HOOK_INPUT_INVALID'); process.exit(0); }, 1500);
-  try {
+  const chunks = []; let size = 0, timer;
+  const deadline = new Promise(resolve => { timer = setTimeout(resolve, 1500, true); });
+  const read = (async () => {
     for await (const chunk of process.stdin) {
       size += chunk.length;
       if (size > 65_536) throw new Error();
       chunks.push(chunk);
     }
+  })();
+  try {
+    // An open stdin would keep this process alive after the deadline: close it.
+    if (await Promise.race([read, deadline])) process.stdin.destroy();
     const input = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks)));
     if (!input || Array.isArray(input) || input.hook_event_name !== eventName) throw new Error();
     return input;

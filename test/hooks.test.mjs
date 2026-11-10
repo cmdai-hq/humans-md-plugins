@@ -2,7 +2,7 @@
 // prints, the model gets either a well-formed profile or the exact absence. Run: node --test
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { chmodSync, cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -65,6 +65,27 @@ for (const p of PLUGINS) {
     const input = JSON.stringify({ ...p.event, pad: 'x'.repeat(70_000) });
     assert.equal(runHook(dir, p, { input }).stdout, '');
   }));
+
+  test(`${p.name}: a complete event is used when the client leaves stdin open; a partial one gives nothing`, async () => {
+    /** Write `input` to the hook without closing its stdin, and wait for it to exit. */
+    const open = input => new Promise(resolve => {
+      const child = spawn(process.execPath, [join(root, 'plugins', p.name, p.hook)], { env: { PATH: process.env.PATH, HOME: home } });
+      let stdout = '', stderr = '';
+      child.stdout.on('data', d => { stdout += d; });
+      child.stderr.on('data', d => { stderr += d; });
+      child.stdin.write(input);
+      const started = Date.now();
+      child.on('exit', code => resolve({ code, stdout, stderr, ms: Date.now() - started }));
+    });
+    const event = JSON.stringify(p.event);
+    const [whole, partial] = await Promise.all([open(event), open(event.slice(0, -1))]);
+    assert.equal(whole.code, 0);
+    assert.match(whole.stdout, /Invented profile for tests\./);
+    assert.equal(whole.stdout, run(join(root, 'plugins', p.name, p.hook), [], { input: event, env: { PATH: process.env.PATH, HOME: home } }).stdout);
+    assert.equal(whole.stderr, '');
+    assert.deepEqual([partial.code, partial.stdout, partial.stderr], [0, '', 'HOOK_INPUT_INVALID\n']);
+    for (const out of [whole, partial]) assert.ok(out.ms < 6_000, 'the hook stops waiting');
+  });
 
   test(`${p.name}: a link named HUMANS.md to someone else's file is not loaded`, () => inTemp(dir => {
     mkdirSync(join(dir, 'people')); mkdirSync(join(dir, '.humans'));
