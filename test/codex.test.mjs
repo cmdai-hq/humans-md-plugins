@@ -123,7 +123,11 @@ test('a profile shared by someone else (`<id>.md`) is never loaded as your own',
   // Named on the command line: refused before any file is read.
   const flag = run(session, ['--profile', colleague], { input: '{"hook_event_name":"SessionStart"}', env });
   assert.equal(flag.stderr, 'PROFILE_UNAVAILABLE\n');
-  assert.equal(flag.stdout, ABSENT);
+  // The model gets the absence; the user is told why through Codex's `systemMessage` (test/notices.test.mjs).
+  const { systemMessage, ...forModel } = JSON.parse(flag.stdout);
+  assert.equal(JSON.stringify(forModel) + '\n', ABSENT);
+  assert.match(systemMessage, /^HUMANS\.md: .* is not named exactly HUMANS\.md/);
+  assert.doesNotMatch(flag.stdout, /Invented|alice/);
   // Codex has no plugin setting; the Claude Code one, a hook input field or the session cwd select nothing.
   for (const viaHook of [
     runHook({ HOME: dir, CLAUDE_PLUGIN_OPTION_PROFILE: colleague }),

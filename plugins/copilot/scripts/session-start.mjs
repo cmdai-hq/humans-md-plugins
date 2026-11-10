@@ -11,5 +11,8 @@ const copilot = e => e.hook_event_name === undefined && typeof e.sessionId === '
 const input = await readEvent(e => e.hook_event_name === 'SessionStart' || copilot(e));
 if (input) {
   const client = copilot(input) ? 'copilot' : 'claude';
-  if (file) renderOwner(file, client); else absent(client);
+  // For its user, Copilot CLI shows a display-only progress line (hooks reference, "Progress
+  // messages"); VS Code's Local harness shows a top-level `systemMessage` ("Common output").
+  const channel = client === 'copilot' ? 'progress' : 'systemMessage';
+  if (file) renderOwner(file, client, channel); else absent(client, channel);
 }

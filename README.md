@@ -76,6 +76,7 @@ Each plugin reads `~/.humans/HUMANS.md` and nothing else. Install one plugin per
 
 - **Install:** `copilot plugin marketplace add cmdai-hq/humans-md-plugins`, then `copilot plugin install humans-md@humans-md`.
 - **Sandbox:** with Copilot CLI's sandbox on (`/sandbox`, off by default), the hook may not be able to read `~/.humans`, and your agent gets no profile.
+- **Needs** Copilot CLI 1.0.55 or later. The line that tells you about a profile problem is a hook progress message, which older versions do not read: with one of those problems, they would load nothing.
 - **VS Code:** VS Code lists plugins installed with Copilot CLI in its Agent Plugins view (setting `chat.plugins.enabled`). Not tried yet. With the Claude Code extension and its plugin too, VS Code may load both.
 - **Update:** `copilot plugin update humans-md`.
 - **Uninstall:** `copilot plugin uninstall humans-md`, then `copilot plugin marketplace remove humans-md`.
@@ -166,6 +167,14 @@ To keep the file elsewhere, for example in a dotfiles repository, make `~/.human
 
 ## Troubleshooting
 
+When your profile is there but your agent did not get it as written (invalid, misnamed, unreadable, or loaded without its notes), some clients tell you at session start, in one line that your agent never sees:
+
+```text
+HUMANS.md: your profile is not valid, so your agent did not get it. To see what to fix, run: npx -y @humans-md/cli check
+```
+
+Claude Code, Codex, GitHub Copilot CLI and the Junie extension show it. Cursor, Antigravity, OpenCode and Devin document no way for a hook to show its user a line without changing the session, so there a profile that does not load stays silent. A profile that does not exist is never reported. This follows each client's hook documentation as read on 2026-11-10; it has not been tried in a real session yet.
+
 1. Run `npx -y @humans-md/cli check` and fix what it reports: each issue gives the field at fault (`path`) and a code (`message`), [listed here](packages/humans-md/README.md#what-check-reports). A file named `humans.md` opens on macOS but is not loaded: `check` reports `FILENAME_MISMATCH`.
 2. Check that `node --version` prints 22.18 or later where your client starts. Desktop apps opened from the Dock may not see a `node` installed with nvm or Homebrew: start the app from a terminal once, or install Node from [nodejs.org](https://nodejs.org).
 3. Codex: check that the hook is trusted in `/hooks`. Cursor: open the Output panel, choose **Hooks** and look for `sessionStart`.
@@ -176,7 +185,7 @@ Restart your client after an install or an update. To update the command line: `
 
 ## What your agent receives
 
-The fields it recognizes, labelled as data, then one plain sentence per preference. Comments, unknown fields and the Markdown body are left out. If the file is missing, invalid or too large, the agent receives `{"status":"none"}`: nothing is loaded, and nothing is cut short. To leave the plain sentences out, start your client with `HUMANS_GUIDANCE=off` set (for OpenCode, in the environment of its background service), or pass `--no-guidance` to the command line.
+The fields it recognizes, labelled as data, then one plain sentence per preference. Comments, unknown fields and the Markdown body are left out. If the file is missing, invalid or too large, the agent receives `{"status":"none"}`: nothing is loaded, and nothing is cut short. What your client tells you then is in [Troubleshooting](#troubleshooting). To leave the plain sentences out, start your client with `HUMANS_GUIDANCE=off` set (for OpenCode, in the environment of its background service), or pass `--no-guidance` to the command line.
 
 ## Privacy and limits
 

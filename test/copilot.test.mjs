@@ -98,7 +98,12 @@ test('a profile shared by someone else (`<id>.md`) is never loaded as your own',
   mkdirSync(join(dir, 'people'));
   writeFileSync(colleague, readFileSync(profile, 'utf8').replace('id: sam-example', 'id: alice'));
   const viaHook = runHook({ HOME: dir }, copilotEvent, ['--profile', colleague]);
-  assert.equal(viaHook.stdout, ABSENT);
+  // The model gets the absence, after one display-only progress line for the user (test/notices.test.mjs).
+  const [progress, ...output] = viaHook.stdout.split('\n');
+  assert.equal(output.join('\n'), ABSENT);
+  assert.deepEqual(Object.keys(JSON.parse(progress)), ['type', 'message']);
+  assert.equal(JSON.parse(progress).type, 'progress');
+  assert.match(JSON.parse(progress).message, /^HUMANS\.md: .* is not named exactly HUMANS\.md/);
   assert.doesNotMatch(viaHook.stdout + viaHook.stderr, /Invented|alice/);
   // ~/.humans/HUMANS.md is the only default; nothing else in the home directory is read.
   writeFileSync(join(dir, 'HUMANS.md'), readFileSync(profile, 'utf8'));

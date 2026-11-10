@@ -5,4 +5,5 @@ import { selectedFile, readEvent, renderOwner, absent } from './runtime.mjs';
 // default the owner never saved. Hook input can never select a file or assert ownership.
 const file = selectedFile(process.argv.slice(2), process.env.CLAUDE_PLUGIN_OPTION_PROFILE || '~/.humans/HUMANS.md');
 const input = await readEvent('SessionStart');
-if (input) { if (file) renderOwner(file); else absent(); }
+// Claude Code shows a hook's top-level `systemMessage` to the user (hooks reference, "JSON output").
+if (input) { if (file) renderOwner(file, 'claude', 'systemMessage'); else absent('claude', 'systemMessage'); }
