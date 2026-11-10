@@ -52,14 +52,14 @@ const cli = built.outputFiles[0].text;
 for (const banned of ["mergeAudience", "--group", "MULTI_PERSON", "humans_group", "claude-recipient", "UserPromptSubmit", "visibleTo", "audience", "/Users/", "/home/"])
   if (cli.includes(banned)) throw new Error(`build: the CLI bundle contains ${banned}`);
 // Each plugin installs on its own, so each carries its own copy.
-for (const plugin of ["humans-md", "codex", "copilot", "cursor", "devin", "junie", "opencode", "antigravity"]) emit(`plugins/${plugin}/scripts/humans.mjs`, cli);
+for (const plugin of ["humans-md", "codex", "copilot", "cursor", "devin", "junie", "opencode", "antigravity", "gemini"]) emit(`plugins/${plugin}/scripts/humans.mjs`, cli);
 emit("skills/humans-md-compile/scripts/humans.mjs", cli);
 emit("packages/humans-md/bin/humans-md.mjs", "#!/usr/bin/env node\n" + cli);
 
 // 2. The hook runtime of the Claude Code plugin, unchanged, in the plugins that read the same
 // envelope. Cursor keeps its own runtime (a source file).
 const runtime = read("plugins/humans-md/hooks/runtime.mjs");
-for (const path of ["plugins/codex/hooks/runtime.mjs", "plugins/copilot/scripts/runtime.mjs", "plugins/devin/scripts/runtime.mjs", "plugins/opencode/scripts/runtime.mjs", "plugins/junie/hooks/runtime.mjs", "plugins/antigravity/hooks/runtime.mjs"]) emit(path, runtime);
+for (const path of ["plugins/codex/hooks/runtime.mjs", "plugins/copilot/scripts/runtime.mjs", "plugins/devin/scripts/runtime.mjs", "plugins/opencode/scripts/runtime.mjs", "plugins/junie/hooks/runtime.mjs", "plugins/antigravity/hooks/runtime.mjs", "plugins/gemini/hooks/runtime.mjs"]) emit(path, runtime);
 
 // 3. Licenses. Apache-2.0 for the code, the portable core's license (spec/tools/LICENSE); NOTICE
 // carries the CC BY 4.0 spec material and yaml's ISC text (§ 4(d)).
@@ -67,12 +67,12 @@ const license = read("LICENSE"), notice = read("NOTICE");
 if (license !== read("spec/tools/LICENSE")) throw new Error("build: LICENSE differs from spec/tools/LICENSE, the portable core's license");
 const yamlLicense = readFileSync(join(root, "node_modules/yaml/LICENSE"), "utf8").trim().split("\n").map(l => (l ? "  " + l : "")).join("\n");
 if (!notice.endsWith(yamlLicense + "\n")) throw new Error("build: NOTICE must end with yaml's LICENSE, indented by two spaces (node_modules/yaml/LICENSE)");
-for (const dir of ["plugins/humans-md", "plugins/codex", "plugins/copilot", "plugins/cursor", "plugins/devin", "plugins/junie", "plugins/opencode", "plugins/antigravity", "packages/humans-md", "skills/humans-md-compile"]) {
+for (const dir of ["plugins/humans-md", "plugins/codex", "plugins/copilot", "plugins/cursor", "plugins/devin", "plugins/junie", "plugins/opencode", "plugins/antigravity", "plugins/gemini", "packages/humans-md", "skills/humans-md-compile"]) {
   emit(`${dir}/LICENSE`, license); emit(`${dir}/NOTICE`, notice);
 }
 
 // 4. One version for every package: a plugin's `version` pins installed users until it changes.
-for (const path of ["plugins/humans-md/.claude-plugin/plugin.json", "plugins/codex/.codex-plugin/plugin.json", "plugins/copilot/plugin.json", "plugins/cursor/.cursor-plugin/plugin.json", "plugins/devin/.devin-plugin/plugin.json", "plugins/opencode/package.json", "plugins/antigravity/plugin.json"])
+for (const path of ["plugins/humans-md/.claude-plugin/plugin.json", "plugins/codex/.codex-plugin/plugin.json", "plugins/copilot/plugin.json", "plugins/cursor/.cursor-plugin/plugin.json", "plugins/devin/.devin-plugin/plugin.json", "plugins/opencode/package.json", "plugins/antigravity/plugin.json", "plugins/gemini/gemini-extension.json"])
   emit(path, JSON.stringify({ ...JSON.parse(read(path)), version }, null, 2) + "\n");
 
 // 5. The closed vocabularies, from the spec's schema, so the compile skill cannot drift from it.
