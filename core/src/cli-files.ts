@@ -61,7 +61,7 @@ export function distinctPaths(files: string[]): string[] {
     try { return realpathSync.native(file); } catch { return resolve(file); }
   }))];
 }
-const CODES = new Set(['PROFILE_INVALID', 'UNSUPPORTED_VERSION', 'PROFILE_UNAVAILABLE', 'NOTE_WITHHELD_AGENT_DIRECTED', 'DRAFT_FILENAME_UNCHECKED', 'UNSUPPORTED_ARGUMENT', 'RENDER_LIMIT']);
+const CODES = new Set(['PROFILE_INVALID', 'UNSUPPORTED_VERSION', 'PROFILE_UNAVAILABLE', 'DRAFT_FILENAME_UNCHECKED', 'UNSUPPORTED_ARGUMENT', 'RENDER_LIMIT']);
 /** Fixed vocabulary, deduplicated per operation; never forward exception text. */
 export function diagnostics(codes: string[]): string {
   return [...new Set(codes.map(c => CODES.has(c) ? c : 'PROFILE_INVALID'))].map(c => c + '\n').join('');

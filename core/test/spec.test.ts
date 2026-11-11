@@ -4,7 +4,8 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseProfile, type Profile } from "../src/profile/parse.js";
 import { mergeAudience } from "../src/profile/merge.js";
-import { agentWord, serializeNote } from "../src/profile/terms.js";
+import { serializeNote } from "../src/profile/terms.js";
+import { serveTo, type ServeOptions } from "../src/profile/view.js";
 
 const spec = join(import.meta.dirname, "../../spec");
 /**
@@ -25,17 +26,32 @@ const errors = (src: string, file: string) => {
 describe("profiles (SPEC § 3)", () => {
   for (const [f, src] of md("examples")) it(`accepts examples/${f}`, () => expect(errors(src, f)).toEqual([]));
   for (const [f, src] of md("tests/invalid")) it(`rejects tests/invalid/${f}`, () => expect(errors(src, f).length).toBeGreaterThan(0));
-  for (const [f, src] of md("tests/schema-valid-but-withheld")) {
-    it(`accepts then withholds tests/schema-valid-but-withheld/${f}`, () => {
+  for (const [f, src] of md("tests/valid")) {
+    it(`accepts tests/valid/${f} and withholds nothing for its words`, () => {
       expect(errors(src, f)).toEqual([]);
-      expect(parseProfile(src, { mode: "read" }).withheld).toContain("notes");
+      const read = parseProfile(src, { mode: "read" });
+      expect(read.withheld).toEqual([]);
+      expect(read.issues).toEqual([]);
     });
   }
 });
 
-describe("withholding and serialization (SPEC § 6.2, § 6.3)", () => {
-  const { cases, serialization } = JSON.parse(readFileSync(join(spec, "tests/withholding.json"), "utf8"));
-  for (const c of cases) it(`${c.expect}: ${c.text}`, () => expect(agentWord(c.text) ? "withhold" : "serve").toBe(c.expect));
+describe("a note is served to its owner's agent only, whatever it says (SPEC § 6.2, § 6.3)", () => {
+  const { audiences, cases, serialization } = JSON.parse(readFileSync(join(spec, "tests/withholding.json"), "utf8"));
+  // Visible to every audience, so that only the note rule decides what each one receives.
+  const base: Profile = { humans: "0.3", id: "sample", name: "Example", updated: "2026-10-13", visibility: "anyone_with_file" };
+  const today = "2026-10-13";
+  it("covers the owner and every other audience", () => expect(Object.entries(audiences).filter(([, d]) => d === "serve").map(([a]) => a)).toEqual(["owner"]));
+  for (const c of cases) for (const [audience, decision] of Object.entries(audiences) as Array<[NonNullable<ServeOptions["audience"]>, string]>) {
+    it(`${audience} ${decision}: ${c.text}`, () => {
+      const got = serveTo({ ...base, notes: c.text }, { today, audience });
+      expect(got.status).toBe("found");
+      expect(got.profile!.withheld).toEqual([]);
+      if (decision === "serve") expect(got.profile!.notes).toBe(c.text);
+      // Another reader gets exactly what the profile would give without a note: nothing shows one exists.
+      else expect(got).toEqual(serveTo(base, { today, audience }));
+    });
+  }
   for (const c of serialization) it(`serializes ${c.text}`, () => expect(serializeNote(c.text)).toBe(c.json_string));
 });
 

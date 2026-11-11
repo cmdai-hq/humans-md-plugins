@@ -109,7 +109,7 @@ Stored inactive variants: `incident`, `low_bandwidth`, `focus`, `mobile`. Each h
 
 One line, 1–280 Unicode scalar values: owner-approved presentation needs or voluntary personal information. Preserve an exact requested statement such as "I have ADHD.". No health blacklist and no inferred diagnosis. Mobile layout, language level, technical quotation needs and qualifications can fit here when closed fields cannot express them. Multiple needs must fit together without silently losing any.
 
-Links, email addresses, markup characters (`` ` * _ # < > [ ] { } | ~ \ ``), and prohibited Unicode categories invalidate plain text. The baseline agent-directed phrase heuristic can withhold a valid note; it is not complete injection detection. Show the exact original, warning and any proposed replacement in the normal preview. Syntax/length conflicts require an explicit edit or choice, not silent sanitization.
+Links, email addresses, markup characters (`` ` * _ # < > [ ] { } | ~ \ ``), and prohibited Unicode categories invalidate plain text. A valid note is served exactly as written to its owner's own agents, whatever its wording, and to no other person's agent, whatever the visibility (SPEC § 6.2); a person who has the file reads it there. A need that other people's agents should respect therefore belongs in a closed field. Show the exact original and any proposed replacement in the normal preview. Syntax/length conflicts require an explicit edit or choice, not silent sanitization.
 
 ## File header
 

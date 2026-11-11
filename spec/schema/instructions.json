@@ -137,5 +137,14 @@
         "idioms": "Use literal words rather than idioms or stock phrases."
       }
     }
+  },
+  "non_owner": {
+    "description": "Rendering for a projection served to anyone other than its owner (SPEC §§ 6.3 and 6.4): the fields under omitted get no sentence, whatever their value. Every other sentence is unchanged.",
+    "omitted": [
+      "deciding.reversible",
+      "deciding.batch_questions",
+      "interrupting.interrupt_for",
+      "interrupting.progress_updates"
+    ]
   }
 }

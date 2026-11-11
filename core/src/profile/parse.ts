@@ -4,7 +4,6 @@ import validate from "../generated/validate-profile.js";
 import validateRead from "../generated/validate-reader.js";
 import schema from "../../../spec/schema/humans.schema.json" with { type: "json" };
 import { parseCore } from "../../../spec/tools/reader-core.mjs";
-import { agentWord } from "./terms.js";
 
 export type Block = Record<string, string>;
 export type Override = Record<string, string | number | string[]>;
@@ -47,7 +46,10 @@ export interface Issue {
 
 export interface ParseResult {
   profile?: Profile;
-  /** Fields a consumer must not serve, and must list as withheld (SPEC § 6.2). */
+  /**
+   * Always empty: the reader withholds no note for its words (SPEC § 6.2). Whether a note is served
+   * depends on who reads the projection, which serveTo and serveOwner decide.
+   */
   withheld: string[];
   issues: Issue[];
 }
@@ -63,12 +65,12 @@ export interface ParseOptions {
 }
 
 
-const dependencies = { yaml, schema, validate, validateRead, withhold: agentWord };
+const dependencies = { yaml, schema, validate, validateRead };
 /**
  * Parse through the pinned bounded reader and return recognized fields plus fixed issues.
  * Byte entrances must pass original bytes, never replacement-decoded strings.
- * Validation and note-withholding warnings do not establish visibility authority;
- * consumers must still project for their recipient before serving any fields.
+ * Validation does not establish visibility authority, and the parsed profile keeps its note:
+ * consumers must still project for their reader before serving any field (SPEC §§ 6.1, 6.2).
  */
 export function parseProfile(source: string | Uint8Array, opts: ParseOptions = { mode: "read" }): ParseResult {
   return parseCore(source, opts, dependencies) as ParseResult;

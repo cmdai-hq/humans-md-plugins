@@ -4,7 +4,7 @@ import { basename, resolve } from 'node:path';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import * as yaml from 'yaml';
-import { readJson, withholdReason } from './lib.mjs';
+import { readJson } from './lib.mjs';
 import { parseCore, readerSchema, calendarDate, invalid } from './reader-core.mjs';
 import { readBounded } from './bytes.mjs';
 import { unicodeSchema } from './unicode17.mjs';
@@ -14,7 +14,7 @@ addFormats(ajv, ['uuid']);
 ajv.addFormat('date', calendarDate);
 const readSchema = readerSchema(schema);
 delete readSchema.$id;
-const deps = { yaml, schema, validate: ajv.compile(schema), validateRead: ajv.compile(readSchema), withhold: withholdReason };
+const deps = { yaml, schema, validate: ajv.compile(schema), validateRead: ajv.compile(readSchema) };
 /** Parse profile text or bytes with the reference dependencies and supplied options; default to read mode. */
 export const parseProfile = (input, opts = { mode: 'read' }) => parseCore(input, opts, deps);
 /**

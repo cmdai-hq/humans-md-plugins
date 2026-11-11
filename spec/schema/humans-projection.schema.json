@@ -385,7 +385,7 @@
               "not": {
                 "$ref": "#/$defs/unsafeText"
               },
-              "description": "Owner-approved preferences or personal information, including voluntary medical statements. Kept as scoped data under SPEC § 6; never an action or task instruction. A sharing warning is not invalidity."
+              "description": "Owner-approved preferences or personal information, including voluntary medical statements. Served to the owner's own agent only (SPEC § 6.2), as data; never an action or task instruction."
             }
           },
           "allOf": [

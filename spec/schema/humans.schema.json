@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://humansmd.dev/schema/0.3/humans.schema.json",
   "title": "HUMANS.md profile fields, version 0.3 (draft)",
-  "description": "Strict writer schema for contract 0.3-draft.2026-10-18.1. SPEC.md also requires byte bounds, fatal UTF-8, scalar/date checks, filename matching and the YAML subset. Readers also accept humans \"0.2\" and reconstruct recognized fields as specified in §§ 3.10 and 11. Voluntary personal and medical notes are allowed.",
+  "description": "Strict writer schema for contract 0.3-draft.2026-11-11.1. SPEC.md also requires byte bounds, fatal UTF-8, scalar/date checks, filename matching and the YAML subset. Readers also accept humans \"0.2\" and reconstruct recognized fields as specified in §§ 3.10 and 11. Voluntary personal and medical notes are allowed.",
   "type": "object",
   "required": [
     "humans",
@@ -195,7 +195,7 @@
       "not": {
         "$ref": "#/$defs/unsafeText"
       },
-      "description": "Owner-approved preferences or personal information, including voluntary medical statements. Kept as scoped data under SPEC § 6; never an action or task instruction. A sharing warning is not invalidity."
+      "description": "Owner-approved preferences or personal information, including voluntary medical statements. Served to the owner's own agent only (SPEC § 6.2), as data; never an action or task instruction."
     }
   },
   "$defs": {

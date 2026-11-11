@@ -30,7 +30,6 @@ export const NOTICES = {
   PROFILE_PATH_NOT_ABSOLUTE: `HUMANS.md: the profile path set for this plugin is not absolute and does not start with ~/, so your agent did not get your profile. Fix the setting, then run: ${CHECK}`,
   PROFILE_UNAVAILABLE: `HUMANS.md: your profile is there but could not be loaded, so your agent did not get it. Run: ${CHECK}`,
   RENDER_LIMIT: `HUMANS.md: your profile is too long for this client, so your agent did not get it. Shorten it, then run: ${CHECK}`,
-  NOTE_WITHHELD_AGENT_DIRECTED: `HUMANS.md: your agent got your profile without its notes, which read like instructions to an agent. Run: ${CHECK}`,
 };
 /**
  * Write a hook's output. `output` is the JSON line for the model, unchanged in every case. The
@@ -145,7 +144,7 @@ export function renderOwner(file, client = 'claude', channel) {
     // One notice at most, the reason nothing was served first. Only whole lines of the command
     // line's fixed vocabulary count: its stderr is never forwarded.
     const codes = result.stderr.split('\n');
-    const code = ['PROFILE_INVALID', 'UNSUPPORTED_VERSION', 'PROFILE_UNAVAILABLE', 'RENDER_LIMIT', 'NOTE_WITHHELD_AGENT_DIRECTED'].find(c => codes.includes(c));
+    const code = ['PROFILE_INVALID', 'UNSUPPORTED_VERSION', 'PROFILE_UNAVAILABLE', 'RENDER_LIMIT'].find(c => codes.includes(c));
     write(result.stdout, code === 'PROFILE_UNAVAILABLE' && !there() ? undefined : code, channel);
   } catch { failed(); return; }
   // Static codes only, one bounded diagnostic even if several child warnings.

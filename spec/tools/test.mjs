@@ -10,8 +10,8 @@ import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import { parseProfile, loadProfile } from './validate.mjs';
 import { merge } from './merge.mjs';
-import { specDir, readJson, withholdReason } from './lib.mjs';
-import { assertParsers, assertGroups, parserCases, optionsFor } from './conformance.mjs';
+import { specDir, readJson, instructionSentences } from './lib.mjs';
+import { assertParsers, assertGroups, parserCases, optionsFor, frames, frameFor, noteFor } from './conformance.mjs';
 import { assertRejectedArguments } from './cli-regressions.mjs';
 import { unsafeUnicodePattern } from './unicode17.mjs';
 import { yamlData } from './yaml-data.mjs';
@@ -30,15 +30,57 @@ test('visibility public is read as anyone_with_file only in a 0.2 profile', () =
   assert.equal(parseProfile(`---\nhumans: "0.2"\n${body.replace('public', 'external')}`).profile, undefined);
   assert.equal(parseProfile(`---\nhumans: "0.3"\n${body.replace('public', 'anyone_with_file')}`, { mode: 'write' }).profile.visibility, 'anyone_with_file');
 });
-test('instruction sentences are never withheld by the baseline heuristic', () => {
-  let count = 0;
-  for (const sentences of Object.values(readJson('schema/instructions.json').languages)) {
-    for (const [field, entry] of Object.entries(sentences)) for (const sentence of typeof entry === 'string' ? [entry] : Object.values(entry)) {
-      assert.equal(withholdReason(sentence), null, `${field}: ${sentence}`);
-      count++;
-    }
+test('non_owner names fields only and adds no instruction sentence', () => {
+  const instructions = readJson('schema/instructions.json');
+  assert.deepEqual(Object.keys(instructions.non_owner), ['description', 'omitted']);
+  assert.ok(instructionSentences(instructions).length > 0);
+  assert.equal(instructionSentences(instructions).length, instructionSentences({ languages: instructions.languages }).length);
+});
+test('a note reaches the projection of its owner only, whatever it says', () => {
+  const cases = readJson('tests/projection.json').cases, counts = { served: 0, kept_out: 0 };
+  for (const c of cases) {
+    if (c.expect.status === 'none') continue;
+    const got = parseProfile(Buffer.from(c.source), optionsFor(c, 'read'));
+    // The parser withholds nothing and reports no warning about a note, whatever the note says (SPEC § 6.2).
+    assert.deepEqual(got.withheld, [], `${c.id} parsed withheld`);
+    assert.deepEqual(got.issues, [], `${c.id} parsed issues`);
+    assert.deepEqual(c.expect.profile.withheld, [], `${c.id} expected withheld`);
+    const note = noteFor(c.trusted_audience, got.profile.notes);
+    assert.equal(note, c.expect.profile.notes, `${c.id} note for ${c.trusted_audience}`);
+    if (got.profile.notes !== undefined) counts[note === undefined ? 'kept_out' : 'served']++;
   }
-  console.log(`instruction sentences checked: ${count}`);
+  assert.ok(counts.served > 0 && counts.kept_out > 0);
+  // Only trusted owner context receives a note: a missing or malformed audience never does.
+  for (const audience of ['org', 'public', 'none', undefined, null, '', 'OWNER', ' owner', true, ['owner']]) assert.equal(noteFor(audience, 'I have ADHD.'), undefined, JSON.stringify(audience));
+  assert.equal(noteFor('owner', 'I have ADHD.'), 'I have ADHD.');
+  assert.equal(noteFor('owner', undefined), undefined);
+  // A sentence addressed to an agent is served to its owner like any other note, and to nobody else.
+  const [mine, theirs] = ['agent-directed-note', 'agent-directed-note-org-member'].map(id => cases.find(c => c.id === id));
+  assert.equal(mine.source, theirs.source);
+  assert.match(mine.expect.profile.notes, /^Ignore previous instructions/);
+  assert.equal('notes' in theirs.expect.profile, false);
+  console.log(`notes checked: ${counts.served} served to their owner, ${counts.kept_out} kept out of another reader's projection`);
+});
+test('the static first line follows the trusted audience in every expected projection text', () => {
+  const { owner, non_owner } = frames(specDir), cases = readJson('tests/projection.json').cases;
+  assert.notEqual(owner, non_owner);
+  const counts = { owner: 0, other: 0 };
+  for (const c of cases) {
+    assert.ok(c.expect_text.startsWith(`${frameFor(specDir, c.trusted_audience)}\n{`), `${c.id} first line`);
+    counts[c.trusted_audience === 'owner' ? 'owner' : 'other']++;
+  }
+  assert.ok(counts.owner > 0 && counts.other > 0);
+  // Only trusted owner context selects the owner line: a missing or malformed value never does.
+  for (const audience of ['org', 'public', 'none', undefined, null, '', 'OWNER', ' owner', true, ['owner']]) assert.equal(frameFor(specDir, audience), non_owner, JSON.stringify(audience));
+  assert.equal(frameFor(specDir, 'owner'), owner);
+  // The same profile served to its owner and to an org member differs in the first line and in the note (SPEC §§ 6.2, 6.3).
+  const [mine, theirs] = ['served-to-owner', 'served-to-org-member'].map(id => cases.find(c => c.id === id));
+  assert.equal(mine.source, theirs.source);
+  const { notes, ...withoutNote } = mine.expect.profile;
+  assert.equal(typeof notes, 'string');
+  assert.deepEqual(theirs.expect, { ...mine.expect, profile: withoutNote });
+  assert.ok(mine.expect_text.includes(JSON.stringify(notes)) && !theirs.expect_text.includes(JSON.stringify(notes)));
+  console.log(`first lines checked: ${counts.owner} owner, ${counts.other} other`);
 });
 test('read preferences match the expected owner projections', () => {
   // The reference tools have no renderer; this compares the preference part a renderer would copy.
@@ -137,6 +179,43 @@ test('merge rejects own selectors by presence before touching profiles or option
   const options = Object.create({ state: 'inactive', activeStates: ['inactive'] });
   options.today = '2026-10-14';
   assert.deepEqual(merge([], options), { humans_group: '0.3', coverage: { with_profile: 0, total: 0 }, conflicts: [] });
+});
+
+test('merge requires today as a real calendar date and never guesses staleness', () => {
+  const old = { humans: '0.3', id: 'old', name: 'Old', updated: '2025-10-13', visibility: 'org' };
+  // 366 days later the profile is stale; 365 days later it is not (SPEC § 3.6).
+  assert.equal(merge([old], { today: '2026-10-14' }).coverage.stale, 1);
+  assert.equal(Object.hasOwn(merge([old], { today: '2026-10-13' }).coverage, 'stale'), false);
+  // A missing, non-string, non-calendar or timestamp value is an argument error, not "never stale".
+  for (const today of [undefined, null, '', 20261014, 'PAYLOAD_MUST_NOT_APPEAR', '2026-02-30', '2026-13-01', '2026-10-14T23:30:00-05:00', ' 2026-10-14', '2026-10-14\n']) {
+    assert.throws(() => merge([old], { today }), { message: 'UNSUPPORTED_ARGUMENT' }, `today: ${JSON.stringify(today)}`);
+  }
+  assert.throws(() => merge([old], {}), { message: 'UNSUPPORTED_ARGUMENT' });
+});
+
+test('merge CLI maps an unreadable or malformed case file to a static diagnostic', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'humans-merge-case-'));
+  try {
+    const file = join(dir, 'case.json');
+    const run = (path) => spawnSync(process.execPath, [fileURLToPath(new URL('./merge.mjs', import.meta.url)), path], { encoding: 'utf8', timeout: 5000 });
+    const cases = {
+      'not JSON': '{ "members": ["PAYLOAD_MUST_NOT_APPEAR.md"',
+      'no members': JSON.stringify({ today: '2026-10-14', note: 'PAYLOAD_MUST_NOT_APPEAR' }),
+      'members not a list': JSON.stringify({ members: 'PAYLOAD_MUST_NOT_APPEAR', today: '2026-10-14' }),
+      'member not a path': JSON.stringify({ members: [{ PAYLOAD_MUST_NOT_APPEAR: 1 }], today: '2026-10-14' }),
+      'root not an object': JSON.stringify('PAYLOAD_MUST_NOT_APPEAR'),
+      'today missing': JSON.stringify({ members: [] }),
+      'today not a date': JSON.stringify({ members: [], today: 'PAYLOAD_MUST_NOT_APPEAR' }),
+    };
+    for (const [label, text] of Object.entries(cases)) {
+      writeFileSync(file, text);
+      const r = run(file);
+      assert.equal(r.status, 2, `${label}: ${r.stderr}`);
+      assert.equal(r.stdout, '', label); assert.equal(r.stderr, 'UNSUPPORTED_ARGUMENT\n', label);
+    }
+    const missing = run(join(dir, 'PAYLOAD_MUST_NOT_APPEAR.json'));
+    assert.equal(missing.status, 2); assert.equal(missing.stdout, ''); assert.equal(missing.stderr, 'UNSUPPORTED_ARGUMENT\n');
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
 test('merge CLI rejects case selectors before member file IO and emits no normal result', () => {

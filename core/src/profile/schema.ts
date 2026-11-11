@@ -1,8 +1,7 @@
-// The HUMANS.md format as the skills and the MCP server consume it. Every list comes from S1's files:
-// spec/schema/humans.schema.json (fields, vocabularies) and spec/schema/terms.json (agent words).
+// The HUMANS.md format as the skills and the MCP server consume it. Every list comes from S1's file
+// spec/schema/humans.schema.json (fields, vocabularies).
 // Validation itself runs on a validator compiled from that schema (scripts/gen-validator.ts).
 import schema from "../../../spec/schema/humans.schema.json" with { type: "json" };
-import terms from "../../../spec/schema/terms.json" with { type: "json" };
 
 type Props = Record<string, { enum?: string[]; items?: { enum?: string[] } }>;
 /** Extract scalar enum properties from the pinned schema; array vocabularies are exported separately. */
@@ -27,8 +26,6 @@ export const TIME_ZONES: readonly string[] = schema.$defs.timeZone.enum;
 export const WEEKDAYS: readonly string[] = schema.$defs.interrupting.properties.quiet_hours.properties.all_day.items.enum;
 /** Same pattern as the schema: HH:MM on the hour or half hour. */
 export const QUIET_TIME: RegExp = new RegExp(schema.$defs.interrupting.properties.quiet_hours.properties.from.pattern, "u");
-
-export const AGENT_WORDS: readonly string[] = [...terms.agent_words.en, ...terms.agent_words.fr];
 
 export const ID_PATTERN = /^[a-z0-9-]{2,64}$/;
 /** Profiles older than this are served with `stale: true`; context after CONTEXT_STALE_AFTER_DAYS. */

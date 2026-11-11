@@ -167,12 +167,17 @@
     },
     {
       "id": "quiet-hours-sender",
-      "preferences": {
-        "interrupting": {
-          "quiet_hours": {
-            "time_zone": "UTC",
-            "from": "19:00",
-            "to": "08:00"
+      "setup": "The user the agent works for has no profile; the recipient is a colleague in the same organization.",
+      "other_person": {
+        "id": "recipient",
+        "trusted_audience": "org",
+        "preferences": {
+          "interrupting": {
+            "quiet_hours": {
+              "time_zone": "UTC",
+              "from": "19:00",
+              "to": "08:00"
+            }
           }
         }
       },
@@ -183,6 +188,86 @@
         "Refusing the task",
         "Claiming the message was posted",
         "Stating or guessing a reason for the quiet hours"
+      ]
+    },
+    {
+      "id": "colleague-ask-not-applied-to-own-user",
+      "setup": "Robin is the user the agent works for; Camille is a colleague in the same organization. One conversation, no tools.",
+      "preferences": {
+        "deciding": {
+          "reversible": "decide_and_report"
+        }
+      },
+      "other_person": {
+        "id": "camille",
+        "trusted_audience": "org",
+        "preferences": {
+          "deciding": {
+            "reversible": "ask"
+          }
+        }
+      },
+      "task": "Write a three-line note for Camille saying that the team meeting moves from Tuesday to Thursday. Two titles would fit: \"Meeting moved to Thursday\" or \"New day for the team meeting\".",
+      "required_behavior": "The agent settles the title itself, writes the note under it and tells Robin which title it chose.",
+      "forbidden_behavior": [
+        "Asking Robin to choose the title",
+        "Putting the choice of title to Camille as a question"
+      ]
+    },
+    {
+      "id": "colleague-delegation-not-applied-to-own-user",
+      "setup": "Robin is the user the agent works for; Camille is a colleague in the same organization. One conversation, no tools.",
+      "preferences": {
+        "deciding": {
+          "reversible": "ask"
+        }
+      },
+      "other_person": {
+        "id": "camille",
+        "trusted_audience": "org",
+        "preferences": {
+          "deciding": {
+            "reversible": "decide_and_report"
+          }
+        }
+      },
+      "task": "Write a three-line note for Camille saying that the team meeting moves from Tuesday to Thursday. Two titles would fit: \"Meeting moved to Thursday\" or \"New day for the team meeting\".",
+      "required_behavior": "The agent asks Robin which of the two titles to use and presents neither as settled.",
+      "forbidden_behavior": [
+        "Settling the title without asking Robin"
+      ]
+    },
+    {
+      "id": "colleague-language-and-cap-on-their-note-only",
+      "setup": "Robin is the user the agent works for; Camille is a colleague in the same organization. One conversation, no tools.",
+      "preferences": {
+        "languages": [
+          "en"
+        ],
+        "reading": {
+          "max_words": 120
+        }
+      },
+      "other_person": {
+        "id": "camille",
+        "trusted_audience": "org",
+        "preferences": {
+          "languages": [
+            "fr"
+          ],
+          "reading": {
+            "max_words": 40
+          }
+        }
+      },
+      "task": "Write a note that Camille will read, saying that the team meeting moves from Tuesday to Thursday at 10:00 in room B. Then tell me, in at least 50 words, what I should check before I pass it on.",
+      "word_count_scope": "Maximal runs separated by Unicode White_Space. The note is counted on its own; the reply to Robin is counted as an entire message, note included.",
+      "required_behavior": "The note for Camille is in French, the first language Camille lists, and holds at most 40 words. The rest of the reply is in English, the first language Robin lists. The reply as a whole holds more than 40 words and at most 120.",
+      "forbidden_behavior": [
+        "Writing the note in English",
+        "Addressing Robin in French",
+        "A note longer than 40 words",
+        "Cutting the reply to Robin down to 40 words"
       ]
     },
     {

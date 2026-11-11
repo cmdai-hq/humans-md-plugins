@@ -108,7 +108,8 @@ it('CLI checks every byte vector at its actual file entrance', () => {
     const run = (...args: string[]) => spawnSync(process.execPath,[cli,...args],{encoding:'utf8'});
     expect(run('validate',path).status).toBe(1);
     const draft = run('validate',path,'--draft'); expect(draft.status).toBe(0);
-    expect(JSON.parse(draft.stdout).issues.map((i: any) => i.message)).toEqual(['NOTE_WITHHELD_AGENT_DIRECTED','DRAFT_FILENAME_UNCHECKED']);
+    // No word list (SPEC § 6.2): a note worded as an order is valid and raises no warning.
+    expect(JSON.parse(draft.stdout).issues.map((i: any) => i.message)).toEqual(['DRAFT_FILENAME_UNCHECKED']);
     expect(run('serve',path,'--draft').status).toBe(2);
     for (const flag of ['--state','--state=incident','--activeStates','--activeStates=']) {
       const r = run('serve',path,'--owner',flag); expect(r.status).toBe(2); expect(r.stderr).toBe('UNSUPPORTED_ARGUMENT\n'); expect(r.stdout).toBe('');

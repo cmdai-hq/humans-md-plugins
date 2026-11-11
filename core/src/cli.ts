@@ -57,11 +57,12 @@ if (cmd === 'merge' || group) {
   codes.push(...issues.map(i => i.message));
   // --owner requires an owner's explicit selected file in trusted local context.
   // It is never a remote identity or an MCP argument.
+  // Without it the reader is someone else: no note, and render-agent takes the second first line (SPEC §§ 6.2, 6.3).
   projection = profile ? serveTo(profile, { today, withheld, audience: owner ? 'owner' : 'public' }) : { status: 'none' };
 }
 if (cmd === 'render-agent') {
   // Text adapters append the SPEC § 6.4 instruction sentences unless --no-guidance is given.
-  const rendered = renderProjection(projection, { adapter, budgetBytes, budgetTokens, ...(guidance ? {} : { guidance: false }) });
+  const rendered = renderProjection(projection, { adapter, owner, budgetBytes, budgetTokens, ...(guidance ? {} : { guidance: false }) });
   if (rendered.diagnostic) codes.push(rendered.diagnostic);
   process.stdout.write(rendered.output);
 } else print(projection); // Diagnostic compatibility commands, not adapter fallbacks.

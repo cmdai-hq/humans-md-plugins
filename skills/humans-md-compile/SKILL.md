@@ -10,7 +10,7 @@ description: >-
 license: Apache-2.0
 compatibility: Needs Node 22.18+ for this skill's scripts/humans.mjs (or npx) and authorized local write access to ~/.humans.
 metadata:
-  spec: humans-md 0.3-draft.2026-10-18.1
+  spec: humans-md 0.3-draft.2026-11-11.1
   status: prototype; native compiler evidence pending
 ---
 
@@ -18,7 +18,7 @@ metadata:
 
 ## 1. Establish the source and provider
 
-Start only on the owner's compilation request. Before opening `~/.humans/source.md` or another authorized source, or asking the first interview question, state which assistant/provider will process it. With a hosted assistant, the provider processes the source even though file commands run locally. If the provider is unknown, say so; never promise an entirely local model. With HUMANS.md plugins and hooks, only your own agents load the profile, approved notes included, and their providers process it. Anyone else who gets the file reads what its visibility allows.
+Start only on the owner's compilation request. Before opening `~/.humans/source.md` or another authorized source, or asking the first interview question, state which assistant/provider will process it. With a hosted assistant, the provider processes the source even though file commands run locally. If the provider is unknown, say so; never promise an entirely local model. With HUMANS.md plugins and hooks, only your own agents load the profile, approved notes included, and their providers process it. Other people's agents are served what its visibility allows and never the notes; a person who has the file reads all of it.
 
 No source text for a new profile? Offer the [interview](references/interview.md); its answers are the source.
 
@@ -40,7 +40,7 @@ Read [fields](references/fields.md); for context mappings consult [vocabulary](r
 - “Fewer than 150 words” / “moins de 150 mots” maps to `max_words: 149`; fewer than 100 maps to 99. The cap covers the whole message, including an appendix. Bounds outside 20–2000 are unrepresentable; explain instead of clamping.
 - Languages: separate the reading/output language from proficiency and quotation language, as [fields](references/fields.md) states for `languages`; a note never replaces a representable language preference.
 - Preserve mobile needs (no wide tables or horizontal scrolling), language level, function names and technical quotation requirements, and research qualifications/citations. Closed fields alone may lose these: propose faithful notes and show their wording. Five lines maps to `length: minimal`; a result-first mapping and any ambiguous role remain visible interpretations.
-- `notes` is a single plain-text string of at most 280 Unicode scalar values. If exact requested statements exceed size or syntax limits, show the loss and ask for an ordinary wording/selection choice. Never silently sanitize, paraphrase, shorten or discard them. Agent-directed withholding is a warning: show the approved original and explain that it will not be served; an alternative wording needs approval.
+- `notes` is a single plain-text string of at most 280 Unicode scalar values. If exact requested statements exceed size or syntax limits, show the loss and ask for an ordinary wording/selection choice. Never silently sanitize, paraphrase, shorten or discard them. The owner's own agents receive the approved note exactly and other people's agents receive none ([fields](references/fields.md#notes)): place what other people's agents should respect in a closed field, or list it as a loss.
 - Stored `states` and `interrupting.when_focused` are inactive. Explain this loss for focus/mobile requests; express a general need only if the owner approves that interpretation. No state activation or expiry is implemented.
 - Only for a new profile propose explicit `visibility: private`. A 0.2 `public` becomes `anyone_with_file` (same scope; show it). For updates, including an empty existing baseline, preserve omitted visibility as omitted (effective `org`), and preserve explicit visibility. If visibility is merely unshown in a partial view, obtain it before saving. Changing scope or adding recipients requires explicit approval; a compilation request alone does not authorize that change.
 
@@ -66,7 +66,7 @@ Write a temporary draft named `HUMANS.md` with frontmatter only; run `<humans-md
 
 Report exact note lengths only when measured in Unicode scalar values; otherwise omit the count, saying whether validation ran.
 
-Show all proposed fields in plain words, the diff on updates, notes exactly as chosen, served/withheld status, visibility with a plain statement of who can read it (`anyone_with_file`: anyone who has the file, anyone on the Internet in a public repository), intended recipients (with HUMANS.md plugins and hooks, only your own agents), the provider flow, that a `quiet_hours` time zone indicates an approximate location, and the complete interpretations/losses list. For a sample, run `<humans-md> show <temp-dir>/HUMANS.md` only within the owner's explicit local compilation preview. Contrast neutral and adapted examples without promising model behavior has been proved. The preview must include mobile layout, language level and quotation requirements when present.
+Show all proposed fields in plain words, the diff on updates, notes exactly as chosen and who is served them (the owner's own agents only), visibility with a plain statement of who can read it (`anyone_with_file`: anyone who has the file, anyone on the Internet in a public repository), intended recipients (with HUMANS.md plugins and hooks, only your own agents), the provider flow, that a `quiet_hours` time zone indicates an approximate location, and the complete interpretations/losses list. For a sample, run `<humans-md> show <temp-dir>/HUMANS.md` only within the owner's explicit local compilation preview. Contrast neutral and adapted examples without promising model behavior has been proved. The preview must include mobile layout, language level and quotation requirements when present.
 
 For every update, unless the owner or an authorized full read has explicitly confirmed baseline completeness, state in the preview and ordinary approval question: acceptance of this proposal does not authorize canonical replacement; first obtain or confirm the complete baseline and preserve unshown fields. Do not ask again when completeness is already confirmed. Ask for normal approval of this version; revalidate and preview changes. New profiles and voluntary health statements need no extra approval step.
 
