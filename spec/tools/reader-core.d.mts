@@ -33,7 +33,7 @@ export function invalid(code?: string): any;
  * Parse profile text or original UTF-8 bytes within MAX_FILE_BYTES, with frontmatter
  * and body bounded by MAX_FRONTMATTER_BYTES and MAX_BODY_BYTES respectively.
  * Expect opts with mode "read" or "write", and deps with the compatible yaml API,
- * profile schema, synchronous validate/validateRead predicates and withhold predicate.
+ * profile schema and synchronous validate/validateRead predicates.
  * These injected dependencies are trusted; their contracts are not checked here.
  * Write mode validates raw data; other modes shape recognized fields, map visibility
  * "public" to "anyone_with_file" in a "0.2" profile only, validate with
@@ -42,8 +42,9 @@ export function invalid(code?: string): any;
  * interrupting.quiet_hours whose from equals its to.
  * opts.kind === "me" forbids a body. opts.expectedId checks the id unless opts.draft
  * is set; draft requires write mode and adds DRAFT_FILENAME_UNCHECKED.
- * Return { profile, withheld, issues } on success; a truthy withhold(notes) marks notes
- * withheld with a warning but leaves them in profile. Parsing does not authorize disclosure.
+ * Return { profile, withheld, issues } on success. withheld is always empty: no note is
+ * withheld by its content, and profile keeps the note. Parsing does not authorize disclosure:
+ * a consumer serves the note under owner context only (SPEC § 6.2).
  * Rejections return no profile: UNSUPPORTED_ARGUMENT for draft outside write mode,
  * UNSUPPORTED_VERSION for a string version other than WRITE_VERSION in write mode or
  * outside READ_VERSIONS in read mode, otherwise PROFILE_INVALID.

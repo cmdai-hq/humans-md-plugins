@@ -1,6 +1,6 @@
 # HUMANS.md vocabulary, version 0.3 (draft)
 
-Closed lists used by [SPEC.md](SPEC.md). Strict writers reject values outside these lists. Known-version readers omit unknown enum values under SPEC § 3.10. Stable vocabulary changes require a new format version; unpublished draft revisions are identified by source commit and contract revision (see CONTRIBUTING.md). There is no medical word blacklist.
+Closed lists used by [SPEC.md](SPEC.md). Strict writers reject values outside these lists. Known-version readers omit unknown enum values under SPEC § 3.10. Stable vocabulary changes require a new format version; unpublished draft revisions are identified by source commit and contract revision (see CONTRIBUTING.md). There is no word list for notes, medical or otherwise: a note is never filtered by its words (SPEC § 6.2).
 
 ## Roles (`context.role`)
 
@@ -25,11 +25,3 @@ The 418 names in `zone.tab` of IANA tz database release 2026e, plus `UTC`: 419 n
 ## Weekdays (`interrupting.quiet_hours.all_day`)
 
 `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`
-
-## Words addressed to an agent
-
-The baseline consumer withholds a note containing one of these expressions (SPEC § 6.2). Match using NFD, removal of Unicode marks, lowercase, non-letter/non-number runs replaced by one space and whole-word phrase boundaries. This is a bounded heuristic, not a safety guarantee. False positives can lose meaningful information and must be visible to the owner; missed imperatives still have no authority. Do not apply this list as a medical filter or use it to invalidate a file. The machine list is schema/terms.json.
-
-English: `ignore`, `disregard`, `forget`, `override`, `bypass`, `instead`, `pretend`, `roleplay`, `act as`, `you are now`, `send`, `forward`, `email`, `emails`, `mail`, `cc`, `bcc`, `post`, `publish`, `share`, `upload`, `download`, `delete`, `remove`, `run`, `execute`, `call`, `invoke`, `fetch`, `browse`, `click`, `tool`, `tools`, `system`, `assistant`, `developer`, `prompt`, `prompts`, `instruction`, `instructions`, `jailbreak`, `secret`, `secrets`, `password`, `passwords`, `token`, `tokens`, `credential`, `credentials`, `api`, `ssh`, `env`
-
-French: `ignore`, `ignorer`, `oublie`, `oublier`, `envoie`, `envoyer`, `transfere`, `transferer`, `copie`, `copier`, `publie`, `publier`, `partage`, `partager`, `supprime`, `supprimer`, `execute`, `executer`, `lance`, `lancer`, `appelle`, `appeler`, `outil`, `outils`, `systeme`, `consigne`, `consignes`, `mot de passe`, `jeton`, `jetons`, `au lieu`

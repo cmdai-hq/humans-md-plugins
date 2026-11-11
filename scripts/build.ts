@@ -47,9 +47,11 @@ const built = await build({
 });
 const cli = built.outputFiles[0].text;
 // The published CLI must not carry the multi-person code paths: group merging and rendering, the
-// recipient hook, audience-based visibility. ("recipient" alone stays: SPEC § 6.3-6.4 owner text.)
+// recipient hook, audience-based visibility, the first line and the sentence omissions for a reader
+// other than the owner (SPEC § 6.3-6.4; the field list of instructions.json stays, as unused data).
+// ("recipient" alone stays: SPEC § 6.3-6.4 owner text.)
 // Nor a path from the build machine (a home folder that esbuild or a dependency wrote in).
-for (const banned of ["mergeAudience", "--group", "MULTI_PERSON", "humans_group", "claude-recipient", "UserPromptSubmit", "visibleTo", "audience", "/Users/", "/home/"])
+for (const banned of ["mergeAudience", "--group", "MULTI_PERSON", "humans_group", "claude-recipient", "UserPromptSubmit", "visibleTo", "audience", "Treat this person as a reader", "FRAME_NON_OWNER", "non_owner.omitted", "/Users/", "/home/"])
   if (cli.includes(banned)) throw new Error(`build: the CLI bundle contains ${banned}`);
 // Each plugin installs on its own, so each carries its own copy.
 for (const plugin of ["humans-md", "codex", "copilot", "cursor", "devin", "junie", "opencode", "antigravity"]) emit(`plugins/${plugin}/scripts/humans.mjs`, cli);

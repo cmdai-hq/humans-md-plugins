@@ -167,7 +167,7 @@ To keep the file elsewhere, for example in a dotfiles repository, make `~/.human
 
 ## Troubleshooting
 
-When your profile is there but your agent did not get it as written (invalid, misnamed, unreadable, or loaded without its notes), some clients tell you at session start, in one line that your agent never sees:
+When your profile is there but your agent did not get it as written (invalid, misnamed or unreadable), some clients tell you at session start, in one line that your agent never sees:
 
 ```text
 HUMANS.md: your profile is not valid, so your agent did not get it. To see what to fix, run: npx -y @humans-md/cli check
@@ -191,11 +191,11 @@ The fields it recognizes, labelled as data, then one plain sentence per preferen
 
 - Your profile can include private notes. They reach your own agent, so your agent's AI provider processes them. Nothing is sent anywhere else: no network request, no telemetry.
 - Preferences change how agents present their work to you. They never grant a permission, and your repository and tool rules win.
-- Notes that look like commands to agents are left out. This filter is best-effort: do not rely on it for security.
+- Your notes reach your own agent exactly as you wrote them: nothing filters them by their wording. A tool that follows the format serves them to no one else's agent, whatever the visibility; a person who has your file can still read them in it.
 
 ## Compatibility
 
-Format version: 0.3 draft (`0.3-draft.2026-10-18.1`). macOS only. "Tested" means a real session on the version named loaded the profile and the model quoted a value from it; it says nothing about how well a model follows the preferences. "From GitHub" means plugin 0.3.0 installed with the command in this README; "local copy" means the 0.3.0 build tested before it was published. 0.3.1 changes only the plain sentences after the data (a sentence for `languages`; `minimal`, `short` and `max_words` now put failures, risks and decisions first and say how many items were left out) and loads the same way; Claude Code CLI 2.1.302 loaded a local copy of the 0.3.1 build. 0.3.2 has the same profile handling as 0.3.1; it is the first version built and published from this repository by its release workflow, with npm provenance.
+Format version: 0.3 draft (`0.3-draft.2026-11-11.1`). macOS only. "Tested" means a real session on the version named loaded the profile and the model quoted a value from it; it says nothing about how well a model follows the preferences. "From GitHub" means plugin 0.3.0 installed with the command in this README; "local copy" means the 0.3.0 build tested before it was published. 0.3.1 changes only the plain sentences after the data (a sentence for `languages`; `minimal`, `short` and `max_words` now put failures, risks and decisions first and say how many items were left out) and loads the same way; Claude Code CLI 2.1.302 loaded a local copy of the 0.3.1 build. 0.3.2 has the same profile handling as 0.3.1; it is the first version built and published from this repository by its release workflow, with npm provenance.
 
 | Client | Version | Status (2026-10-17) |
 |---|---|---|

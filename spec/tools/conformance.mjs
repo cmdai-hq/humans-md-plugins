@@ -6,6 +6,21 @@ import { regressions } from './regressions.mjs';
 /** Read a JSON fixture relative to the supplied root; read and syntax errors propagate. */
 export const json = (root, file) => JSON.parse(readFileSync(join(root, file), 'utf8'));
 /**
+ * Read the two static first lines of SPEC § 6.3 from the projection vectors:
+ * `owner` for a projection served to its owner, `non_owner` for anyone else.
+ */
+export const frames = root => { const { frame, frame_non_owner } = json(root, 'tests/projection.json'); return { owner: frame, non_owner: frame_non_owner }; };
+/**
+ * Choose the first line for a trusted audience, as a renderer under test must:
+ * only `owner` selects the owner line; every other value, a missing one included, selects the second line.
+ */
+export const frameFor = (root, audience) => frames(root)[audience === 'owner' ? 'owner' : 'non_owner'];
+/**
+ * Choose what a projection carries of a parsed note for a trusted audience (SPEC § 6.2), as a consumer under test must:
+ * only `owner` receives the note, exactly as parsed; every other value, a missing one included, receives none.
+ */
+export const noteFor = (audience, note) => (audience === 'owner' && typeof note === 'string' ? note : undefined);
+/**
  * Collect materialized byte recipes, projection inputs, Markdown fixtures and regression cases.
  * Projection diagnostics are adapted separately for reader and strict-writer expectations.
  */
@@ -19,7 +34,7 @@ export function parserCases(root) {
     // the case states its own writer diagnostics (a readable previous version).
     write_diagnostics: c.write_diagnostics ?? c.diagnostics ?? (c.writer_valid ? [] : ['PROFILE_INVALID']),
   }));
-  const files = ['examples', 'tests/valid', 'tests/invalid', 'tests/schema-valid-but-withheld'].flatMap(dir => readdirSync(join(root,dir)).filter(f => f.endsWith('.md')).map(filename => ({ id: `${dir}/${filename}`, filename, source: readFileSync(join(root,dir,filename)), writer_valid: dir !== 'tests/invalid' })));
+  const files = ['examples', 'tests/valid', 'tests/invalid'].flatMap(dir => readdirSync(join(root,dir)).filter(f => f.endsWith('.md')).map(filename => ({ id: `${dir}/${filename}`, filename, source: readFileSync(join(root,dir,filename)), writer_valid: dir !== 'tests/invalid' })));
   return [...bytes, ...projections, ...files, ...regressions];
 }
 /** Derive parser mode, profile kind and expected repository id from a case filename. */

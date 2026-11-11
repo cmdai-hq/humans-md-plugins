@@ -46,7 +46,7 @@ Compare the free answers (questions 10 and 11) with the choices already made:
 
 ## Preview and save
 
-- Show the complete frontmatter exactly as it will be saved, file header included, and the note word for word. Say who can read the note with the chosen visibility. A one-line summary is not a preview.
+- Show the complete frontmatter exactly as it will be saved, file header included, and the note word for word. Say who gets the note: the owner's own agents, and any person who has the file. A one-line summary is not a preview.
 - In the preview, picked choices are explicit. Show as interpretations: the order of `reading.visual`, the proposed `id`, and every mapped free answer.
 - Ask to save only after that.
 

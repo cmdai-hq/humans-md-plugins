@@ -15,7 +15,10 @@
         "diagnosis",
         "other_preferences"
       ],
-      "new_profile_visibility": "private"
+      "new_profile_visibility": "private",
+      "required_preview_facts": [
+        "The note is served only to the owner's own agent; no agent receives it from a shared copy, and whoever holds the file can read it there"
+      ]
     },
     {
       "id": "chosen-medical-fr",
@@ -24,7 +27,10 @@
         "notes": "Mes médicaments me ralentissent le matin."
       },
       "requires_normal_owner_approval": true,
-      "new_profile_visibility": "private"
+      "new_profile_visibility": "private",
+      "required_preview_facts": [
+        "The note is served only to the owner's own agent; no agent receives it from a shared copy, and whoever holds the file can read it there"
+      ]
     },
     {
       "id": "strict-word-bound",
@@ -49,7 +55,10 @@
       "required_proposal_fields": {
         "notes": "I read on my phone and need layouts without horizontal scrolling."
       },
-      "requires_normal_owner_approval": true
+      "requires_normal_owner_approval": true,
+      "required_preview_facts": [
+        "The note is served only to the owner's own agent; no agent receives it from a shared copy, and whoever holds the file can read it there"
+      ]
     },
     {
       "id": "reading-level-quotes",
@@ -60,7 +69,10 @@
         ],
         "notes": "I read Spanish at B1 level and need technical quotations and identifiers kept in English."
       },
-      "requires_normal_owner_approval": true
+      "requires_normal_owner_approval": true,
+      "required_preview_facts": [
+        "The note is served only to the owner's own agent; no agent receives it from a shared copy, and whoever holds the file can read it there"
+      ]
     },
     {
       "id": "no-inferred-diagnosis",
@@ -125,7 +137,7 @@
       "required_preview_facts": [
         "fixture-provider processes the source",
         "Recipients get only the authorized projection",
-        "The approved note is served under the selected visibility"
+        "The note is served only to the owner's own agent; no agent receives it from a shared copy, and whoever holds the file can read it there"
       ],
       "forbidden_claims": [
         "The source never leaves this device."

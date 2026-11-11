@@ -7,7 +7,7 @@ export const MAX_BODY_BYTES = 4096;
 /** Version a strict writer writes, and versions a reader accepts (SPEC § 11). */
 export const WRITE_VERSION = '0.3';
 export const READ_VERSIONS = Object.freeze(['0.3', '0.2']);
-/** Build a profile-less result with no withheld fields and one root error using the given code. */
+/** Build a profile-less result with an empty withheld list and one root error using the given code. */
 export const invalid = (code = 'PROFILE_INVALID') => ({ withheld: [], issues: [{ path: '$', message: code, severity: 'error' }] });
 /** Test for a non-null object that is not an array; this does not require a plain object. */
 export const isMap = v => v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -75,11 +75,12 @@ function shape(value, node, schema, filterEnums) {
   return value;
 }
 /**
- * Parse bounded profile text or bytes using injected YAML, schema validators and withholding logic.
+ * Parse bounded profile text or bytes using injected YAML and schema validators.
  * Apply writer or reader shaping and filename rules, returning profile/diagnostics or a profile-less error;
- * caught failures become PROFILE_INVALID.
+ * caught failures become PROFILE_INVALID. No note is withheld by its content: withheld is always empty here,
+ * and a consumer decides from the trusted audience whether it serves the note (SPEC § 6.2).
  */
-export function parseCore(input, opts, { yaml, schema, validate, validateRead, withhold }) {
+export function parseCore(input, opts, { yaml, schema, validate, validateRead }) {
   try {
     if (opts.draft && opts.mode !== 'write') return invalid('UNSUPPORTED_ARGUMENT');
     let source = typeof input === 'string' ? input : decodeBytes(input);
@@ -107,9 +108,7 @@ export function parseCore(input, opts, { yaml, schema, validate, validateRead, w
     const quiet = data.interrupting?.quiet_hours;
     if (isMap(quiet) && quiet.from === quiet.to) return invalid();
     const profile = opts.mode === 'write' ? data : shape(data, schema, schema, true);
-    const withheld = typeof profile.notes === 'string' && withhold(profile.notes) ? ['notes'] : [];
-    const issues = withheld.length ? [{ path: '/notes', message: 'NOTE_WITHHELD_AGENT_DIRECTED', severity: 'warning' }] : [];
-    if (opts.draft) issues.push({ path: '$', message: 'DRAFT_FILENAME_UNCHECKED', severity: 'warning' });
-    return { profile, withheld, issues };
+    const issues = opts.draft ? [{ path: '$', message: 'DRAFT_FILENAME_UNCHECKED', severity: 'warning' }] : [];
+    return { profile, withheld: [], issues };
   } catch { return invalid(); }
 }

@@ -57,7 +57,6 @@ One line, at most 512 bytes: `{"ok":false,"issues":[{"path":"/reading/max_words"
 | `UNSUPPORTED_VERSION` | `humans` must be `"0.3"`. |
 | `PROFILE_UNAVAILABLE` | The file is missing or cannot be read. |
 | `PROFILE_INVALID` | Invalid, and `check` found no place to point at. |
-| `NOTE_WITHHELD_AGENT_DIRECTED` (warning) | Your notes read like instructions to an agent: your agent gets your profile without them. |
 | `DRAFT_FILENAME_UNCHECKED` (warning) | `--draft` skipped the file name rule. |
 
 ## Hook configuration

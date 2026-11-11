@@ -21,8 +21,8 @@ const USAGE = `humans-md: check and load your own HUMANS.md (https://humansmd.de
   options for show and hook: --no-guidance, --budget-bytes N, --budget-tokens N
   file defaults to ${DEFAULT_FILE}
 `;
-// yaml prints every frontmatter token to stdout when these are set: comments and withheld notes
-// would reach the agent's context ahead of the envelope.
+// yaml prints every frontmatter token to stdout when these are set: comments and fields that are
+// never projected would reach the agent's context ahead of the envelope.
 delete process.env.LOG_TOKENS; delete process.env.LOG_STREAM;
 const [cmd, ...args] = process.argv.slice(2);
 if (args.length === 0 && (cmd === '--help' || cmd === '-h' || cmd === 'help')) { process.stdout.write(USAGE); process.exit(0); }
@@ -108,12 +108,14 @@ if (cmd === 'check') {
 // where a repository could ship its own `.humans/HUMANS.md`), to a file named HUMANS.md.
 // A link named HUMANS.md to someone's `<id>.md` is not the owner's file either.
 if (!isAbsolute(file) || basename(file) !== 'HUMANS.md' || basename(real(file)) !== 'HUMANS.md') fail();
-const { profile, withheld, issues, digest } = loadBound(file);
+const { profile, issues, digest } = loadBound(file);
 const codes = issues.map(i => i.message);
-const projection = profile ? serveOwner(profile, { today, withheld }) : { status: 'none' as const };
+// Owner context (SPEC § 6.3): the owner's own file, selected on their machine, for their own agent.
+// The note is served as written (SPEC § 6.2), under the owner's first line.
+const projection = profile ? serveOwner(profile, { today }) : { status: 'none' as const };
 const adapter = (cmd === 'hook' ? client : json ? 'json' : 'text') as Adapter;
 // Text adapters append the SPEC § 6.4 instruction sentences unless --no-guidance is given.
-const rendered = renderProjection(projection, { adapter, budgetBytes, budgetTokens, ...(guidance ? {} : { guidance: false }) });
+const rendered = renderProjection(projection, { adapter, owner: true, budgetBytes, budgetTokens, ...(guidance ? {} : { guidance: false }) });
 if (rendered.diagnostic) codes.push(rendered.diagnostic);
 if (cmd === 'sync') {
   // A missing, invalid or oversized profile writes nothing: no copy of an absence. No copy matches it either.

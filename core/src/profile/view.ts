@@ -1,6 +1,5 @@
 // Deterministic projection of a parsed profile. Authorization is trusted caller context.
 import type { Profile, QuietHours } from './parse.js';
-import { agentWord } from './terms.js';
 import { CONTEXT_STALE_AFTER_DAYS, STALE_AFTER_DAYS } from './schema.js';
 export interface ServedProfile {
   id: string;
@@ -12,6 +11,7 @@ export interface ServedProfile {
   interrupting?: Profile['interrupting'];
   context?: { role?: string; knows_well?: string[]; knows_little?: string[]; decides?: string[]; stale: boolean };
   avoid?: string[];
+  /** Only in a projection served under owner context (SPEC § 6.2). */
   notes?: string;
   withheld: string[];
 }
@@ -20,6 +20,11 @@ export interface ServeOptions {
   today: string;
   audience?: 'owner' | 'org' | 'public' | 'none';
   contextExtension?: boolean;
+  /**
+   * A consumer's own, separately identified policy on the owner's note (SPEC § 6.2): `['notes']` leaves
+   * the note out of the owner's projection and says so. Ignored for every other reader, whose
+   * projection never carries a note and never reports one.
+   */
   withheld?: string[];
   /** Local owner selection only; remote APIs must derive authority themselves. */
   owner?: boolean;
@@ -43,28 +48,45 @@ function quietHours(q: QuietHours): QuietHours {
 /**
  * Project a validated profile for a trusted audience without mutating the source.
  * Hidden profiles yield absence; identity prose and dormant fields are omitted.
- * Voluntary notes remain exact unless lexically withheld, which is disclosed.
+ * Only the owner audience receives the note, exactly as written; any other reader gets the
+ * projection the profile would have without a note, and `withheld: []` (SPEC § 6.2).
  * Own state/activeStates options throw UNSUPPORTED_ARGUMENT even when undefined.
  */
 export function serveTo(p: Profile, opts: ServeOptions): { status: ServeStatus; profile?: ServedProfile } {
   if (Object.hasOwn(opts, 'state') || Object.hasOwn(opts, 'activeStates')) {
     throw new Error('UNSUPPORTED_ARGUMENT');
   }
-  if (!visibleTo(p, opts.owner ? 'owner' : opts.audience)) return { status: 'none' };
-  return serveOwner(p, opts);
+  // Only the literal true, or the owner audience, is owner context: any other value fails closed.
+  const audience = opts.owner === true ? 'owner' : opts.audience;
+  if (!visibleTo(p, audience)) return { status: 'none' };
+  if (audience === 'owner') return serveOwner(p, opts);
+  const profile = project(p, opts);
+  return { status: profile.stale ? 'stale' : 'found', profile };
 }
 
 /**
  * Project a validated profile for its owner: visibility always admits the owner, so no audience is
- * read. Only for the owner's explicit local selection (the single-person CLI); every other reader
- * goes through serveTo. Own state/activeStates options throw UNSUPPORTED_ARGUMENT.
+ * read. Only under owner context (SPEC § 6.3), such as the owner's explicit local selection of their
+ * personal profile (the single-person CLI); every other reader goes through serveTo. The note is
+ * kept exactly as written, whatever it says, unless the caller's own policy withholds it, which the
+ * projection then reports. Own state/activeStates options throw UNSUPPORTED_ARGUMENT.
  */
 export function serveOwner(p: Profile, opts: Pick<ServeOptions, 'today' | 'withheld' | 'contextExtension'>): { status: ServeStatus; profile?: ServedProfile } {
   if (Object.hasOwn(opts, 'state') || Object.hasOwn(opts, 'activeStates')) {
     throw new Error('UNSUPPORTED_ARGUMENT');
   }
-  const withheld = opts.withheld?.includes('notes') || (p.notes && agentWord(p.notes)) ? ['notes'] : [];
-  const out: ServedProfile = { id: p.id, updated: p.updated, stale: daysBetween(p.updated, opts.today) > STALE_AFTER_DAYS, withheld };
+  const out = project(p, opts);
+  if (opts.withheld?.includes('notes')) out.withheld = ['notes'];
+  else if (p.notes) out.notes = p.notes;
+  return { status: out.stale ? 'stale' : 'found', profile: out };
+}
+
+/**
+ * Build what every admitted reader receives: closed values, numbers and patterned strings, and no
+ * note (SPEC § 6.2). Callers have applied visibility and rejected state selectors.
+ */
+function project(p: Profile, opts: Pick<ServeOptions, 'today' | 'contextExtension'>): ServedProfile {
+  const out: ServedProfile = { id: p.id, updated: p.updated, stale: daysBetween(p.updated, opts.today) > STALE_AFTER_DAYS, withheld: [] };
   for (const key of ['languages', 'avoid'] as const) if (p[key]?.length) out[key] = [...p[key]!];
   for (const key of ['reading', 'deciding', 'interrupting'] as const) {
     const block = Object.fromEntries(Object.entries(p[key] ?? {}).filter(([k,v]) => k !== 'when_focused' && (!Array.isArray(v) || v.length))
@@ -79,8 +101,7 @@ export function serveOwner(p: Profile, opts: Pick<ServeOptions, 'today' | 'withh
     }));
     if (Object.keys(fields).length) out.context = { ...fields, stale: daysBetween(c.context_updated ?? p.updated, opts.today) > CONTEXT_STALE_AFTER_DAYS };
   }
-  if (p.notes && !withheld.length) out.notes = p.notes;
-  return { status: out.stale ? 'stale' : 'found', profile: out };
+  return out;
 }
 /**
  * Return signed whole UTC days between validated YYYY-MM-DD dates for staleness checks; unparseable dates

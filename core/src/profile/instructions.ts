@@ -39,15 +39,24 @@ const quietHours = (v: unknown): boolean => isMap(v) && typeof v.time_zone === "
  * in SPEC § 6.4 order. Only own, closed-value entries of the pinned table are used; unknown fields,
  * unknown values and prototype keys contribute nothing. `appendix_depth` is read on groups only and
  * `quiet_hours` on individuals only, as SPEC § 9 defines them. The sentences grant no action authority.
+ * `owner` is true only under owner context (SPEC § 6.3), which the caller establishes from trusted
+ * context, never from the profile: without it, an individual projection gets no sentence for the
+ * fields instructions.json lists under `non_owner.omitted` (SPEC § 6.4), which describe how the owner
+ * works with their own agent; their values stay in the projection as data. A group keeps every
+ * sentence in this draft.
  * An unknown language throws UNSUPPORTED_ARGUMENT.
  */
-export function asInstructions(served: ServedProfile | MergedProfile, language: InstructionLanguage = "en"): string[] {
+export function asInstructions(served: ServedProfile | MergedProfile, language: InstructionLanguage = "en", owner = false): string[] {
   if (!Object.hasOwn(instructions.languages, language)) throw new Error("UNSUPPORTED_ARGUMENT");
   const table: InstructionTable = instructions.languages[language];
   let group = false;
   // Dropped from the single-person public bundle (build-public.ts, esbuild dropLabels): it never
   // renders a group, so `group` stays false there.
   MULTI_PERSON: group = "humans_group" in served;
+  let omitted: readonly string[] = [];
+  // Dropped from the single-person public bundle too: it renders its owner's own profile only, so
+  // nothing is omitted there.
+  MULTI_PERSON: if (owner !== true && !group) omitted = instructions.non_owner.omitted;
   const out: string[] = [];
   /** Append the sentence for one closed value, if the table has exactly that own entry. */
   const closed = (field: string, value: unknown) => {
@@ -60,6 +69,7 @@ export function asInstructions(served: ServedProfile | MergedProfile, language: 
     if (typeof entry === "string") out.push(entry);
   };
   for (const field of INSTRUCTION_ORDER) {
+    if (omitted.includes(field)) continue;
     if (field === "languages") {
       // One sentence that names the field, never the code: only a nonempty list of known codes earns it.
       const codes: unknown = served.languages;
